@@ -1,16 +1,11 @@
 import React from "react";
-import { connect } from "react-redux";
 import { View, Text } from "react-native";
 import { Tabs, ScrollableTab } from "native-base";
-import * as authActions from "src/redux/actions/authActions";
-import LanguageSwitcher from "src/components/LanguageSwitcher";
 import HeaderComponent from "src/components/HeaderComponent";
-import { translate } from "src/locales/i18n";
 import styles from "./styles";
-import BreastpumpsCards from "./breastpumps";
-import SuppliesCards from "./supplies";
+import TutorialsCards from "./tutorials";
+import ContactUsCards from "./contactus";
 import ArticlesCards from "./articles";
-import ContactusCards from "./contactus";
 import { getActiveIndex } from "./tab-menu";
 
 function TabFirstComponent({ child }) {
@@ -22,34 +17,23 @@ function TabFirstComponent({ child }) {
 }
 
 class TrackScreen extends React.Component {
-	static navigationOptions = ({ navigation, screenProps: { i18n, insets } }) => {
-		return {
-			title: translate("trackScreen.headerTitle"),
-			headerRight: (
-				<LanguageSwitcher navigation={navigation} i18n={i18n} insets={insets} />
-			)
-		};
-	};
+
+	static navigationOptions = {
+		headerTitle: <HeaderComponent />,
+		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+		headerLeft: null
+	}
 
 	constructor(props) {
 		super();
 		const { navigation } = props;
-		const initialTab = navigation.getParam("activeTab") || "Breastpumps";
+		const initialTab = navigation.getParam("activeTab") || "Tutorials";
 		this.state = {
 			activeIndex: getActiveIndex(initialTab),
 		};
 	}
 
-	static navigationOptions = {
-		header: <HeaderComponent />
-	}
-
-	componentDidMount() {
-	}
-
 	tabClick(tab) {
-		// console.log("INDEX FOR NEXT", getActiveIndex(tab), tab);
-		// this.setState({ selectedTab: tab });
 		if(this._tabRef) {
 			this._tabRef.goToPage(getActiveIndex(tab));
 		}
@@ -68,7 +52,7 @@ class TrackScreen extends React.Component {
 						page={activeIndex}
 						ref={(ref) => this._tabRef = ref}
 						initialPage={activeIndex}
-						renderTabBar={() => <ScrollableTab style={{ height: 25, backgroundColor: "#fff", borderWidth: 0, }} />}
+						renderTabBar={() => <ScrollableTab style={{ width: 260, height: 25, backgroundColor: "#fff", borderWidth: 0 }} tabsContainerStyle={{ width: 260 }} />}
 						tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
 						tabBgColor={{ backgroundColor: "#fff", paddingLeft: 0, paddingRight: 0 }}
 						tabStyle={{ backgroundColor: "#fff", borderBottomWidth: 0, paddingLeft: 0, paddingRight: 0 }}
@@ -76,20 +60,12 @@ class TrackScreen extends React.Component {
 
 					>
 						<TabFirstComponent
-							heading="Breastpumps"
+							heading="Tutorials"
 							tabStyle={styles.tabStyle}
 							textStyle={styles.tabTextStyle}
 							activeTabStyle={styles.activeTabStyle}
 							activeTextStyle={styles.activeTextStyle}
-							child={<BreastpumpsCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
-						/>
-						<TabFirstComponent
-							heading="Supplies"
-							tabStyle={styles.tabStyle}
-							textStyle={styles.tabTextStyle}
-							activeTabStyle={styles.activeTabStyle}
-							activeTextStyle={styles.activeTextStyle}
-							child={<SuppliesCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
+							child={<TutorialsCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
 						/>
 						<TabFirstComponent
 							heading="Articles"
@@ -105,7 +81,7 @@ class TrackScreen extends React.Component {
 							textStyle={styles.tabTextStyle}
 							activeTabStyle={styles.activeTabStyle}
 							activeTextStyle={styles.activeTextStyle}
-							child={<ContactusCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
+							child={<ContactUsCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
 						/>
 					</Tabs>
 				</View>
@@ -114,8 +90,4 @@ class TrackScreen extends React.Component {
 	}
 }
 
-const mapDispatchToProps = {
-	dispatchResetAuthState: () => authActions.resetAuthState()
-};
-
-export default connect(null, mapDispatchToProps)(TrackScreen);
+export default TrackScreen;

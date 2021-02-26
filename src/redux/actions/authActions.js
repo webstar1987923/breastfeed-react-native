@@ -7,6 +7,8 @@ export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
 export const RESET_AUTH_STATE = "RESET_AUTH_STATE";
 export const SIGN_UP_START = "SIGN_UP_START";
 export const SIGN_UP_SUCCESS = "SIGN_UP_SUCCESS";
+export const VERIFY_SIGN_UP_OTP_START = "VERIFY_SIGN_UP_OTP_START";
+export const VERIFY_SIGN_UP_OTP_SUCCESS = "VERIFY_SIGN_UP_OTP_SUCCESS";
 export const FORGOT_PASSWORD_START = "FORGOT_PASSWORD_START";
 export const FORGOT_PASSWORD_SUCCESS = "FORGOT_PASSWORD_SUCCESS";
 export const VERIFY_OTP_START = "VERIFY_OTP_START";
@@ -15,6 +17,7 @@ export const RESET_PASSWORD_START = "RESET_PASSWORD_START";
 export const RESET_PASSWORD_SUCCESS = "RESET_PASSWORD_SUCCESS";
 export const FB_LOG_IN_START = "FB_LOG_IN_START";
 export const FB_LOG_IN_SUCCESS = "FB_LOG_IN_SUCCESS";
+export const GET_STARTED_SUCCESS = "GET_STARTED_SUCCESS";
 
 /* LOGIN ACTIONS */
 export const logInStart = () => ({
@@ -37,6 +40,15 @@ export const signUpStart = () => ({
 
 export const signUpSuccess = (data) => ({
 	type: SIGN_UP_SUCCESS,
+	data
+});
+
+export const verifySignUpOTPStart = () => ({
+	type: VERIFY_SIGN_UP_OTP_START
+});
+
+export const verifySignUpOTPSuccess = (data) => ({
+	type: VERIFY_SIGN_UP_OTP_SUCCESS,
 	data
 });
 
@@ -78,6 +90,11 @@ export const fbLogInSuccess = (data) => ({
 	data
 });
 
+export const getStartedSuccess = (data) => ({
+	type: GET_STARTED_SUCCESS,
+	data,
+});
+
 export function handleLogIn(data) {
 	return (dispatch) => {
 		dispatch(commonActions.loadingStart());
@@ -110,7 +127,22 @@ export function handleSignUp(data) {
 	};
 }
 
+export function handleVerifySignUpOTP(data) {
+	return (dispatch) => {
+		dispatch(commonActions.loadingStart());
+		dispatch(verifySignUpOTPStart());
+		AuthService.handleSignupVerifyOTP(data).then(function(response) {
+			dispatch(verifySignUpOTPSuccess(response.data));
+			dispatch(commonActions.loadingEnd());
+		}).catch(function(error) {
+			dispatch(commonActions.loadingEnd());
+			showAPIErrorAlert(error);
+		});
+	};
+}
+
 export function handleForgotPassword(data) {
+	console.log("data", data);
 	return (dispatch) => {
 		dispatch(commonActions.loadingStart());
 		dispatch(forgotPasswordStart());

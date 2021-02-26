@@ -9,13 +9,15 @@ import AuthNavigator from "./authNavigator";
 import LoadingIndicator from "./components/LoadingIndicator";
 import StatusBar from "./components/StatusBar";
 import { Keys, KeyValueStore } from "./utils/KeyValueStore";
+import GetStartedNavigator from "./getStartedNavigator";
+import * as commonActions from "./redux/actions/commonActions";
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			signedIn: props.auth.loggedIn || false
-			// signedIn: true
+			signedIn: props.auth.loggedIn || false,
+			isGetStarted: props.auth.isGetStarted || false
 		};
 	}
 
@@ -25,9 +27,13 @@ class App extends Component {
 			this.setState({ signedIn: auth.loggedIn });
 		}
 
-		if((prevProps.auth.isSignupSuccessful === false && auth.isSignupSuccessful === true) || (prevProps.auth.isSignupSuccessful === true && auth.isSignupSuccessful === false)) {
-			this.setState({ signedIn: auth.loggedIn });
+		if((prevProps.auth.isGetStarted === false && auth.isGetStarted === true) || (prevProps.auth.isGetStarted === true && auth.isGetStarted === false)) {
+			this.setState({ isGetStarted: auth.isGetStarted });
 		}
+
+		// if((prevProps.auth.isSignupSuccessful === false && auth.isSignupSuccessful === true) || (prevProps.auth.isSignupSuccessful === true && auth.isSignupSuccessful === false)) {
+		// 	this.setState({ signedIn: auth.loggedIn });
+		// }
 	}
 
 	async componentDidMount() {
@@ -39,8 +45,25 @@ class App extends Component {
 		}
 	}
 
+	getActiveRouteName(navigationState) {
+		if(!navigationState) {
+			return null;
+		}
+		const route = navigationState.routes[navigationState.index];
+		if(route.routes) {
+			return this.getActiveRouteName(route);
+		}
+		return { route: route.routeName, params: route.params };
+	}
+
+	onNavigateStateChange(prevState, currentState) {
+		const { dispatchCurrentScreen } = this.props;
+		const currentScreen = this.getActiveRouteName(currentState);
+		dispatchCurrentScreen(currentScreen.route);
+	}
+
 	render() {
-		const { signedIn } = this.state;
+		const { signedIn, isGetStarted } = this.state;
 		const { common: { isLoading } } = this.props;
 		const { t, i18n } = this.props;
 
@@ -53,7 +76,13 @@ class App extends Component {
 								(insets) => (
 									<React.Fragment>
 										<StatusBar barStyle="light" />
-										<HomeNavigator screenProps={{ t, i18n, insets }} />
+										{
+											isGetStarted ? (
+												<HomeNavigator screenProps={{ t, i18n, insets }} onNavigationStateChange={(prevState, currentState) => this.onNavigateStateChange(prevState, currentState)} />
+											) : (
+												<GetStartedNavigator screenProps={{ t, i18n, insets }} />
+											)
+										}
 									</React.Fragment>
 								)
 							}
@@ -76,4 +105,8 @@ App.propTypes = {
 	common: PropTypes.oneOfType([PropTypes.object]).isRequired
 };
 
-export default connect(mapStateToProps, null)(withTranslation()(App));
+const mapDispatchToProps = {
+	dispatchCurrentScreen: (currentScreen) => commonActions.getCurrentScreen(currentScreen),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(App));

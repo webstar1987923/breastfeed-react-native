@@ -4,15 +4,15 @@ const dimensions = Dimensions.get("window");
 
 export default StyleSheet.create({
 	container: {
-		padding: 0,
+		paddingHorizontal: 15,
+		flex: 1,
+		paddingBottom: 15
 	},
 	addBreastfeed: {
-		flexDirection: "row",
-		justifyContent: "flex-end",
-		alignItems: "center",
-		marginTop: 20
-	},
-	addBreastfeedButton: {
+		position: "absolute",
+		bottom: 20,
+		right: 15,
+		zIndex: 999,
 		width: 50,
 		height: 50,
 		backgroundColor: "#4B2785",
@@ -26,7 +26,7 @@ export default StyleSheet.create({
 		elevation: 5
 	},
 	scrollView: {
-		height: dimensions.height / 2 - 20
+		marginTop: 15
 	},
 	graphTitle: {
 		flexDirection: "row",

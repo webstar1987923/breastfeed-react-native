@@ -49,6 +49,15 @@ export default StyleSheet.create({
 		textAlign: "center",
 		marginVertical: 50
 	},
+	ResetPasswordheaderText: {
+		fontSize: 30,
+		lineHeight: 37,
+		fontWeight: "500",
+		color: "#fff",
+		textAlign: "center",
+		marginTop: 50,
+		marginBottom: 22
+	},
 	headerSubText: {
 		fontWeight: "normal",
 		fontSize: 22,
@@ -57,10 +66,8 @@ export default StyleSheet.create({
 		textAlign: "center",
 		marginBottom: 20
 	},
-	custominputDigit: {
-		backgroundColor: "#ececec",
-		borderRadius: 3,
-		width: "100%"
+	otpInputs: {
+		maxWidth: 220
 	},
 	otpErrorMessage: {
 		color: "red",
@@ -73,5 +80,27 @@ export default StyleSheet.create({
 		lineHeight: 17,
 		marginTop: 20,
 		color: "#fff"
+	},
+	resendTextDiv: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: 50
+	},
+	resendText: {
+		fontWeight: "normal",
+		fontSize: 14,
+		lineHeight: 17,
+		textTransform: "uppercase",
+		color: "#999999"
+	},
+	resend: {
+		fontWeight: "normal",
+		fontSize: 14,
+		lineHeight: 17,
+		textTransform: "uppercase",
+		color: "#999999",
+		marginLeft: 5,
+		textDecorationLine: "underline"
 	}
 });

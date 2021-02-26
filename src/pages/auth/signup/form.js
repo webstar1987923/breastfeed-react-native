@@ -31,7 +31,7 @@ class SignupForm extends React.Component {
 
 	isValid() {
 		const { email, password, confirm_password, fullName } = this.state;
-		const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		if(isEmpty(email) || isEmpty(password) || isEmpty(confirm_password) || isEmpty(fullName)) {
 			return false;
@@ -53,7 +53,7 @@ class SignupForm extends React.Component {
 
 		/* CONFIRM PASSWORD VALIDATION */
 		if(password !== confirm_password) {
-			this.setState({ confirm_passwordErrorMessage: translate("formErrorMessage.confirm_passwordErrorMessage"), isconfirm_passwordInvalid: true });
+			this.setState({ confirm_passwordErrorMessage: translate("formErrorMessage.cPasswordErrorMessage"), isconfirm_passwordInvalid: true });
 			return false;
 		}
 		return true;
@@ -93,6 +93,7 @@ class SignupForm extends React.Component {
 				<TextInput
 					style={styles.textInputContainer}
 					textLabelBackground="#F0D4AB"
+					textLabelColor="#fff"
 					value={fullName}
 					placeholder={translate("signupScreen.fullNamePlaceholder")}
 					isInvalid={(validateInput && isEmpty(fullName))}
@@ -106,6 +107,7 @@ class SignupForm extends React.Component {
 					onRef={(input) => { this.emailInput = input; }}
 					style={styles.textInputContainer}
 					textLabelBackground="#EECFA2"
+					textLabelColor="#fff"
 					value={email}
 					placeholder={translate("signupScreen.emailPlaceholder")}
 					keyboardType="email-address"
@@ -122,6 +124,7 @@ class SignupForm extends React.Component {
 					onRef={(input) => { this.passwordInput = input; }}
 					style={styles.textInputContainer}
 					textLabelBackground="#EDCA99"
+					textLabelColor="#fff"
 					value={password}
 					placeholder={translate("signupScreen.passwordPlaceholder")}
 					autoCorrect={false}
@@ -137,6 +140,7 @@ class SignupForm extends React.Component {
 				<TextInput
 					onRef={(input) => { this.confirm_passwordInput = input; }}
 					style={styles.textInputContainer}
+					textLabelColor="#fff"
 					value={confirm_password}
 					placeholder={translate("signupScreen.cPaswordPlaceholder")}
 					autoCorrect={false}

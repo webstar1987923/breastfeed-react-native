@@ -2,7 +2,8 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
 	container: {
-		flex: 1,
+		paddingLeft: 10,
+		paddingRight: 10,
 	},
 	articlesImgBox: {
 		flexDirection: "row",
@@ -15,19 +16,25 @@ export default StyleSheet.create({
 	},
 	articleContent: {
 		paddingLeft: 20,
-		width: "75%"
+		flexDirection: "column",
+		flex: 1,
+		justifyContent: "flex-start",
+		alignItems: "flex-start"
 	},
 	articleTitle: {
 		fontWeight: "bold",
 		fontSize: 16,
 		lineHeight: 20,
 		color: "#000000",
-		marginBottom: 4
+		marginBottom: 0,
+		flex: 1
 	},
 	articledescription: {
 		fontSize: 12,
 		lineHeight: 14,
 		fontWeight: "normal",
 		color: "#999999",
+		flex: 1,
+		marginTop: -18
 	}
 });

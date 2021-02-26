@@ -12,16 +12,23 @@ import TrackScreen from "./pages/track";
 import AccountScreen from "./pages/account";
 import SearchScreen from "./pages/search";
 import DashboardScreen from "./pages/dashboard";
-import TutorialsScreen from "./pages/tutorials";
+import OrderScreen from "./pages/order";
 import StatisticsScreen from "./pages/statistics";
 import EditProfileScreen from "./pages/editprofile";
+import AddProfileScreen from "./pages/addprofile";
 import SettingsScreen from "./pages/settings";
 import AddBreastfeedEntryScreen from "./pages/add-breastfeed-entry";
+import EditBreastfeedScreen from "./pages/edit-breastfeed";
 import BreastfeedEntryDetailsScreen from "./pages/breastfeed-entry-details";
 import SupportScreen from "./pages/support";
+import ProductSupportScreen from "./pages/product-support";
+import TechSupportScreen from "./pages/tech-support";
 import AddPumpEntryScreen from "./pages/add-pump-entry";
+import EditPumpScreen from "./pages/edit-pump";
 import AddBottleScreen from "./pages/add-bottle";
+import EditBottleScreen from "./pages/edit-bottle";
 import AddDiaperScreen from "./pages/add-diaper";
+import EditDiaperScreen from "./pages/edit-diaper";
 import AddGrowthScreen from "./pages/add-growth";
 import ChangePasswordScreen from "./pages/change-password";
 
@@ -88,10 +95,14 @@ const HomeTabStack = createStackNavigator(homeRouteConfig, {
 const trackRouteConfig = {
 	Track: { screen: TrackScreen },
 	AddBreastfeedEntry: { screen: AddBreastfeedEntryScreen },
+	EditBreastfeed: { screen: EditBreastfeedScreen },
 	BreastfeedEntryDetails: { screen: BreastfeedEntryDetailsScreen },
 	AddPumpEntry: { screen: AddPumpEntryScreen },
+	EditPump: { screen: EditPumpScreen },
 	AddBottle: { screen: AddBottleScreen },
+	EditBottle: { screen: EditBottleScreen },
 	AddDiaper: { screen: AddDiaperScreen },
+	EditDiaper: { screen: EditDiaperScreen },
 	AddGrowth: { screen: AddGrowthScreen },
 };
 
@@ -110,8 +121,8 @@ TrackTabStack.navigationOptions = ({ navigation }) => {
 	let tabBarVisible = true;
 	if(navigation.state.index > 0) {
 	  const currentScreen = getActiveRouteName(navigation.state);
-	  if(currentScreen ===  'AddBreastfeedEntry' || currentScreen ===  'BreastfeedEntryDetails' || currentScreen ===  'AddPumpEntry' || currentScreen ===  'AddBottle' || currentScreen ===  'AddDiaper' || currentScreen ===  'AddGrowth'){
-		tabBarVisible = false;
+	  if(currentScreen === "AddBreastfeedEntry" || currentScreen === "BreastfeedEntryDetails" || currentScreen === "AddPumpEntry" || currentScreen === "AddBottle" || currentScreen === "AddDiaper" || currentScreen === "AddGrowth") {
+			tabBarVisible = false;
 	  }
 	}
 	return {
@@ -120,10 +131,28 @@ TrackTabStack.navigationOptions = ({ navigation }) => {
 };
 /* SUPPORT STACK */
 const supportRouteConfig = {
-	Support: { screen: SupportScreen }
+	Support: { screen: SupportScreen },
+	ProductSupport: { screen: ProductSupportScreen },
+	TechSupport: { screen: TechSupportScreen }
 };
 
 const SupportTabStack = createStackNavigator(supportRouteConfig, {
+	defaultNavigationOptions: {
+		headerStyle: stackHeaderStyle,
+		headerTitleStyle: stackHeaderTitleStyle,
+		headerTintColor: "white",
+		// headerForceInset: { top: "never", bottom: "never" }
+	},
+	initialRouteParams: { transition: "fade" },
+	transitionConfig: transitionSlideConfig,
+});
+
+/* ORDER STACK */
+const orderRouteConfig = {
+	Order: { screen: OrderScreen }
+};
+
+const OrderTabStack = createStackNavigator(orderRouteConfig, {
 	defaultNavigationOptions: {
 		headerStyle: stackHeaderStyle,
 		headerTitleStyle: stackHeaderTitleStyle,
@@ -170,27 +199,12 @@ const AccountTabStack = createStackNavigator(accountRouteConfig, {
 const dashboardRouteConfig = {
 	Dashboard: { screen: DashboardScreen },
 	EditProfile: { screen: EditProfileScreen },
+	AddProfile: { screen: AddProfileScreen },
 	Settings: { screen: SettingsScreen },
 	ChangePassword: { screen: ChangePasswordScreen },
 };
 
 const DashboardTabStack = createStackNavigator(dashboardRouteConfig, {
-	defaultNavigationOptions: {
-		headerStyle: stackHeaderStyle,
-		headerTitleStyle: stackHeaderTitleStyle,
-		headerTintColor: "white",
-		// headerForceInset: { top: "never", bottom: "never" }
-	},
-	initialRouteParams: { transition: "fade" },
-	transitionConfig: transitionSlideConfig,
-});
-
-/* TUTORIALS STACK */
-const tutorialsRouteConfig = {
-	Tutorials: { screen: TutorialsScreen },
-};
-
-const TutorialsTabStack = createStackNavigator(tutorialsRouteConfig, {
 	defaultNavigationOptions: {
 		headerStyle: stackHeaderStyle,
 		headerTitleStyle: stackHeaderTitleStyle,
@@ -233,7 +247,7 @@ DashboardTabStack.navigationOptions = ({ navigation }) => {
 	let tabBarVisible = true;
 	if(navigation.state.index > 0) {
 	  const currentScreen = getActiveRouteName(navigation.state);
-	  if(currentScreen === "EditProfile" || currentScreen === "Settings" || currentScreen === "ChangePassword") {
+	  if(currentScreen === "EditProfile" || currentScreen === "Settings" || currentScreen === "ChangePassword" || currentScreen === "AddProfile") {
 			tabBarVisible = false;
 	  }
 	}
@@ -253,8 +267,8 @@ const TabNavigator = createBottomTabNavigator({
 	Track: {
 		screen: TrackTabStack
 	},
-	Tutorials: {
-		screen: TutorialsTabStack
+	Order: {
+		screen: OrderTabStack
 	},
 	Statistics: {
 		screen: StatisticsTabStack

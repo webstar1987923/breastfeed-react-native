@@ -21,6 +21,8 @@ export default StyleSheet.create({
 	},
 	container: {
 		padding: 15,
+		flex: 1,
+		marginBottom: 15,
 	},
 	editprofileTitle: {
 		textAlign: "center",
@@ -124,6 +126,13 @@ export default StyleSheet.create({
 		justifyContent: "center",
 		paddingTop: 8,
 	},
+	RNPickerIcon: {
+		color: "#999",
+		fontSize: 30,
+		position: "absolute",
+		top: 18,
+		right: 5
+	},
 	pickerIcon: {
 		color: "#999",
 		fontSize: 30,
@@ -152,6 +161,13 @@ export default StyleSheet.create({
 		backgroundColor: "#fff",
 		elevation: 2,
 		marginRight: 11,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.20,
+		shadowRadius: 1.41,
 	},
 	savebuttonStyle: {
 		maxWidth: "100%",
@@ -159,6 +175,13 @@ export default StyleSheet.create({
 		backgroundColor: "#E4B167",
 		elevation: 2,
 		marginLeft: 11,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.20,
+		shadowRadius: 1.41,
 	},
 	savebuttontextStyle: {
 		color: "#fff",

@@ -65,11 +65,11 @@ export default {
 	},
 	forgotPasswordScreen: {
 		title: "Forgot Password",
-		verifyOTPHeaderText: "Verication Code",
+		verifyOTPHeaderText: "Verification Code",
 		resetPasswordHeaderText: "Reset Password",
 		emailPlaceholder: "Email",
-		getOTP: "Get OTP",
-		otpDescription: "Enter 4 digit verification code.",
+		getOTP: "Submit",
+		otpDescription: "Enter 6 digit verification code.",
 		otpButton: "Verify OTP",
 		otpErrorMessage: "Please enter otp.",
 		resetPasswordButton: "Reset Password"

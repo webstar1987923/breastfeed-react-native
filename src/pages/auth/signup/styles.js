@@ -9,6 +9,7 @@ export default StyleSheet.create({
 	},
 	container: {
 		flexGrow: 1,
+		width: "100%"
 	},
 	contentArea: {
 		flexGrow: 1,
@@ -23,6 +24,7 @@ export default StyleSheet.create({
 	},
 	buttonContainer: {
 		paddingTop: 50,
+		width: "100%"
 	},
 	buttonStyle: {
 		shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -37,5 +39,61 @@ export default StyleSheet.create({
 	},
 	formContainer: {
 		width: "100%"
+	},
+	otpContainer: {
+		flexGrow: 1,
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	otpInputs: {
+		maxWidth: 220
+	},
+	otpErrorMessage: {
+		color: "red",
+		marginTop: 5,
+		fontSize: 13
+	},
+	resendTextDiv: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: 50
+	},
+	resendText: {
+		fontWeight: "normal",
+		fontSize: 14,
+		lineHeight: 17,
+		textTransform: "uppercase",
+		color: "#999999"
+	},
+	resend: {
+		fontWeight: "normal",
+		fontSize: 14,
+		lineHeight: 17,
+		textTransform: "uppercase",
+		color: "#999999",
+		marginLeft: 5,
+		textDecorationLine: "underline"
+	},
+	lockIcon: {
+		width: 100,
+		resizeMode: "contain"
+	},
+	headerText: {
+		fontSize: 30,
+		lineHeight: 37,
+		fontWeight: "500",
+		color: "#fff",
+		textAlign: "center",
+		marginVertical: 50
+	},
+	headerSubText: {
+		fontWeight: "normal",
+		fontSize: 22,
+		lineHeight: 26,
+		color: "#fff",
+		textAlign: "center",
+		marginBottom: 20
 	},
 });

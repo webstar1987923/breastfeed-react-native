@@ -5,7 +5,7 @@ export const Images = {
 		lockIcon: require("./lock-icon.png"),
 		sendIcon: require("./send-icon.png"),
 		resetIcon: require("./reset-icon.png"),
-		successIcon: require("./success-icon.png"),
+		successIcon: require("./success-icon.png")
 	},
 	globalScreen: {
 		backIcon: require("./back-icon.png"),
@@ -13,7 +13,9 @@ export const Images = {
 		topBG: require("./top-bg.png"),
 		smallLogo: require("./small-logo.png"),
 		babyImage: require("./baby-image.jpeg"),
-		downVector: require("./down-vector.png")
+		downVector: require("./down-vector.png"),
+		editIconGray: require("./edit-icon-gray.png"),
+		closeIcon: require("./close-icon.png"),
 	},
 	dashboard: {
 		diaperingIcon: require("./diapering-icon.png"),
@@ -89,7 +91,7 @@ export const Images = {
 		dashboardBlackIcon: require("./dashboard_black.png"),
 		trackBlackIcon: require("./track_black.png"),
 		statisticsBlackIcon: require("./statistics_black.png"),
-		tutorialsBlackIcon: require("./tutorials_black.png"),
+		orderBlackIcon: require("./cart-icon.png"),
 		supportBlackIcon: require("./support_black.png")
 	},
 	BreastfeedEntryDetails: {
@@ -103,10 +105,16 @@ export const Images = {
 		settingCheckicon: require("./setting-checkicon.png")
 	},
 	Tutorials: {
-		tutorialsVideo: require("./video_image.png")
+		tutorialsVideo: require("./video_image.png"),
+		tutorialsVideo1: require("./video1.jpg"),
+		tutorialsVideo2: require("./video2.jpg"),
+		tutorialsVideo3: require("./video3.jpg")
 	},
 	Breastpumps: {
 		leftarrowIcon: require("./leftarrow.png"),
+	},
+	BreastpumpCards: {
+		leftarrowIcon: require("./leftarrow-white.png"),
 	},
 	Articles: {
 		articlesImg: require("./article-img.png"),
@@ -115,6 +123,9 @@ export const Images = {
 		prevIcon: require("./prev-icon.png"),
 		nextIcon: require("./next-icon.png")
 	},
+	ContactusScreen: {
+		rightArrowIcon: require("./right-arrow-orange.png")
+	}
 };
 
 export default Images;

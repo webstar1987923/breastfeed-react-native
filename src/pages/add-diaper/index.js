@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import { StackActions, NavigationActions } from "react-navigation";
 import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -9,8 +11,12 @@ import ButtonComponent from "src/components/ButtonComponent";
 import * as authActions from "src/redux/actions/authActions";
 import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import { translate } from "src/locales/i18n";
+import * as diaperActions from "src/redux/actions/diaperActions";
 import { Images } from "src/assets/images";
+import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
+import { getActiveBaby } from "src/redux/selectors";
+import moment from "moment";
 import styles from "./styles";
 
 class AddDiaper extends React.Component {
@@ -21,7 +27,7 @@ class AddDiaper extends React.Component {
 			// selectedStartTime: "",
 			// TimeValue: "",
 			time: "9:00 AM",
-			selectedFeed: ""
+			selectedFeed: "Both"
 		};
 	}
 
@@ -47,7 +53,16 @@ class AddDiaper extends React.Component {
 		};
 	};
 
-	componentDidMount() {
+	componentDidUpdate() {
+		const { card: { msg }, dispatchClearCard, navigation } = this.props;
+		if(msg === "ADD_DIAPER_SUCCESS") {
+			dispatchClearCard();
+			this.setState(() => {
+				showAlert("Success", "diaper create successfully.", "", () => {
+					navigation.navigate("Track", { activeTab: "Diapers" });
+				});
+			});
+		}
 	}
 
 	onCancel() {
@@ -66,8 +81,30 @@ class AddDiaper extends React.Component {
 	}
 
 	saveHandler() {
-		const { navigation } = this.props;
-		navigation.navigate("Track");
+		const { time, NotesValue, selectedFeed } = this.state;
+		const { dispatchDiaperCreate, activeBaby, navigation: {state : {params}}  } = this.props;
+
+
+		let date = moment(params.date).format("YYYY-MM-DD");
+		let tmp_time = moment().format("hh:mm:ss");
+		let date_time = moment(date+' '+tmp_time).format("YYYY-MM-DD HH:mm:ss")
+
+
+		let timeConvert = time.split(" ")[0];
+		const data = {
+			babyprofile_id: activeBaby.id,
+			start_time: timeConvert,
+			type_of_diaper: selectedFeed,
+			note: NotesValue,
+			created_at: date_time
+		};
+		if(!isEmptyObject(data)) {
+			dispatchDiaperCreate(data);
+		}
+	}
+
+	getTimeAMPM(data) {
+		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
 	render() {
@@ -84,7 +121,7 @@ class AddDiaper extends React.Component {
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>
-									{time}
+									{this.getTimeAMPM(time)}
 								</Text>
 							</TouchableOpacity>
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
@@ -100,21 +137,43 @@ class AddDiaper extends React.Component {
 						</View>
 					</View>
 					<View style={styles.feedPicker}>
-						<Text style={[styles.feedLabel, { backgroundColor: "#fff", color: "#999" }]}>Type of Feed</Text>
+						<Text style={[styles.feedLabel, { backgroundColor: "#fff", color: "#999" }]}>Type of Diaper</Text>
 						<View style={styles.picker}>
-							<Picker
-								selectedValue={selectedFeed}
-								style={styles.pickerInput}
-								itemTextStyle={{ fontSize: 20 }}
-								onValueChange={(itemValue) => {
-									this.setState({ selectedFeed: itemValue });
+							<RNPickerSelect
+								onValueChange={(value) => {
+									this.setState({ selectedFeed: value });
 								}}
-							>
-								<Picker.Item label="Both" value="Both" />
-								<Picker.Item label="Poop" value="Poop" />
-								<Picker.Item label="Pee" value="Pee" />
-							</Picker>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+								value={selectedFeed}
+								style={{
+									inputIOS: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									},
+									inputAndroid: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									}
+								}}
+								useNativeAndroidPickerStyle={false}
+								Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+								placeholder={{
+									label: "Select Diaper",
+									color: "#999999"
+								}}
+								items={[
+									{ label: "Pee", value: "Pee" },
+									{ label: "Poop", value: "Poop" },
+									{ label: "Both", value: "Both" },
+								]}
+							/>
 						</View>
 					</View>
 					<View style={styles.notsInput}>
@@ -155,8 +214,15 @@ class AddDiaper extends React.Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	card: state.diaperReducer,
+	activeBaby: getActiveBaby(state)
+});
+
 const mapDispatchToProps = {
+	dispatchDiaperCreate: (data) => diaperActions.handleDiaperCreate(data),
+	dispatchClearCard: () => diaperActions.clearMsg(),
 	dispatchResetAuthState: () => authActions.resetAuthState()
 };
 
-export default connect(null, mapDispatchToProps)(AddDiaper);
+export default connect(mapStateToProps, mapDispatchToProps)(AddDiaper);

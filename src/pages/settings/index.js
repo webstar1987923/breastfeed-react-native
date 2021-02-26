@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from "react-native";
 import { Images } from "src/assets/images";
 import * as authActions from "src/redux/actions/authActions";
+import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 // import LanguageSwitcher from "src/components/LanguageSwitcher";
 import ButtonComponent from "src/components/ButtonComponent";
 // import { translate } from "src/locales/i18n";
+import * as userAction from "src/redux/actions/userAction";
+import { isEmptyObject } from "src/utils/native";
 import { RadioGroup, RadioButton } from "../../components/radio";
 import styles from "./styles";
 
@@ -41,7 +44,11 @@ class SettingsScreen extends React.Component {
 		};
 	};
 
-	componentDidMount() {
+	componentDidUpdate(prevProps) {
+		const { userDetails, dispatchUserProfileGet } = this.props;
+		if(prevProps.userDetails.babyDelete === false && userDetails.babyDelete === true) {
+			dispatchUserProfileGet();
+		}
 	}
 
 	logOutHandler() {
@@ -80,53 +87,84 @@ class SettingsScreen extends React.Component {
 		navigation.navigate("ChangePassword");
 	}
 
+	editBabyProfile(data) {
+		const { navigation, dispatchEditBaby } = this.props;
+		navigation.navigate("EditProfile", { data });
+	}
+
+	deleteBady(value) {
+		const { dispatchDeleteBaby } = this.props;
+
+		const data = {
+			babyprofile_id: value.id
+		};
+
+		dispatchDeleteBaby(data);
+	}
+
+	RedirectToAddBaby() {
+		const { navigation } = this.props;
+		navigation.navigate("AddProfile");
+	}
+
 	render() {
 		const { bottlesisEnabled, breastfeedisEnabled, pumpisEnabled } = this.state;
+		const { auth, userDetails } = this.props;
+		const { user } = auth;
+		const { babyDetails } = userDetails;
 		return (
 			<View style={styles.container}>
 				<ScrollView style={styles.scrollView}>
 					<Text style={styles.settingsTitle}>Settings</Text>
 					<View style={styles.settingsEmail}>
 						<Text style={styles.settingsLabel}>Email</Text>
-						<Text style={styles.settingsEmailID}>example@email.com</Text>
+						<Text style={styles.settingsEmailID}>{user && user.result && user.result.email ? user.result.email : ""}</Text>
 					</View>
 					<View style={styles.changePassword}>
 						<Text style={styles.changepasswordLabel} onPress={() => this.changePasswordHandler()}>Change Password</Text>
 					</View>
-					<View style={styles.babyAdd}>
-						<View style={styles.babyTitleIcon}>
-							<Image
-								source={Images.Settings.babyaddIcon}
-								style={styles.babyaddIcon}
-							/>
-							<Text style={styles.babyTitle}>Baby 1</Text>
-						</View>
-						<Image
-							source={Images.Settings.editpencilIcon}
-							style={styles.editpencilIcon}
-						/>
-					</View>
-					<View style={styles.babyAdd}>
-						<View style={styles.babyTitleIcon}>
-							<Image
-								source={Images.Settings.babyaddoneIcon}
-								style={styles.babyaddIcon}
-							/>
-							<Text style={styles.babyTitle}>Baby 2</Text>
-						</View>
-						<Image
-							source={Images.Settings.editpencilIcon}
-							style={styles.editpencilIcon}
-						/>
-					</View>
+					{babyDetails.map((el) => {
+						return (
+							<View style={styles.babyAdd}>
+								<View style={styles.babyTitleIcon}>
+									{!el.baby_profileupload
+										? (
+											<Image
+												source={Images.Settings.babyaddIcon}
+												style={styles.babyaddIcon}
+											/>
+										) : (
+											<Image
+												source={{ uri: el.baby_profileupload }}
+												style={{ width: 30, height: 30, borderRadius: 80 }}
+											/>
+										)}
+									<Text style={styles.babyTitle}>{el.name}</Text>
+								</View>
+								<View style={styles.settingsBabyIcon}>
+									<TouchableOpacity onPress={() => this.editBabyProfile(el)}>
+										<Image
+											source={Images.Settings.editpencilIcon}
+											style={styles.editpencilIcon}
+										/>
+									</TouchableOpacity>
+									<TouchableOpacity onPress={() => this.deleteBady(el)}>
+										<MaterialIcon style={styles.babyDeleteIcon}>delete</MaterialIcon>
+									</TouchableOpacity>
+								</View>
+							</View>
+						);
+					})}
 					<View style={styles.babyaddplusIcon}>
 						<Image
 							source={Images.Settings.addbabyIcon}
 							style={styles.addbabyIcon}
 						/>
-						<Text style={styles.anotherBaby}>Add Another Baby</Text>
+						<TouchableOpacity onPress={() => this.RedirectToAddBaby()}>
+							<Text style={styles.anotherBaby}>Add Another Baby</Text>
+						</TouchableOpacity>
 					</View>
-					<View style={styles.unitsBox}>
+					{/* <View style={styles.unitsBox}>
 						<Text style={styles.unitsTitle}>Units</Text>
 						<RadioGroup
 							size={16}
@@ -151,7 +189,7 @@ class SettingsScreen extends React.Component {
 								<Text style={styles.unitRadiotitle}>Metric</Text>
 							</RadioButton>
 						</RadioGroup>
-					</View>
+					</View> */}
 					<View style={styles.notificationBox}>
 						<Text style={styles.notificationTitle}>Notifications</Text>
 						<View style={styles.notificationList}>
@@ -243,8 +281,15 @@ class SettingsScreen extends React.Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	auth: state.authReducer,
+	userDetails: state.userReducer
+});
 const mapDispatchToProps = {
-	dispatchResetAuthState: () => authActions.resetAuthState()
+	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchEditBaby: (data) => userAction.EditGetDataBaby(data),
+	dispatchDeleteBaby: (data) => userAction.deleteBadyProfile(data),
+	dispatchUserProfileGet: () => userAction.getBadyProfile(),
 };
 
-export default connect(null, mapDispatchToProps)(SettingsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);

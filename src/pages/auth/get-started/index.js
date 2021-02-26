@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import * as authActions from "src/redux/actions/authActions";
+import * as userAction from "src/redux/actions/userAction";
 import GetStartedForm from "./form";
 import styles from "./styles";
 
@@ -14,11 +15,15 @@ class GetStartedScreen extends React.Component {
 	}
 
 	submitForm(values) {
-		console.log("values", values);
-		const { dispatchLogin } = this.props;
+		const { dispatchGetStarted, dispatchCreateProfile } = this.props;
 		if(!isEmptyObject(values)) {
-			dispatchLogin(values);
+			dispatchCreateProfile(values);
 		}
+	}
+
+	skipNowScreen() {
+		const { dispatchGetStarted } = this.props;
+		dispatchGetStarted(true);
 	}
 
 	render() {
@@ -27,8 +32,8 @@ class GetStartedScreen extends React.Component {
 				<ScrollView style={styles.scrollView}>
 					<View style={styles.contentArea}>
 						<View style={styles.getStartedHeader}>
-							<Text style={styles.getStartedTitle}>Let’s get started with your baby’s profile.</Text>
-							<TouchableOpacity style={styles.skipButton}>
+							<Text style={styles.getStartedTitle}>Let's get started with your baby's profile.</Text>
+							<TouchableOpacity onPress={() => this.skipNowScreen()} style={styles.skipButton}>
 								<Text style={styles.skipButtonText}>Skip for now </Text>
 								<MaterialIcon style={styles.skipButtonIcon}>keyboard_backspace</MaterialIcon>
 							</TouchableOpacity>
@@ -48,7 +53,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-	dispatchLogin: (data) => authActions.handleLogIn(data)
+	dispatchGetStarted: (data) => authActions.getStartedSuccess(data),
+	dispatchCreateProfile: (data) => userAction.CreateProfiles(data)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GetStartedScreen);

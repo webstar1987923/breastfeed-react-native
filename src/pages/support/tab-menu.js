@@ -1,19 +1,18 @@
 export const tabs = [
 	{
-		"title": "Breastpumps",
-		"id": "Breastpumps",
-	},
-	{
-		"title": "Supplies",
-		"id": "Supplies",
+		"title": "Tutorials",
+		"id": "Tutorials",
+		"width": 0
 	},
 	{
 		"title": "Articles",
 		"id": "Articles",
+		"width": 0
 	},
 	{
 		"title": "Contact Us",
 		"id": "Contact Us",
+		"width": 0
 	},
 ];
 

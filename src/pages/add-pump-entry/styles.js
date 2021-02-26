@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 const dimensions = Dimensions.get("window");
 
@@ -20,7 +20,9 @@ export default StyleSheet.create({
 		marginLeft: 7
 	},
 	container: {
-		padding: 15,
+		paddingHorizontal: 15,
+		paddingBottom: 10,
+		flex: 1
 	},
 	breastfeedTitle: {
 		textAlign: "center",
@@ -124,6 +126,13 @@ export default StyleSheet.create({
 		top: 15,
 		right: 15
 	},
+	RNPickerIcon: {
+		color: "#000",
+		fontSize: 30,
+		position: "absolute",
+		top: 15,
+		right: 15
+	},
 	manualEentry: {
 		flex: 1,
 		alignItems: "center",
@@ -143,7 +152,8 @@ export default StyleSheet.create({
 	checkIcon: {
 		position: "absolute",
 		color: "#fff",
-		left: 28,
+		left: Platform.OS === "ios" ? 30 : 28,
+		top: Platform.OS === "ios" ? 0 : 9,
 		zIndex: 1,
 	},
 	ClearButton: {

@@ -11,19 +11,24 @@ export default class AuthService {
 		return requestInstance.post("api/signup", data);
 	};
 
+	static handleSignupVerifyOTP = (data) => {
+		const requestInstance = apiRequest.getUnauthenticatedInstance();
+		return requestInstance.post("api/verifyotp/activeuser", data);
+	};
+
 	static handleForgotPassword = (data) => {
 		const requestInstance = apiRequest.getUnauthenticatedInstance();
-		return requestInstance.post("auth/forgot-password", data);
+		return requestInstance.post("api/forgetpassword/sendotp", data);
 	};
 
 	static handleVerifyOTP = (data) => {
 		const requestInstance = apiRequest.getUnauthenticatedInstance();
-		return requestInstance.post("auth/verify-otp", data);
+		return requestInstance.post("api/forgetpassword/verifyotp", data);
 	};
 
 	static handleResetPassword = (data) => {
 		const requestInstance = apiRequest.getUnauthenticatedInstance();
-		return requestInstance.post("auth/reset-password", data);
+		return requestInstance.post("api/password/reset", data);
 	};
 
 	static handleFacebookLogin = (data) => {

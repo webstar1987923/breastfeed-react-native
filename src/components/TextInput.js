@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default function TextInput({ inputStyle, textLabelColor, textLabelBackground, placeholder, onChangeText, value, style, keyboardType, maxLength, isInvalid, errorMessage, autoCorrect, secureTextEntry, onSubmitEditing, onRef, returnKeyType, blurOnSubmit, editable }) {
+export default function TextInput({ inputStyle, multiline, textLabelColor, textLabelBackground, placeholder, onChangeText, value, style, keyboardType, maxLength, isInvalid, errorMessage, autoCorrect, secureTextEntry, onSubmitEditing, onRef, returnKeyType, blurOnSubmit, editable }) {
 	return (
 		<View style={[styles.textContainer, style]}>
 			<Text style={[styles.textLabel, { backgroundColor: textLabelBackground, color: textLabelColor }]}>{placeholder}</Text>
@@ -48,6 +48,7 @@ export default function TextInput({ inputStyle, textLabelColor, textLabelBackgro
 				// placeholder={placeholder}
 				// placeholderTextColor="#fff"
 				value={value}
+				multiline={multiline}
 				onChangeText={onChangeText}
 				keyboardType={keyboardType}
 				autoCorrect={autoCorrect}
@@ -71,6 +72,7 @@ TextInput.propTypes = {
 	textLabelColor: PropTypes.string,
 	placeholder: PropTypes.string,
 	onChangeText: PropTypes.func.isRequired,
+	multiline: PropTypes.func.isRequired,
 	value: PropTypes.string.isRequired,
 	style: PropTypes.object,
 	inputStyle: PropTypes.object,
@@ -90,10 +92,12 @@ TextInput.propTypes = {
 /* SPECIFIES THE DEFAULT VALUES FOR PROPS */
 TextInput.defaultProps = {
 	textLabelBackground: "#ECC894",
+	textLabelColor: "#fff",
 	placeholder: "",
 	onRef: null,
 	isInvalid: false,
 	errorMessage: "",
+	inputStyle: {},
 	style: {},
 	keyboardType: "default",
 	maxLength: null,

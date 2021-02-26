@@ -1,8 +1,12 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 const dimensions = Dimensions.get("window");
 
 export default StyleSheet.create({
+	container: {
+		flex: 1,
+		paddingBottom: 30
+	},
 	backButton: {
 		alignItems: "center",
 		justifyContent: "center",
@@ -20,7 +24,7 @@ export default StyleSheet.create({
 		marginLeft: 7
 	},
 	scrollView: {
-		height: dimensions.height / 2 + 250,
+		height: dimensions.height / 2 + 220,
 		padding: 15
 	},
 	settingsTitle: {
@@ -87,6 +91,15 @@ export default StyleSheet.create({
 		height: 15,
 		resizeMode: "contain"
 	},
+	babyDeleteIcon: {
+		fontSize: 18,
+		color: "#000",
+		marginLeft: 10
+	},
+	settingsBabyIcon: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
 	babyaddplusIcon: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -124,7 +137,8 @@ export default StyleSheet.create({
 		borderBottomWidth: 1,
 		borderColor: "#E0E0E0",
 		paddingBottom: 20,
-		marginBottom: 20
+		marginBottom: 20,
+		paddingRight: Platform.OS === "ios" ? 20 : 0
 	},
 	notificationTitle: {
 		fontWeight: "bold",
@@ -149,8 +163,8 @@ export default StyleSheet.create({
 	checkIcon: {
 		position: "absolute",
 		color: "#fff",
-		right: 8,
-		top: 8,
+		right: Platform.OS === "ios" ? -3 : 8,
+		top: Platform.OS === "ios" ? 0 : 8,
 		zIndex: 1
 	},
 	notificationlistTitle: {

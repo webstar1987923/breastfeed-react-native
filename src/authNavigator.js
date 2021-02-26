@@ -5,8 +5,6 @@ import WelcomeScreen from "./pages/auth/welcome/welcome";
 import LoginScreen from "./pages/auth/login/login";
 import SignupScreen from "./pages/auth/signup/signup";
 import ForgotPasswordScreen from "./pages/auth/forgot-password";
-import PurchasedScreen from "./pages/auth/purchased";
-import GetStartedScreen from "./pages/auth/get-started";
 
 const transitionSlideConfig = () => {
 	return {
@@ -36,9 +34,7 @@ const authRouteConfig = {
 	Welcome: { screen: WelcomeScreen },
 	Login: { screen: LoginScreen },
 	Signup: { screen: SignupScreen },
-	ForgotPassword: { screen: ForgotPasswordScreen },
-	Purchased: { screen: PurchasedScreen },
-	GetStarted: { screen: GetStartedScreen },
+	ForgotPassword: { screen: ForgotPasswordScreen }
 };
 
 const LogInNavigator = createStackNavigator(authRouteConfig, {

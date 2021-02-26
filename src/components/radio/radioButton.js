@@ -6,6 +6,23 @@ import {
 	TouchableWithoutFeedback
 } from "react-native";
 
+let styles = StyleSheet.create({
+	container: {
+		flexGrow: 1,
+		flexDirection: "row",
+		padding: 10,
+	},
+	radio: {
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	item: {
+		marginLeft: 5,
+		alignItems: "center",
+		justifyContent: "center",
+	}
+});
+
 export default class RadioButton extends Component {
 	constructor(props, context) {
 		super(props, context);
@@ -70,19 +87,3 @@ RadioButton.contextTypes = {
 	highlightColor: PropTypes.string
 };
 
-let styles = StyleSheet.create({
-	container: {
-		flexGrow: 1,
-		flexDirection: "row",
-		padding: 10,
-	},
-	radio: {
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	item: {
-		marginLeft: 5,
-		alignItems: "center",
-		justifyContent: "center",
-	}
-});

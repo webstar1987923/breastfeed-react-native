@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import { StackActions, NavigationActions } from "react-navigation";
 import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -9,8 +11,12 @@ import ButtonComponent from "src/components/ButtonComponent";
 import * as authActions from "src/redux/actions/authActions";
 import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import { translate } from "src/locales/i18n";
+import * as bottleActions from "src/redux/actions/bottleActions";
 import { Images } from "src/assets/images";
+import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
+import { getActiveBaby } from "src/redux/selectors";
+import moment from "moment";
 import styles from "./styles";
 
 class AddBottle extends React.Component {
@@ -21,8 +27,8 @@ class AddBottle extends React.Component {
 			// selectedStartTime: "",
 			// TimeValue: "",
 			time: "9:00 AM",
-			selectedAmount: "",
-			selectedFeed: ""
+			selectedAmount: "1.0",
+			selectedFeed: "Breastmilk"
 		};
 	}
 
@@ -48,7 +54,16 @@ class AddBottle extends React.Component {
 		};
 	};
 
-	componentDidMount() {
+	componentDidUpdate() {
+		const { card: { msg }, dispatchClearCard, navigation } = this.props;
+		if(msg === "ADD_BOTTLE_SUCCESS") {
+			dispatchClearCard();
+			this.setState(() => {
+				showAlert("Success", "bottle create successfully.", "", () => {
+					navigation.navigate("Track", { activeTab: "Bottles" });
+				});
+			});
+		}
 	}
 
 	onCancel() {
@@ -67,8 +82,31 @@ class AddBottle extends React.Component {
 	}
 
 	saveHandler() {
-		const { navigation } = this.props;
-		navigation.navigate("Track");
+		const { time, NotesValue, selectedAmount, selectedFeed } = this.state;
+		const { dispatchBottleCreate, activeBaby, navigation: {state : {params}} } = this.props;
+
+		let date = moment(params.date).format("YYYY-MM-DD");
+		let tmp_time = moment().format("hh:mm:ss");
+		let date_time = moment(date+' '+tmp_time).format("YYYY-MM-DD HH:mm:ss")
+
+		let timeConvert = time.split(" ")[0];
+		const data = {
+			babyprofile_id: activeBaby.id,
+			start_time: timeConvert,
+			type_of_feed: selectedFeed,
+			amount: selectedAmount,
+			note: NotesValue,
+			created_at: date_time
+		};
+		// console.log(data);
+		// return;
+		if(!isEmptyObject(data)) {
+			dispatchBottleCreate(data);
+		}
+	}
+
+	getTimeAMPM(data) {
+		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
 	render() {
@@ -85,7 +123,7 @@ class AddBottle extends React.Component {
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>
-									{time}
+									{this.getTimeAMPM(time)}
 								</Text>
 							</TouchableOpacity>
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
@@ -103,37 +141,83 @@ class AddBottle extends React.Component {
 					<View style={styles.feedPicker}>
 						<Text style={[styles.feedLabel, { backgroundColor: "#fff", color: "#999" }]}>Type of Feed</Text>
 						<View style={styles.picker}>
-							<Picker
-								selectedValue={selectedFeed}
-								style={styles.pickerInput}
-								itemTextStyle={{ fontSize: 20 }}
-								onValueChange={(itemValue) => {
-									this.setState({ selectedFeed: itemValue });
+							<RNPickerSelect
+								onValueChange={(value) => {
+									this.setState({ selectedFeed: value });
 								}}
-							>
-								<Picker.Item label="Breastmilk" value="Breastmilk" />
-								<Picker.Item label="Mix" value="Mix" />
-								<Picker.Item label="Formula" value="Formula" />
-							</Picker>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+								value={selectedFeed}
+								style={{
+									inputIOS: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									},
+									inputAndroid: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									}
+								}}
+								useNativeAndroidPickerStyle={false}
+								Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+								placeholder={{
+									label: "Select Feed",
+									color: "#999999"
+								}}
+								items={[
+									{ label: "Breastmilk", value: "Breastmilk" },
+									{ label: "Mix", value: "Mix" },
+									{ label: "Formula", value: "Formula" },
+								]}
+							/>
 						</View>
 					</View>
 					<View style={styles.amountPicker}>
 						<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 						<View style={styles.picker}>
-							<Picker
-								selectedValue={selectedAmount}
-								style={styles.pickerInput}
-								onValueChange={(itemValue) => {
-									this.setState({ selectedAmount: itemValue });
+							<RNPickerSelect
+								onValueChange={(value) => {
+									this.setState({ selectedAmount: value });
 								}}
-							>
-								<Picker.Item label="1.0 OZ" value="22" />
-								<Picker.Item label="2.0 OZ" value="23" />
-								<Picker.Item label="3.0 OZ" value="24" />
-								<Picker.Item label="4.0 OZ" value="25" />
-							</Picker>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+								value={selectedAmount}
+								style={{
+									inputIOS: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									},
+									inputAndroid: {
+										height: 60,
+										width: "100%",
+										color: "#000",
+										fontSize: 20,
+										lineHeight: 24,
+										paddingHorizontal: 12
+									}
+								}}
+								useNativeAndroidPickerStyle={false}
+								Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+								placeholder={{
+									label: "Select Amount",
+									color: "#999999"
+								}}
+								items={[
+									{ label: "1.0 OZ", value: "1.0" },
+									{ label: "2.0 OZ", value: "2.0" },
+									{ label: "3.0 OZ", value: "3.0" },
+									{ label: "4.0 OZ", value: "4.0" },
+									{ label: "5.0 OZ", value: "5.0" },
+								]}
+							/>
 						</View>
 					</View>
 					<View style={styles.notsInput}>
@@ -174,8 +258,15 @@ class AddBottle extends React.Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	card: state.bottleReducer,
+	activeBaby: getActiveBaby(state)
+});
+
 const mapDispatchToProps = {
+	dispatchBottleCreate: (data) => bottleActions.handleBottleCreate(data),
+	dispatchClearCard: () => bottleActions.clearMsg(),
 	dispatchResetAuthState: () => authActions.resetAuthState()
 };
 
-export default connect(null, mapDispatchToProps)(AddBottle);
+export default connect(mapStateToProps, mapDispatchToProps)(AddBottle);

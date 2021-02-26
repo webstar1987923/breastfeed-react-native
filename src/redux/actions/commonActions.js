@@ -5,6 +5,7 @@ export const LOADING_START = "LOADING_START";
 export const LOADING_SUCCESSFUL = "LOADING_SUCCESSFUL";
 export const LOADING_ERROR = "LOADING_ERROR";
 export const LOADING_ERROR_RESET = "LOADING_ERROR_RESET";
+export const GET_CURRENT_SCREEN = "GET_CURRENT_SCREEN";
 
 /* LOADING ACTIONS */
 export const loadingStart = () => ({
@@ -18,6 +19,11 @@ export const loadingEnd = () => ({
 export const loadingFailed = (error) => ({
 	type: LOADING_ERROR,
 	error
+});
+
+export const getCurrentScreen = (payload) => ({
+	type: GET_CURRENT_SCREEN,
+	payload
 });
 
 export function loadingError(error) {

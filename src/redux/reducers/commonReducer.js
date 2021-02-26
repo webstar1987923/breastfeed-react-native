@@ -1,13 +1,15 @@
 import {
 	LOADING_START,
 	LOADING_SUCCESSFUL,
-	LOADING_ERROR
+	LOADING_ERROR,
+	GET_CURRENT_SCREEN,
 } from "../actions/commonActions";
 
 const initialState = {
 	isLoading: false,
 	hasLoadingFailed: false,
-	loadingError: null
+	loadingError: null,
+	currentScreen: null,
 };
 
 const commonReducer = (state = initialState, action) => {
@@ -18,6 +20,8 @@ const commonReducer = (state = initialState, action) => {
 			return { isLoading: false, hasLoadingFailed: false, loadingError: null };
 		case LOADING_ERROR:
 			return { isLoading: false, hasLoadingFailed: true, loadingError: action.error };
+		case GET_CURRENT_SCREEN:
+			return { ...state, currentScreen: action.payload };
 		default:
 			return state;
 	}

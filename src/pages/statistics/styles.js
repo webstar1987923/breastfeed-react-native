@@ -2,7 +2,9 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
 	container: {
-		padding: 15
+		paddingHorizontal: 15,
+		paddingBottom: 10,
+		paddingTop: 10
 	},
 	statisticsHeader: {
 		flexDirection: "row",

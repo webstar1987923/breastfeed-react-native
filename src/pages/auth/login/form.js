@@ -23,7 +23,7 @@ class LoginForm extends React.Component {
 	isValid = () => {
 		// let { t } = this.props;
 		const { email, password } = this.state;
-		const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		const reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 		if(isEmpty(email) || isEmpty(password)) {
 			return false;

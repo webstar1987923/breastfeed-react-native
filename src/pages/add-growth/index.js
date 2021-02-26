@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { StackActions, NavigationActions } from "react-navigation";
 import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard } from "react-native";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
@@ -9,10 +10,13 @@ import ButtonComponent from "src/components/ButtonComponent";
 import * as authActions from "src/redux/actions/authActions";
 import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import { translate } from "src/locales/i18n";
+import * as growthActions from "src/redux/actions/growthActions";
 import { Images } from "src/assets/images";
+import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import Moment from 'moment';
+import { getActiveBaby } from "src/redux/selectors";
+import Moment from "moment";
 import styles from "./styles";
 
 class AddGrowth extends React.Component {
@@ -23,8 +27,8 @@ class AddGrowth extends React.Component {
 			// selectedStartTime: "",
 			// TimeValue: "",
 			time: "Dec 30, 2020",
-			selectedAmount: "",
-			selectedFeed: "",
+			selectedAmount: "31.4",
+			selectedFeed: "28",
 			isDatePickerVisible: false,
 			value: "Dec 30, 2020"
 		};
@@ -34,10 +38,10 @@ class AddGrowth extends React.Component {
 		return {
 			title: null,
 			headerTintColor: "white",
-			headerStyle: { 
-				backgroundColor: "#fff", 
-				shadowOpacity: 0, 
-				elevation: 0, 
+			headerStyle: {
+				backgroundColor: "#fff",
+				shadowOpacity: 0,
+				elevation: 0,
 				height: 50,
 			},
 			headerLeft: (
@@ -52,7 +56,16 @@ class AddGrowth extends React.Component {
 		};
 	};
 
-	componentDidMount() {
+	componentDidUpdate() {
+		const { card: { msg }, dispatchClearCard, navigation } = this.props;
+		if(msg === "ADD_GROWTH_SUCCESS") {
+			dispatchClearCard();
+			this.setState(() => {
+				showAlert("Success", "Growth create successfully.", "", () => {
+					navigation.navigate("Track", { activeTab: "Growth" });
+				});
+			});
+		}
 	}
 
 	onCancel() {
@@ -71,25 +84,36 @@ class AddGrowth extends React.Component {
 	}
 
 	saveHandler() {
-		const { navigation } = this.props;
-		navigation.navigate("Track");
+		const { time, NotesValue, selectedAmount, selectedFeed, value } = this.state;
+		const { dispatchGrowthCreate, activeBaby } = this.props;
+		const data = {
+			babyprofile_id: activeBaby.id,
+			date: value ? new Date(Moment(value).format("MMM DD, YYYY")) : new Date(),
+			height: selectedFeed,
+			weight: selectedAmount,
+			note: NotesValue,
+		};
+
+		if(!isEmptyObject(data)) {
+			dispatchGrowthCreate(data);
+		}
 	}
 
 	showDatePicker() {
-		console.log('A date has been picked: ');
+		console.log("A date has been picked: ");
 		this.setState({ isDatePickerVisible: true });
 		Keyboard.dismiss();
-	};
+	}
 
 	hideDatePicker(date) {
 		this.setState({ isDatePickerVisible: false });
-		this.setState({ value: Moment(date).format('MMM DD, YYYY') });
-	};
+		this.setState({ value: Moment(date).format("MMM DD, YYYY") });
+	}
 
 	handleConfirm(date) {
 		this.hideDatePicker();
-		this.setState({ value: Moment(date).format('MMM DD, YYYY') });
-	};
+		this.setState({ value: Moment(date).format("MMM DD, YYYY") });
+	}
 
 	render() {
 		const { NotesValue, time, selectedAmount, selectedFeed, isDatePickerVisible, value } = this.state;
@@ -105,17 +129,17 @@ class AddGrowth extends React.Component {
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>
-									{Moment(value).format('MMM DD, YYYY')}
+									{Moment(value).format("MMM DD, YYYY")}
 								</Text>
 							</TouchableOpacity>
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 							<DateTimePickerModal
 								date={value ? new Date(value) : new Date()}
-						        isVisible={isDatePickerVisible}
-						        mode="date"
-						        onConfirm={(date) => this.handleConfirm(date)}
-						        onCancel={(date) => this.hideDatePicker(date)}
-					      	/>
+								isVisible={isDatePickerVisible}
+								mode="date"
+								onConfirm={(date) => this.handleConfirm(date)}
+								onCancel={(date) => this.hideDatePicker(date)}
+							/>
 						</View>
 					</View>
 					<View style={styles.feedPicker}>
@@ -124,7 +148,7 @@ class AddGrowth extends React.Component {
 							<Picker
 								selectedValue={selectedFeed}
 								style={styles.pickerInput}
-								itemTextStyle={{fontSize: 20}}
+								itemTextStyle={{ fontSize: 20 }}
 								onValueChange={(itemValue) => {
 									this.setState({ selectedFeed: itemValue });
 								}}
@@ -146,10 +170,10 @@ class AddGrowth extends React.Component {
 									this.setState({ selectedAmount: itemValue });
 								}}
 							>
-								<Picker.Item label="31.4 lbs" value="22" />
-								<Picker.Item label="31.5 lbs" value="23" />
-								<Picker.Item label="32.4 lbs" value="24" />
-								<Picker.Item label="33.4 lbs" value="25" />
+								<Picker.Item label="31.4 lbs" value="31.4" />
+								<Picker.Item label="31.5 lbs" value="31.5" />
+								<Picker.Item label="32.4 lbs" value="32.4" />
+								<Picker.Item label="33.4 lbs" value="33.4" />
 							</Picker>
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 						</View>
@@ -192,8 +216,15 @@ class AddGrowth extends React.Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	card: state.growthReducer,
+	activeBaby: getActiveBaby(state)
+});
+
 const mapDispatchToProps = {
+	dispatchGrowthCreate: (data) => growthActions.handleGrowthCreate(data),
+	dispatchClearCard: () => growthActions.clearMsg(),
 	dispatchResetAuthState: () => authActions.resetAuthState()
 };
 
-export default connect(null, mapDispatchToProps)(AddGrowth);
+export default connect(mapStateToProps, mapDispatchToProps)(AddGrowth);

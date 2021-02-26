@@ -2,7 +2,9 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
 	container: {
-		padding: 15,
+		paddingHorizontal: 15,
+		paddingTop: 10,
+		paddingBottom: 15
 	},
 	activityTitle: {
 		color: "#000000",
@@ -16,9 +18,14 @@ export default StyleSheet.create({
 		backgroundColor: "#fff",
 		padding: 11,
 		borderRadius: 5,
-		shadowOffset: { width: 10, height: 10, },
-		shadowColor: "black",
-		shadowOpacity: 1.0,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.22,
+		shadowRadius: 2.22,
+
 		elevation: 3,
 	},
 	dashboardboxHeader: {
@@ -47,6 +54,21 @@ export default StyleSheet.create({
 		maxWidth: 20,
 		height: 20,
 		resizeMode: "contain",
+	},
+	listBreastsIcon: {
+		width: 16,
+		height: 16,
+		backgroundColor: "#000000",
+		color: "#fff",
+		borderRadius: 8,
+		overflow: "hidden",
+		alignContent: "center",
+		justifyContent: "center",
+		textAlign: "center",
+		fontWeight: "500",
+		fontSize: 12,
+		lineHeight: 15,
+		marginRight: 5,
 	},
 	mainlistText: {
 		flexDirection: "row",
@@ -141,5 +163,72 @@ export default StyleSheet.create({
 		lineHeight: 17,
 		color: "#000000",
 		fontWeight: "bold",
-	}
+	},
+	notFoundText: {
+		fontWeight: "500",
+		fontSize: 16,
+		lineHeight: 20,
+		color: "#999999",
+		textAlign: "center",
+		paddingVertical: 40
+	},
+	centeredView: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "rgba(153, 153, 153, 0.5)"
+	},
+	modalView: {
+		backgroundColor: "white",
+		borderRadius: 20,
+		paddingTop: 45,
+		paddingBottom: 30,
+		paddingHorizontal: 25,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+		width: "95%",
+		position: "relative",
+	},
+	modalClose: {
+		position: "absolute",
+		right: 19,
+		top: 24
+	},
+	modalTitle: {
+		fontWeight: "500",
+		fontSize: 20,
+		lineHeight: 24,
+		color: "#000000",
+		marginBottom: 12
+	},
+	modalSubTitle: {
+		fontWeight: "normal",
+		fontSize: 16,
+		lineHeight: 19,
+		color: "#000000"
+	},
+	buttonContainer: {
+		paddingTop: 29,
+	},
+	buttonStyle: {
+		shadowColor: "rgba(0, 0, 0, 0.25)",
+		backgroundColor: "#E4B167",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+		maxWidth: "100%"
+	},
+	buttonTextStyle: {
+		color: "#fff",
+	},
 });

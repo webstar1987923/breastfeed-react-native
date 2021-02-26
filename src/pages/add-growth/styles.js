@@ -7,7 +7,7 @@ export default StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		flexDirection: "row",
-		paddingHorizontal: 20, 
+		paddingHorizontal: 20,
 	},
 	backIcon: {
 		color: "#000",
@@ -21,6 +21,8 @@ export default StyleSheet.create({
 	},
 	container: {
 		padding: 15,
+		marginBottom: 15,
+		flex: 1
 	},
 	breastfeedTitle: {
 		textAlign: "center",
@@ -83,13 +85,13 @@ export default StyleSheet.create({
 		position: "relative",
 		justifyContent: "center",
 		textAlign: "center",
-		paddingHorizontal: dimensions.width / 4
+		paddingHorizontal: dimensions.width / 4 - 10
 	},
 	pickerLabel: {
 		backgroundColor: "#ECC894",
 		position: "absolute",
 		top: -8,
-		left: dimensions.width / 4 + 12,
+		left: dimensions.width / 4,
 		fontWeight: "normal",
 		fontSize: 12,
 		lineHeight: 16,
@@ -247,13 +249,13 @@ export default StyleSheet.create({
 		position: "relative",
 		justifyContent: "center",
 		textAlign: "center",
-		paddingHorizontal: dimensions.width / 4
+		paddingHorizontal: dimensions.width / 4 - 10
 	},
 	amountLabel: {
 		backgroundColor: "#ECC894",
 		position: "absolute",
 		top: -8,
-		left: dimensions.width / 4 + 12,
+		left: dimensions.width / 4,
 		fontWeight: "normal",
 		fontSize: 12,
 		lineHeight: 16,
@@ -267,13 +269,13 @@ export default StyleSheet.create({
 		position: "relative",
 		justifyContent: "center",
 		textAlign: "center",
-		paddingHorizontal: dimensions.width / 4
+		paddingHorizontal: dimensions.width / 4 - 10
 	},
 	feedLabel: {
 		backgroundColor: "#ECC894",
 		position: "absolute",
 		top: -8,
-		left: dimensions.width / 4 + 12,
+		left: dimensions.width / 4,
 		fontWeight: "normal",
 		fontSize: 12,
 		lineHeight: 16,

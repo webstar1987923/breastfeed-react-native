@@ -57,7 +57,8 @@ class ResetPassword extends React.Component {
 		if(this.isValidResetPasswordFileds() === true) {
 			Keyboard.dismiss();
 			const body = {
-				"password": password,
+				"new_password": password,
+				"confirm_password": password,
 			};
 			resetPasswordHandler(body);
 		}

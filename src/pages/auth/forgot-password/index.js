@@ -65,7 +65,7 @@ class ForgotPasswordScreen extends React.Component {
 			const response = auth.verifyOTPResponse;
 			if(!response.error) {
 				showAlert(response.message, "", "", () => {
-					this.setState({ formStep: "reset-password", otpErrorMessage: "", token: response.data.token });
+					this.setState({ formStep: "reset-password", otpErrorMessage: "", token: response.result[0].token });
 				});
 			}
 		}
@@ -73,48 +73,48 @@ class ForgotPasswordScreen extends React.Component {
 			const response = auth.resetPassResponse;
 			if(!response.error) {
 				showAlert(response.message, "", "", () => {
-					navigation.pop();
+					this.setState({ formStep: "successful-reset" });
 				});
 			}
 		}
 	}
 
 	getOTPHandler(data) {
-		// const { dispatchForgotPassword } = this.props;
-
+		const { dispatchForgotPassword } = this.props;
+		console.log("data.email", data.email);
 		if(!isEmptyObject(data)) {
-			// this.setState({ email: data.email });
-			// dispatchForgotPassword(data);
-			this.setState({ formStep: "verify-otp" });
+			this.setState({ email: data.email });
+			dispatchForgotPassword(data);
+			// this.setState({ formStep: "verify-otp" });
 		}
 	}
 
 	changePinHandler(otp) {
-		// const { dispatchVerifyOTP } = this.props;
-		// const { email } = this.state;
+		const { dispatchVerifyOTP } = this.props;
+		const { email } = this.state;
 
 		this.setState({ OTP: otp });
-		if(otp.length === 6) {
-			// Keyboard.dismiss();
-			// const body = {
-			// 	"email": email,
-			// 	"otp": Number(otp)
-			// };
-			// dispatchVerifyOTP(body);
-			// this.setState({ resetOTPInput: true, OTP: "", otpErrorMessage: "" });
-			this.setState({ formStep: "reset-password" });
+		if(otp.length === 4) {
+			Keyboard.dismiss();
+			const body = {
+				"email": email,
+				"otp": Number(otp)
+			};
+			dispatchVerifyOTP(body);
+			this.setState({ resetOTPInput: true, OTP: "", otpErrorMessage: "" });
+			// this.setState({ formStep: "reset-password" });
 		}
 	}
 
 	resetPasswordHandler(data) {
-		// const { dispatchResetPassword } = this.props;
-		// const { email, token } = this.state;
+		const { dispatchResetPassword } = this.props;
+		const { email, token } = this.state;
 		if(!isEmptyObject(data)) {
-			// let body = data;
-			// body.token = token;
-			// body.email = email;
-			// dispatchResetPassword(body);
-			this.setState({ formStep: "successful-reset" });
+			let body = data;
+			body.token = token;
+			body.email = email;
+			dispatchResetPassword(body);
+			// this.setState({ formStep: "successful-reset" });
 		}
 	}
 
@@ -132,12 +132,17 @@ class ForgotPasswordScreen extends React.Component {
 		const { formStep, otpErrorMessage, OTP, resetOTPInput, isKeyboardShow } = this.state;
 		return (
 			<LinearGradient style={styles.container} colors={["#E8BC7D", "#E8BC7D"]}>
-				<TouchableOpacity onPress={() => { this.backHandler(); }} style={styles.backButton}>
-					<Image
-						source={Images.globalScreen.backIconWhite}
-						style={styles.backIcon}
-					/>
-				</TouchableOpacity>
+				{
+					(formStep != "successful-reset")
+					&& (
+						<TouchableOpacity onPress={() => { this.backHandler(); }} style={styles.backButton}>
+							<Image
+								source={Images.globalScreen.backIconWhite}
+								style={styles.backIcon}
+							/>
+						</TouchableOpacity>
+					)
+				}
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }} keyboardShouldPersistTaps="handled">
 					{
 						(formStep === "forgot-password")
@@ -165,13 +170,17 @@ class ForgotPasswordScreen extends React.Component {
 								/>
 								<Text style={styles.headerText}>{translate("forgotPasswordScreen.verifyOTPHeaderText")}</Text>
 								<Text style={styles.headerSubText}>{translate("forgotPasswordScreen.otpDescription")}</Text>
-								<View style={{ paddingHorizontal: 20 }}>
-									<OtpInputs noOfBoxes={6} custominputDigit={styles.custominputDigit} onChangePin={(otp) => this.changePinHandler(otp)} hideNumber={false} resetOTPInput={resetOTPInput} />
+								<View style={styles.otpInputs}>
+									<OtpInputs noOfBoxes={4} custominputDigit={styles.custominputDigit} onChangePin={(otp) => this.changePinHandler(otp)} hideNumber={false} resetOTPInput={resetOTPInput} />
 									{ (!isEmpty(otpErrorMessage)) && <Text style={styles.otpErrorMessage}>{otpErrorMessage}</Text> }
+								</View>
+								<View style={styles.resendTextDiv}>
+									<Text style={styles.resendText}>Didn't receive a code?</Text>
+									<Text style={styles.resend}>Resend</Text>
 								</View>
 								<ButtonComponent
 									buttonClicked={() => {
-										if(OTP.length !== 6) {
+										if(OTP.length !== 4) {
 											this.setState({ otpErrorMessage: translate("forgotPasswordScreen.otpErrorMessage") });
 											return;
 										}
@@ -192,7 +201,7 @@ class ForgotPasswordScreen extends React.Component {
 									source={Images.authScreen.resetIcon}
 									style={styles.lockIcon}
 								/>
-								<Text style={styles.headerText}>{translate("forgotPasswordScreen.resetPasswordHeaderText")}</Text>
+								<Text style={styles.ResetPasswordheaderText}>{translate("forgotPasswordScreen.resetPasswordHeaderText")}</Text>
 								<ResetPassword
 									resetPasswordHandler={(data) => this.resetPasswordHandler(data)}
 								/>

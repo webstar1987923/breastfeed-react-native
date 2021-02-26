@@ -43,9 +43,12 @@ export default StyleSheet.create({
 		paddingHorizontal: 20,
 	},
 	forgotPasswordText: {
+		fontWeight: "normal",
 		fontSize: 14,
 		lineHeight: 17,
-		color: "#fff",
-		textTransform: "uppercase"
+		textTransform: "uppercase",
+		color: "#999999",
+		marginLeft: 5,
+		textDecorationLine: "underline"
 	}
 });

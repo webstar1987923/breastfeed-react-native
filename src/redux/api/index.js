@@ -17,8 +17,7 @@ export function getAuthenticatedInstance() {
 	return axios.create({
 		baseURL: Config.API_URL,
 		headers: {
-			"Authorization": store.getState().authReducer.user.token,
-			"device-id": getDeviceUniqueId()
+			"Authorization": `${"Bearer" + " "}${store.getState().authReducer.user.result.access_token}`
 		},
 		timeout: parseInt(Config.REQUEST_TIMEOUT)
 	});

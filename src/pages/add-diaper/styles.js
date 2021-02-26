@@ -21,6 +21,8 @@ export default StyleSheet.create({
 	},
 	container: {
 		padding: 15,
+		marginBottom: 15,
+		flex: 1
 	},
 	breastfeedTitle: {
 		textAlign: "center",
@@ -118,6 +120,13 @@ export default StyleSheet.create({
 		paddingTop: 7,
 	},
 	pickerIcon: {
+		color: "#000",
+		fontSize: 30,
+		position: "absolute",
+		top: 15,
+		right: 15
+	},
+	RNPickerIcon: {
 		color: "#000",
 		fontSize: 30,
 		position: "absolute",

@@ -3,8 +3,9 @@ import { View, StyleSheet, Image } from "react-native";
 import { Images } from "src/assets/images";
 import { Button, Footer, FooterTab, Text } from "native-base";
 // import { AppTheme } from "../utils/appTheme";
+import { connect } from "react-redux";
 import { translate } from "../locales/i18n";
-
+import { setActiveTab } from "../redux/actions/tabAction";
 const styles = StyleSheet.create({
 	footer: {
 		paddingBottom: 0,
@@ -47,20 +48,10 @@ const styles = StyleSheet.create({
 class TabBar extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			tab: "Dashboard"
-		};
 	}
 
-	componentDidMount() {
-		const { navigation } = this.props;
-		const { state } = navigation;
-		const currentRouteKey = state.routes[state.index].key;
-		this.setState({ tab: currentRouteKey });
-	}
-
-	getActiveTabStyle(activeTab) {
-		const { tab } = this.state;
+	getActiveTabStyle(tab) {
+		const { tab: {activeTab}} = this.props;
 		if(tab === activeTab) {
 			return [styles.activetabIcon, styles.activetabText];
 		} else {
@@ -68,45 +59,14 @@ class TabBar extends Component {
 		}
 	}
 
-	activateTab(page) {
-		switch (page) {
-			case "Dashboard":
-				this.setState({ tab: "Dashboard" });
-				break;
-			case "Home":
-				this.setState({ tab: "Home" });
-				break;
-			case "Track":
-				this.setState({ tab: "Track" });
-				break;
-			case "Tutorials":
-				this.setState({ tab: "Tutorials" });
-				break;
-			case "Statistics":
-				this.setState({ tab: "Statistics" });
-				break;
-			case "Support":
-				this.setState({ tab: "Support" });
-				break;
-			case "Search":
-				this.setState({ tab: "Search" });
-				break;
-			case "Account":
-				this.setState({ tab: "Account" });
-				break;
-			default:
-				this.setState({ tab: page });
-				break;
-		}
-	}
-
 	redirect(page) {
 		const { navigation } = this.props;
-		this.setState({ tab: page });
+		this.props.setActiveTab(page);
 		navigation.navigate(page);
 	}
 
 	render() {
+		console.log("TA BAR AXTRIOn", this.props);
 		return (
 			<View>
 				<Footer style={styles.footer}>
@@ -142,23 +102,23 @@ class TabBar extends Component {
 							</Button>
 						</View>
 						<View>
-							<Button style={{ marign: 0, padding: 0 }} onPress={() => this.redirect("Tutorials")}>
-								<Image
-									source={Images.Footertab.tutorialsBlackIcon}
-									style={this.getActiveTabStyle("Tutorials")[0]}
-									name="tutorials"
-								/>
-								<Text uppercase={false} style={this.getActiveTabStyle("Tutorials")[1]}>{translate("tabTitle.tutorials")}</Text>
-							</Button>
-						</View>
-						<View>
 							<Button style={{ marign: 0, padding: 0 }} onPress={() => this.redirect("Support")}>
 								<Image
 									source={Images.Footertab.supportBlackIcon}
 									style={this.getActiveTabStyle("Support")[0]}
-									name="support"
+									name="Support"
 								/>
 								<Text uppercase={false} style={this.getActiveTabStyle("Support")[1]}>{translate("tabTitle.support")}</Text>
+							</Button>
+						</View>
+						<View>
+							<Button style={{ marign: 0, padding: 0 }} onPress={() => this.redirect("Order")}>
+								<Image
+									source={Images.Footertab.orderBlackIcon}
+									style={this.getActiveTabStyle("Order")[0]}
+									name="Order"
+								/>
+								<Text uppercase={false} style={this.getActiveTabStyle("Order")[1]}>{translate("tabTitle.order")}</Text>
 							</Button>
 						</View>
 					</FooterTab>
@@ -168,4 +128,13 @@ class TabBar extends Component {
 	}
 }
 
-export default TabBar;
+
+const mapStateToProps = (state) => ({
+	tab: state.tabReducer
+});
+
+const mapDisptachToProps = ({
+	setActiveTab
+});
+
+export default connect(mapStateToProps, mapDisptachToProps	)(TabBar);

@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { StackActions, NavigationActions } from "react-navigation";
 import { View, Text, ScrollView, Switch, TouchableOpacity, Image } from "react-native";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
@@ -9,8 +10,12 @@ import ButtonComponent from "src/components/ButtonComponent";
 import * as authActions from "src/redux/actions/authActions";
 import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import { translate } from "src/locales/i18n";
+import * as breastfeedActions from "src/redux/actions/breastfeedActions";
 import { Images } from "src/assets/images";
+import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
+import { getActiveBaby } from "src/redux/selectors";
+import moment from "moment";
 import styles from "./styles";
 
 class AddBreastfeedEntry extends React.Component {
@@ -21,10 +26,18 @@ class AddBreastfeedEntry extends React.Component {
 			// selectedStartTime: "",
 			isEnabled: false,
 			IsmanualEntry: false,
+			IsmanualEntryRight: false,
 			// TimeValue: "",
 			time: "9:00 AM",
 			timeCount: "0m 0s",
-			timeCountRight: "0m 0s"
+			timeCountRight: "0m 0s",
+			isActive: false,
+			secondsElapsed: 0,
+			isActiveRight: false,
+			secondsElapsedRight: 0,
+			TotalTimeMinute: 0,
+			TotalTimeSecond: 0,
+			ManualTotalTime: "0m 0s",
 		};
 	}
 
@@ -50,14 +63,116 @@ class AddBreastfeedEntry extends React.Component {
 		};
 	};
 
-	componentDidMount() {
+	componentDidUpdate() {
+		const { card: { msg }, dispatchClearCard, navigation } = this.props;
+		if(msg === "ADD_BREASTFEED_SUCCESS") {
+			dispatchClearCard();
+			this.setState(() => {
+				showAlert("Success", "baby breastfeed create successfully.", "", () => {
+					// const resetAction = StackActions.reset({
+					// 	index: 1,
+					// 	key: undefined,
+					// 	actions: [
+					// 		NavigationActions.navigate({ routeName: "Track" }),
+					// 		NavigationActions.navigate({ routeName: "Track" })
+					// 	],
+					// });
+					// navigation.dispatch(resetAction);
+					navigation.navigate("Track", { activeTab: "Breastfeed" });
+				});
+			});
+		}
+	}
+
+	getMinutes() {
+		const { secondsElapsed } = this.state;
+		return (`00${Math.floor((secondsElapsed % 3600) / 60)}`).slice(2);
+	}
+
+	getSeconds() {
+		const { secondsElapsed } = this.state;
+		return (`00${secondsElapsed % 60}`).slice(2);
+	}
+
+	getMinutesRight() {
+		const { secondsElapsedRight } = this.state;
+		return (`00${Math.floor((secondsElapsedRight % 3600) / 60)}`).slice(2);
+	}
+
+	getSecondsRight() {
+		const { secondsElapsedRight } = this.state;
+		return (`00${secondsElapsedRight % 60}`).slice(2);
+	}
+
+	startTime() {
+		this.pauseTimeRight();
+		this.setState({ isActive: true });
+
+		this.countdown = setInterval(() => {
+			this.setState(({ secondsElapsed }) => ({
+				secondsElapsed: secondsElapsed + 1
+			}));
+			this.TotaltimeCalculate();
+		}, 1000);
+	}
+
+	TotaltimeCalculate() {
+		const { secondsElapsed, secondsElapsedRight } = this.state;
+		const minuteLeftMatch = (`00${Math.floor((secondsElapsed % 3600) / 60)}`).slice(2);
+		const minuteRightMatch = (`00${Math.floor((secondsElapsedRight % 3600) / 60)}`).slice(2);
+		const secondsLeftMatch = (`00${secondsElapsed % 60}`).slice(2);
+		const secondsRightMatch = (`00${secondsElapsedRight % 60}`).slice(2);
+		this.setState({ TotalTimeSecond: parseInt(secondsLeftMatch) + parseInt(secondsRightMatch) });
+		this.setState({ TotalTimeMinute: parseInt(minuteLeftMatch) + parseInt(minuteRightMatch) });
+	}
+
+	resetTime() {
+		clearInterval(this.countdown);
+		clearInterval(this.countdownRight);
+		this.setState({
+			secondsElapsed: 0,
+			isActive: false,
+			secondsElapsedRight: 0,
+			isActiveRight: false,
+			TotalTimeSecond: 0,
+			TotalTimeMinute: 0,
+			timeCount: "0m 0s",
+			timeCountRight: "0m 0s",
+		});
+	}
+
+	pauseTime() {
+		clearInterval(this.countdown);
+		this.setState({ isActive: false });
+	}
+
+	startTimeRight() {
+		this.pauseTime();
+		this.setState({ isActiveRight: true });
+
+		this.countdownRight = setInterval(() => {
+			this.setState(({ secondsElapsedRight }) => ({
+				secondsElapsedRight: secondsElapsedRight + 1
+			}));
+			this.TotaltimeCalculate();
+		}, 1000);
+	}
+
+	pauseTimeRight() {
+		clearInterval(this.countdownRight);
+		this.setState({ isActiveRight: false });
 	}
 
 	toggleSwitch() {
-		const { isEnabled, IsmanualEntry } = this.state;
+		clearInterval(this.countdownRight);
+		this.setState({ isActiveRight: false });
+		clearInterval(this.countdown);
+		this.setState({ isActive: false });
+		const { isEnabled, IsmanualEntry, IsmanualEntryRight } = this.state;
 		this.setState({
 			isEnabled: !isEnabled,
-			IsmanualEntry: !IsmanualEntry
+			IsmanualEntry: !IsmanualEntry,
+			IsmanualEntryRight: !IsmanualEntryRight
 		});
 	}
 
@@ -77,6 +192,7 @@ class AddBreastfeedEntry extends React.Component {
 
 	ontimeCountConfirm(minute, second) {
 		this.setState({ timeCount: `${minute}m ${second}s` });
+		this.ManualTotalTimeCal(minute, second);
 		this.TimePicker2.close();
 	}
 
@@ -86,7 +202,40 @@ class AddBreastfeedEntry extends React.Component {
 
 	ontimeCountRightConfirm(minute, second) {
 		this.setState({ timeCountRight: `${minute}m ${second}s` });
+		// this.ManualTotalTimeCal(minute, second);
 		this.TimePicker3.close();
+	}
+
+	ManualTotalTimeCal(left, right) {
+		let TotalSeconf = 0;
+		let TotlaMinur = 0;
+		if(left && right) {
+			const secons = right.split("s")[0];
+			const value = secons.split("m")[1];
+			const minutes = right.split("m")[0];
+			const seconsLeft = left.split("s")[0];
+			const valueLeft = seconsLeft.split("m")[1];
+			const minutesLeft = left.split("m")[0];
+			TotalSeconf = parseInt(valueLeft) + parseInt(value);
+			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+		}
+		return `${TotlaMinur}:${TotalSeconf}`;
+	}
+
+	ManualTotalTimeCalView(left, right) {
+		let TotalSeconf = 0;
+		let TotlaMinur = 0;
+		if(left && right) {
+			const secons = right.split("s")[0];
+			const value = secons.split("m")[1];
+			const minutes = right.split("m")[0];
+			const seconsLeft = left.split("s")[0];
+			const valueLeft = seconsLeft.split("m")[1];
+			const minutesLeft = left.split("m")[0];
+			TotalSeconf = parseInt(valueLeft) + parseInt(value);
+			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+		}
+		return `${TotlaMinur}m ${TotalSeconf}s`;
 	}
 
 	cancelHandler() {
@@ -95,38 +244,112 @@ class AddBreastfeedEntry extends React.Component {
 	}
 
 	saveHandler() {
-		const { navigation } = this.props;
-		navigation.navigate("Track");
+		const { time, NotesValue, TotalTimeMinute, TotalTimeSecond, isEnabled, timeCount, timeCountRight } = this.state;
+		const { dispatchBreastfeedCreate, activeBaby, navigation: {state : {params}} } = this.props;
+		let startGetLeftBreast = `${this.getMinutes()}:${this.getSeconds()}`;
+		let startGetRightBreast = `${this.getMinutesRight()}:${this.getSecondsRight()}`;
+		let startGetTotalBreast = `${TotalTimeMinute}:${TotalTimeSecond}`;
+
+
+		const tempLeft = isEnabled ? timeCount.replace("m", "").replace("s", "").split(" ") : startGetLeftBreast.split(":");
+		const tempRight = isEnabled ? timeCountRight.replace("m", "").replace("s", "").split(" ") : startGetRightBreast.split(":");
+
+		
+		if(Number(tempLeft[0]) == 0 && Number(tempLeft[1]) == 0 && Number(tempRight[0]) == 0 && Number(tempRight[1]) == 0){
+			showAlert("Success", "Left/Right breastfeet time must be required.", "", () => {})
+			return;
+		}
+
+		let timeConvert = time.split(" ")[0];
+		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ").join(":");
+		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ").join(":");
+
+
+		let date = moment(params.date).format("YYYY-MM-DD");
+		let tmp_time = moment().format("hh:mm:ss");
+		let date_time = moment(date+' '+tmp_time).format("YYYY-MM-DD HH:mm:ss")
+		
+		const data = {
+			babyprofile_id: activeBaby.id,
+			start_time: isEnabled ? timeConvert : moment().format("HH:mm"),
+			left_breast: isEnabled ? timeCountLeftConvert : this.checkTimeLen(startGetLeftBreast),
+			right_breast: isEnabled ? timeCountRightConvert : this.checkTimeLen(startGetRightBreast),
+			total_time: isEnabled ? this.ManualTotalTimeCal(timeCount, timeCountRight) : startGetTotalBreast,
+			manual_entry: isEnabled ? "1" : "0",
+			note: NotesValue,
+			created_at: date_time
+		};
+		// console.log(data);
+		
+		// return;
+		if(!isEmptyObject(data)) {
+			dispatchBreastfeedCreate(data);
+			// const { navigation } = this.props;
+			// navigation.navigate("Track");
+		}
+	}
+
+	checkTimeLen(value) {
+		let tmp = value.split(":");
+
+		let _l = tmp[0];
+		let _r = tmp[1].toString().length === 1 ? `0${tmp[1]}` : tmp[1]; 
+		return `${_l}:${_r}`
+	}
+
+	getTimeAMPM(data) {
+		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
 	render() {
-		const { NotesValue, isEnabled, IsmanualEntry, time, timeCountRight, timeCount } = this.state;
+		// console.log("Add", this.props);
+		const { NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		
+		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
+		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
+		console.log({timeCountRightConvert, timeCountLeftConvert})
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Breastfeed Entry</Text>
 				<ScrollView style={styles.ScrollView}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
-						<View style={styles.picker}>
-							<TouchableOpacity
-								onPress={() => this.TimePicker.open()}
-								style={styles.pickerInput}
-							>
-								<Text style={styles.pickerInput}>
-									{time}
-								</Text>
-							</TouchableOpacity>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
-							<TimePicker
-								ref={(ref) => {
-									this.TimePicker = ref;
-								}}
-								selectedHour="9"
-								selectedMinute="00"
-								onCancel={() => this.onCancel()}
-								onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
-							/>
-						</View>
+						{
+							isEnabled
+								? (
+									<View style={styles.picker}>
+										<TouchableOpacity
+											onPress={() => this.TimePicker.open()}
+											style={styles.pickerInput}
+										>
+											<Text style={styles.pickerInput}>
+												{this.getTimeAMPM(time)}
+											</Text>
+										</TouchableOpacity>
+										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+										<TimePicker
+											ref={(ref) => {
+												this.TimePicker = ref;
+											}}
+											selectedHour="9"
+											selectedMinute="00"
+											onCancel={() => this.onCancel()}
+											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
+										/>
+									</View>
+								)
+								: 								(
+									<View style={styles.picker}>
+										<TouchableOpacity style={styles.pickerInput}>
+											<Text style={styles.pickerInput}>
+												{ moment().format("hh:mm A") }
+											</Text>
+										</TouchableOpacity>
+										{/* <FontAwesomeIcon style={styles.pickerIcon} name="caret-down" /> */}
+									</View>
+								)
+						}
+
 					</View>
 					<View style={styles.manualEntryMain}>
 						<View style={styles.manualEentry}>
@@ -155,16 +378,38 @@ class AddBreastfeedEntry extends React.Component {
 								<Text style={styles.timeTitle}>Left</Text>
 								{
 									IsmanualEntry === false ? (
-										<View style={styles.TimeStart}>
-											<Text style={styles.playText}>Start</Text>
-											<FontAwesomeIcon style={styles.playIcon} name="caret-right" />
-										</View>
+										<TouchableOpacity style={styles.TimeStart} onPress={isActive ? () => this.pauseTime() : () => this.startTime()}>
+											{isActive === false && secondsElapsed === 0 && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Start</Text>
+													<FontAwesomeIcon style={styles.playIcon} name="caret-right" />
+												</View>
+											)}
+											{isActive === true && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Pause</Text>
+													<FontAwesomeIcon style={styles.pauseIcon} name="pause" />
+												</View>
+											)}
+											{isActive === false && secondsElapsed > 0 && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Resume</Text>
+													<FontAwesomeIcon style={styles.playIcon} name="caret-right" />
+												</View>
+											)}
+										</TouchableOpacity>
 									)
 										: (<Text style={styles.emptyText} />)
 								}
 								{
 									IsmanualEntry === false ? (
-										<Text style={styles.timeCountText}>0m 0s</Text>
+										<Text style={styles.timeCountText}>
+											{this.getMinutes()}
+											m
+											{" "}
+											{this.getSeconds()}
+											s
+										</Text>
 									)
 										: (
 											<View style={styles.timeCount}>
@@ -182,8 +427,8 @@ class AddBreastfeedEntry extends React.Component {
 													ref={(ref) => {
 														this.TimePicker2 = ref;
 													}}
-													selectedHour="0"
-													selectedMinute="0"
+													selectedHour={timeCountLeftConvert[0] || "00"}
+													selectedMinute={timeCountLeftConvert[1] || "00"}
 													maxMinute="60"
 													maxHour="60"
 													onCancel={() => this.ontimeCountCancel()}
@@ -193,24 +438,62 @@ class AddBreastfeedEntry extends React.Component {
 										)
 								}
 							</View>
-							<View style={styles.MiddleTimeCount}>
-								<Text style={styles.timeTitle}>Total Time</Text>
-								<Text style={styles.timeCountText}>0m 0s</Text>
-							</View>
+							{
+								IsmanualEntry === false ? (
+									<View style={styles.MiddleTimeCount}>
+										<Text style={styles.timeTitle}>Total Time</Text>
+										<Text style={styles.timeCountText}>
+											{TotalTimeMinute}
+											m
+											{" "}
+											{TotalTimeSecond}
+											s
+										</Text>
+									</View>
+								)
+									: (
+										<View style={styles.MiddleTimeCount}>
+											<Text style={styles.timeTitle}>Total Time</Text>
+											<Text style={styles.timeCountText}>{this.ManualTotalTimeCalView(timeCount, timeCountRight)}</Text>
+										</View>
+									)
+							}
 							<View style={styles.RightTimeCount}>
 								<Text style={styles.timeTitle}>Right</Text>
 								{
-									IsmanualEntry === false ? (
-										<View style={styles.TimeStart}>
-											<Text style={styles.playText}>Pause</Text>
-											<FontAwesomeIcon style={styles.pauseIcon} name="pause" />
-										</View>
+									IsmanualEntryRight === false ? (
+										<TouchableOpacity style={styles.TimeStart} onPress={isActiveRight ? () => this.pauseTimeRight() : () => this.startTimeRight()}>
+											{isActiveRight === false && secondsElapsedRight === 0 && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Start</Text>
+													<FontAwesomeIcon style={styles.playIcon} name="caret-right" />
+												</View>
+											)}
+											{isActiveRight === true && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Pause</Text>
+													<FontAwesomeIcon style={styles.pauseIcon} name="pause" />
+												</View>
+											)}
+											{isActiveRight === false && secondsElapsedRight > 0 && (
+												<View style={styles.TimeStart}>
+													<Text style={styles.playText}>Resume</Text>
+													<FontAwesomeIcon style={styles.playIcon} name="caret-right" />
+												</View>
+											)}
+										</TouchableOpacity>
 									)
 										: (<Text style={styles.emptyText} />)
 								}
 								{
-									IsmanualEntry === false ? (
-										<Text style={styles.timeCountText}>0m 0s</Text>
+									IsmanualEntryRight === false ? (
+										<Text style={styles.timeCountText}>
+											{this.getMinutesRight()}
+											m
+											{" "}
+											{this.getSecondsRight()}
+											s
+										</Text>
 									)
 										: (
 											<View style={styles.timeCount}>
@@ -228,8 +511,8 @@ class AddBreastfeedEntry extends React.Component {
 													ref={(ref) => {
 														this.TimePicker3 = ref;
 													}}
-													selectedHour="0"
-													selectedMinute="0"
+													selectedHour={timeCountRightConvert[0] || "00"}
+													selectedMinute={timeCountRightConvert[1] || "00"}
 													maxMinute="60"
 													maxHour="60"
 													onCancel={() => this.ontimeCountRightCancel()}
@@ -246,6 +529,7 @@ class AddBreastfeedEntry extends React.Component {
 								buttonStyle={styles.clearButtonStyle}
 								buttonText="Clear"
 								buttonTextStyle={{ color: "#fff", fontSize: 16 }}
+								buttonClicked={() => this.resetTime()}
 							/>
 						</View>
 					</View>
@@ -287,8 +571,15 @@ class AddBreastfeedEntry extends React.Component {
 	}
 }
 
+const mapStateToProps = (state) => ({
+	card: state.breastfeedReducer,
+	activeBaby: getActiveBaby(state)
+});
+
 const mapDispatchToProps = {
-	dispatchResetAuthState: () => authActions.resetAuthState()
+	dispatchBreastfeedCreate: (data) => breastfeedActions.handleBreastfeedCreate(data),
+	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchClearCard: () => breastfeedActions.clearMsg()
 };
 
-export default connect(null, mapDispatchToProps)(AddBreastfeedEntry);
+export default connect(mapStateToProps, mapDispatchToProps)(AddBreastfeedEntry);

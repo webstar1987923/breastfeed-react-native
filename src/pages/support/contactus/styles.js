@@ -2,29 +2,31 @@ import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
 	container: {
-		flex: 1,
+		paddingLeft: 0,
+		paddingRight: 0,
+		paddingTop: 10
 	},
-	contactText: {
-		fontWeight: "normal",
+	supportList: {
+		borderTopWidth: 1,
+		borderColor: "#E0E0E0",
+		marginTop: 10
+	},
+	supportText: {
 		fontSize: 16,
-		lineHeight: 19,
-		color: "#000000",
-		marginTop: 20
 	},
-	checkStatus: {
-		color: "#E4B167",
+	supportImage: {
+		maxWidth: 12,
+		height: 10,
+		resizeMode: "contain",
 	},
-	contactForm: {
-		marginTop: 20
+	supportListItem: {
+		borderBottomWidth: 1,
+		borderColor: "#E0E0E0",
+		marginLeft: 0,
+		marginRight: 0,
+		height: 50
 	},
-	textInput: {
-		fontSize: 20,
-		lineHeight: 24,
-		color: "#000000"
-	},
-	inputStyle: {
-		borderColor: "#999999",
-		color: "#000",
-		width: "100%"
+	supportListItemPadding: {
+		paddingLeft: 15
 	}
 });

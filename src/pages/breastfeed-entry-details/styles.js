@@ -21,6 +21,8 @@ export default StyleSheet.create({
 	},
 	container: {
 		padding: 15,
+		marginBottom: 15,
+		flex: 1
 	},
 	breastfeedTitle: {
 		textAlign: "center",

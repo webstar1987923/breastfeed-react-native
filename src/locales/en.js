@@ -16,8 +16,8 @@ export default {
 		account: "Account",
 		dashboard: "Dashboard",
 		statistics: "Statistics",
-		tutorials: "Tutorials",
 		support: "Support",
+		order: "Order",
 	},
 	homeScreen: {
 		headerTitle: "Home",
@@ -106,13 +106,13 @@ export default {
 	},
 	forgotPasswordScreen: {
 		title: "Forgot Password?",
-		forgotText: "Enter the email address associated with your account and we’ll send a link to reset your password.",
-		verifyOTPHeaderText: "Verication Code",
+		forgotText: "Enter the email address associated with your account and we'll send a link to reset your password.",
+		verifyOTPHeaderText: "We've sent you an email",
 		resetPasswordHeaderText: "Reset Password",
 		emailPlaceholder: "Email",
-		getOTP: "Get OTP",
-		otpDescription: "Enter 4 digit verification code.",
-		otpButton: "Verify OTP",
+		getOTP: "Submit",
+		otpDescription: "Please enter the verification code we just sent to your email address.",
+		otpButton: "Verify",
 		otpErrorMessage: "Please enter otp.",
 		resetPasswordButton: "Reset Password"
 	}

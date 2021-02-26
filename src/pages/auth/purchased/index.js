@@ -30,13 +30,13 @@ class PurchasedScreen extends React.Component {
 						style={styles.signButtonContainer}
 						buttonStyle={styles.buttonStyle}
 						buttonTextStyle={styles.buttonTextStyle}
-						buttonText="No, I’d Like to order one"
+						buttonText="No, I'd Like to order one"
 					/>
 
 					<ButtonComponent
 						buttonClicked={() => { this.getStartedHandler(); }}
 						style={styles.buttonContainer}
-						buttonText="Yes, let’s continue"
+						buttonText="Yes, let's continue"
 					/>
 
 				</View>

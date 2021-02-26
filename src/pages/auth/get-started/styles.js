@@ -13,7 +13,7 @@ export default StyleSheet.create({
 		paddingVertical: 40
 	},
 	getStartedHeader: {
-		marginBottom: 50
+		marginBottom: 0
 	},
 	getStartedTitle: {
 		fontWeight: "normal",
@@ -45,6 +45,12 @@ export default StyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	formContainerInner: {
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: 50
 	},
 	textInputContainer: {
 		paddingTop: 0,
@@ -108,6 +114,13 @@ export default StyleSheet.create({
 		top: 18,
 		right: 5
 	},
+	RNPickerIcon: {
+		color: "#fff",
+		fontSize: 30,
+		position: "absolute",
+		top: 18,
+		right: 5
+	},
 	addAnother: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -125,5 +138,14 @@ export default StyleSheet.create({
 		fontSize: 16,
 		lineHeight: 19,
 		color: "#fff"
+	},
+	error: {
+		color: "red",
+		fontWeight: "normal",
+		fontSize: 14,
+		lineHeight: 16,
+		marginTop: 5,
+		textAlign: "left",
+		width: "100%"
 	}
 });

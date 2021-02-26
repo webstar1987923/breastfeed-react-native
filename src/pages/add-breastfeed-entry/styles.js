@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 const dimensions = Dimensions.get("window");
 
@@ -21,6 +21,8 @@ export default StyleSheet.create({
 	},
 	container: {
 		padding: 15,
+		marginBottom: 15,
+		flex: 1
 	},
 	breastfeedTitle: {
 		textAlign: "center",
@@ -143,7 +145,8 @@ export default StyleSheet.create({
 	checkIcon: {
 		position: "absolute",
 		color: "#fff",
-		left: 28,
+		left: Platform.OS === "ios" ? 30 : 28,
+		top: Platform.OS === "ios" ? 0 : 9,
 		zIndex: 1,
 	},
 	ClearButton: {
@@ -169,14 +172,14 @@ export default StyleSheet.create({
 		marginTop: 20
 	},
 	timeTitle: {
-		fontSize: 16,
+		fontSize: 15,
 		color: "#000",
 		textTransform: "uppercase",
 		fontWeight: "700",
 		marginBottom: 3
 	},
 	timeCountText: {
-		fontSize: 20,
+		fontSize: 18,
 		color: "#F5821F",
 		marginTop: 3,
 		paddingRight: 10
@@ -188,8 +191,8 @@ export default StyleSheet.create({
 	MiddleTimeCount: {
 		textAlign: "center",
 		alignItems: "center",
-		paddingRight: 15,
-		paddingLeft: 15
+		paddingRight: 5,
+		paddingLeft: 5
 	},
 	RightTimeCount: {
 		textAlign: "center",
@@ -197,8 +200,8 @@ export default StyleSheet.create({
 	},
 	TimeStart: {
 		backgroundColor: "#4B2785",
-		width: 95,
-		height: 95,
+		width: 85,
+		height: 85,
 		shadowColor: "#4B2785",
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.8,
@@ -209,7 +212,7 @@ export default StyleSheet.create({
 		alignItems: "center"
 	},
 	playText: {
-		fontSize: 20,
+		fontSize: 18,
 		color: "#fff",
 		textTransform: "uppercase",
 		marginBottom: 2
