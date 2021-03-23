@@ -9,6 +9,7 @@ import { translate } from "src/locales/i18n";
 import * as authActions from "src/redux/actions/authActions";
 import LoginForm from "./form";
 import styles from "./styles";
+import { getFirebaseToken, getDeviceId, getOS } from "../../../services/device";
 
 class LoginScreen extends React.Component {
 	static navigationOptions = {
@@ -59,13 +60,29 @@ class LoginScreen extends React.Component {
 		navigation.pop();
 	}
 
-	submitForm(values) {
+	async submitForm(values) {
 		// const { navigation } = this.props;
 		// navigation.navigate("Purchased");
-		const { dispatchLogin } = this.props;
-		if(!isEmptyObject(values)) {
-			dispatchLogin(values);
+		try {
+			const device_token = await getFirebaseToken();
+			const device_id = await getDeviceId();
+			const os_type = getOS();
+
+			const { dispatchLogin } = this.props;
+			if(!isEmptyObject(values)) {
+				values = {
+					...values,
+					device_id,
+					device_token,
+					os_type
+				}
+				console.log({values});
+				dispatchLogin(values);
+			}
+		} catch (e) {
+			console.log(e);
 		}
+		
 	}
 
 	forgotPasswordHandler = () => {

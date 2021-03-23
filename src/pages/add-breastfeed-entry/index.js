@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Keyboard, LayoutAnimation } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -38,6 +39,7 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: 0,
 			TotalTimeSecond: 0,
 			ManualTotalTime: "0m 0s",
+			isKeyboardShow: false
 		};
 	}
 
@@ -62,6 +64,22 @@ class AddBreastfeedEntry extends React.Component {
 			)
 		};
 	};
+
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
+	}
 
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
@@ -138,6 +156,7 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: 0,
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
+			time: "9:00"
 		});
 	}
 
@@ -170,6 +189,7 @@ class AddBreastfeedEntry extends React.Component {
 		this.setState({ isActive: false });
 		const { isEnabled, IsmanualEntry, IsmanualEntryRight } = this.state;
 		this.setState({
+			time: "9:00",
 			isEnabled: !isEnabled,
 			IsmanualEntry: !IsmanualEntry,
 			IsmanualEntryRight: !IsmanualEntryRight
@@ -181,8 +201,7 @@ class AddBreastfeedEntry extends React.Component {
 	}
 
 	onConfirm(hour, minute) {
-		let AMPM = hour < 12 ? "AM" : "PM";
-		this.setState({ time: `${hour}:${minute} ${AMPM}` });
+		this.setState({ time: `${hour}:${minute}` });
 		this.TimePicker.close();
 	}
 
@@ -202,7 +221,6 @@ class AddBreastfeedEntry extends React.Component {
 
 	ontimeCountRightConfirm(minute, second) {
 		this.setState({ timeCountRight: `${minute}m ${second}s` });
-		// this.ManualTotalTimeCal(minute, second);
 		this.TimePicker3.close();
 	}
 
@@ -218,6 +236,11 @@ class AddBreastfeedEntry extends React.Component {
 			const minutesLeft = left.split("m")[0];
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
 		}
 		return `${TotlaMinur}:${TotalSeconf}`;
 	}
@@ -234,6 +257,15 @@ class AddBreastfeedEntry extends React.Component {
 			const minutesLeft = left.split("m")[0];
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
+
+			if(TotalSeconf.toString().length === 1 && TotalSeconf > 0) {
+				TotalSeconf = `0${TotalSeconf}`
+			}
 		}
 		return `${TotlaMinur}m ${TotalSeconf}s`;
 	}
@@ -303,15 +335,19 @@ class AddBreastfeedEntry extends React.Component {
 
 	render() {
 		// console.log("Add", this.props);
-		const { NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { isKeyboardShow, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
-		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
-		console.log({timeCountRightConvert, timeCountLeftConvert})
+		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ");
+
+
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
+
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Breastfeed Entry</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
@@ -325,14 +361,15 @@ class AddBreastfeedEntry extends React.Component {
 											<Text style={styles.pickerInput}>
 												{this.getTimeAMPM(time)}
 											</Text>
-										</TouchableOpacity>
+										
 										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+										</TouchableOpacity>
 										<TimePicker
 											ref={(ref) => {
 												this.TimePicker = ref;
 											}}
-											selectedHour="9"
-											selectedMinute="00"
+											selectedHour={selectedTime[0] || "00"}
+											selectedMinute={selectedTime[1] || "00"}
 											onCancel={() => this.onCancel()}
 											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 										/>
@@ -429,7 +466,7 @@ class AddBreastfeedEntry extends React.Component {
 													}}
 													selectedHour={timeCountLeftConvert[0] || "00"}
 													selectedMinute={timeCountLeftConvert[1] || "00"}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountCancel()}
 													onConfirm={(minute, second) => this.ontimeCountConfirm(minute, second)}
@@ -446,7 +483,7 @@ class AddBreastfeedEntry extends React.Component {
 											{TotalTimeMinute}
 											m
 											{" "}
-											{TotalTimeSecond}
+											{TotalTimeSecond != 0 && TotalTimeSecond.toString().length === 1 ? '0' : ''}{TotalTimeSecond}
 											s
 										</Text>
 									</View>
@@ -513,7 +550,7 @@ class AddBreastfeedEntry extends React.Component {
 													}}
 													selectedHour={timeCountRightConvert[0] || "00"}
 													selectedMinute={timeCountRightConvert[1] || "00"}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountRightCancel()}
 													onConfirm={(minute, second) => this.ontimeCountRightConfirm(minute, second)}
@@ -546,7 +583,7 @@ class AddBreastfeedEntry extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

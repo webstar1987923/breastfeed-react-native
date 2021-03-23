@@ -321,7 +321,6 @@ export default StyleSheet.create({
 	},
 	setModalView: {
 		backgroundColor: "white",
-		borderRadius: 10,
 		shadowColor: "#000",
 		shadowOffset: {
 		  width: 0,
@@ -359,5 +358,39 @@ export default StyleSheet.create({
 		fontSize: 22,
 		lineHeight: 27,
 		color: "#F3921F"
-	}
+	},
+	setModalBody: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		paddingHorizontal: 12,
+		paddingVertical: 15,
+		borderBottomWidth: 1,
+		borderBottomColor: "#999999"
+	},
+	startsText: {
+		fontWeight: "normal",
+		fontSize: 22,
+		lineHeight: 26,
+		color: "#000"
+	},
+	startsDate: {
+		fontWeight: "normal",
+		fontSize: 22,
+		lineHeight: 26,
+		color: "#F3921F"
+	},
+	setModalFooter: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		paddingHorizontal: 12,
+		paddingVertical: 15,
+	},
+	repeatText: {
+		fontWeight: "normal",
+		fontSize: 22,
+		lineHeight: 26,
+		color: "#000"
+	},
 });

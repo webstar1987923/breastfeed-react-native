@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard, LayoutAnimation } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -28,7 +29,9 @@ class AddBottle extends React.Component {
 			// TimeValue: "",
 			time: "9:00 AM",
 			selectedAmount: "1.0",
-			selectedFeed: "Breastmilk"
+			selectedFeed: "Breastmilk",
+			isKeyboardShow: false,
+			ozList: null
 		};
 	}
 
@@ -54,6 +57,28 @@ class AddBottle extends React.Component {
 		};
 	};
 
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+
+		let oz = [];
+		for (let i = 0; i < 31; i++) {
+			oz.push({label: `${i}.0 OZ`, value: i})
+		}
+		this.setState({ ozList: oz });
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
+	}
+
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
 		if(msg === "ADD_BOTTLE_SUCCESS") {
@@ -71,8 +96,8 @@ class AddBottle extends React.Component {
 	}
 
 	onConfirm(hour, minute) {
-		let AMPM = hour < 12 ? "AM" : "PM";
-		this.setState({ time: `${hour}:${minute} ${AMPM}` });
+		// let AMPM = hour < 12 ? "AM" : "PM";
+		this.setState({ time: `${hour}:${minute}` });
 		this.TimePicker.close();
 	}
 
@@ -110,11 +135,16 @@ class AddBottle extends React.Component {
 	}
 
 	render() {
-		const { NotesValue, time, selectedAmount, selectedFeed } = this.state;
+		const { ozList, NotesValue, time, selectedAmount, selectedFeed, isKeyboardShow } = this.state;
+
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
+
+
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Bottle</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
@@ -131,8 +161,8 @@ class AddBottle extends React.Component {
 								ref={(ref) => {
 									this.TimePicker = ref;
 								}}
-								selectedHour="9"
-								selectedMinute="00"
+								selectedHour={selectedTime[0] || "00"}
+								selectedMinute={selectedTime[1] || "00"}
 								onCancel={() => this.onCancel()}
 								onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 							/>
@@ -181,43 +211,41 @@ class AddBottle extends React.Component {
 					<View style={styles.amountPicker}>
 						<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 						<View style={styles.picker}>
-							<RNPickerSelect
-								onValueChange={(value) => {
-									this.setState({ selectedAmount: value });
-								}}
-								value={selectedAmount}
-								style={{
-									inputIOS: {
-										height: 60,
-										width: "100%",
-										color: "#000",
-										fontSize: 20,
-										lineHeight: 24,
-										paddingHorizontal: 12
-									},
-									inputAndroid: {
-										height: 60,
-										width: "100%",
-										color: "#000",
-										fontSize: 20,
-										lineHeight: 24,
-										paddingHorizontal: 12
-									}
-								}}
-								useNativeAndroidPickerStyle={false}
-								Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
-								placeholder={{
-									label: "Select Amount",
-									color: "#999999"
-								}}
-								items={[
-									{ label: "1.0 OZ", value: "1.0" },
-									{ label: "2.0 OZ", value: "2.0" },
-									{ label: "3.0 OZ", value: "3.0" },
-									{ label: "4.0 OZ", value: "4.0" },
-									{ label: "5.0 OZ", value: "5.0" },
-								]}
-							/>
+							{
+								ozList ?
+									<RNPickerSelect
+										onValueChange={(value) => {
+											this.setState({ selectedAmount: value });
+										}}
+										value={selectedAmount}
+										style={{
+											inputIOS: {
+												height: 60,
+												width: "100%",
+												color: "#000",
+												fontSize: 20,
+												lineHeight: 24,
+												paddingHorizontal: 12
+											},
+											inputAndroid: {
+												height: 60,
+												width: "100%",
+												color: "#000",
+												fontSize: 20,
+												lineHeight: 24,
+												paddingHorizontal: 12
+											}
+										}}
+										useNativeAndroidPickerStyle={false}
+										Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+										placeholder={{
+											label: "Select Amount",
+											color: "#999999"
+										}}
+										items={ozList}
+									/>
+								:null
+							}							
 						</View>
 					</View>
 					<View style={styles.notsInput}>
@@ -233,7 +261,7 @@ class AddBottle extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

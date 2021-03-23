@@ -147,5 +147,22 @@ export default StyleSheet.create({
 		marginTop: 5,
 		textAlign: "left",
 		width: "100%"
-	}
+	},
+	weightPicker: {
+		borderWidth: 1,
+		borderColor: "#fff",
+		borderRadius: 5,
+		fontSize: 20,
+		lineHeight: 24,
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	weightLBPicker: {
+		width: "50%",
+		// borderRightColor: "#fff",
+		// borderRightWidth: 1,
+	},
+	weightOZPicker: {
+		width: "50%",
+	},
 });

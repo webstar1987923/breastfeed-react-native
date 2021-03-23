@@ -5,6 +5,7 @@ import ButtonComponent from "src/components/ButtonComponent";
 import { isEmpty } from "src/utils/native";
 import { translate } from "src/locales/i18n";
 import styles from "./styles";
+import { checkPasswordStrength } from "../../../utils/passwordCheck";
 
 class ResetPassword extends React.Component {
 	constructor(props) {
@@ -30,8 +31,14 @@ class ResetPassword extends React.Component {
 		this.setState({ passwordErrorMessage: "", cPasswordErrorMessage: "", validateInput: false, isPasswordInvalid: false, iscPasswordInvalid: false });
 
 		/* PASSWORD VALIDATION */
-		if(password.length < 4) {
-			this.setState({ passwordErrorMessage: translate("signupScreen.passwordRequired"), isPasswordInvalid: true });
+		if(password.length < 6) {
+			this.setState({ passwordErrorMessage: translate("formErrorMessage.passwordErrorMessage"), isPasswordInvalid: true });
+			return false;
+		}
+
+		let passwordFlag = checkPasswordStrength(password);
+		if(passwordFlag) {
+			this.setState({ passwordErrorMessage: passwordFlag, isPasswordInvalid: true });
 			return false;
 		}
 

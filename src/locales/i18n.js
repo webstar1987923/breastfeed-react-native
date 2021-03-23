@@ -27,8 +27,8 @@ i18n.use(initReactI18next)
 		}
 	});
 
-export function translate(text) {
-	return i18n.t(text);
+export function translate(text, extra = {}) {
+	return i18n.t(text, extra);
 }
 
 export default i18n;

@@ -100,7 +100,8 @@ export default {
 	},
 	formErrorMessage: {
 		emailErrorMessage: "Please enter valid email!",
-		passwordErrorMessage: "Password must be at least 4 characters",
+		passwordErrorMessage: "Password must be at least 6 characters",
+		passwordStrengthErrorMessage: "Password is {{type}}",
 		cPasswordErrorMessage: "Password not match",
 		notFoundCountry: "Your country is not available.",
 	},

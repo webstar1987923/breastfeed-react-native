@@ -176,6 +176,7 @@ class HeaderComponent extends Component {
 
 	render() {
 		const { user } = this.props;
+		
 		const { activeIndex } = this.state;
 		return (
 			<View style={styles.header}>
@@ -302,9 +303,12 @@ class HeaderComponent extends Component {
 															<View style={styles.menuOptionContentItem}>
 																<Text style={styles.contentItemBold}>Weight: </Text>
 																<Text style={styles.contentItemLight}>
-																	{data.weight}
+																	{data.weight_lb}
 																	{" "}
-																	lbs
+																	lbs, 
+																	{data.weight_oz}
+																	{" "}
+																	oz
 																</Text>
 															</View>
 														</View>

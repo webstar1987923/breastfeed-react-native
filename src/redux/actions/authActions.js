@@ -1,7 +1,7 @@
 import AuthService from "src/services/authService";
 import * as commonActions from "./commonActions";
 import { showAPIErrorAlert } from "../../utils/native";
-
+import { getDeviceId } from "../../services/device";
 export const LOG_IN_START = "LOG_IN_START";
 export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
 export const RESET_AUTH_STATE = "RESET_AUTH_STATE";
@@ -100,11 +100,11 @@ export function handleLogIn(data) {
 		dispatch(commonActions.loadingStart());
 		dispatch(logInStart());
 		AuthService.handleLogin(data).then(function(response) {
-			// console.log("response", response.data);
+			console.log("response", response.data);
 			dispatch(logInSuccess(response.data));
 			dispatch(commonActions.loadingEnd());
 		}).catch(function(error) {
-			// console.log("error", error);
+			console.log("error", error);
 			dispatch(commonActions.loadingEnd());
 			showAPIErrorAlert(error);
 		});
@@ -199,14 +199,24 @@ export function handleFBLogIn(data) {
 }
 
 export function handleLogout() {
-	return (dispatch) => {
-		dispatch(commonActions.loadingStart());
-		dispatch(resetAuthState());
-		AuthService.handleLogout().then(function() {
-			dispatch(commonActions.loadingEnd());
-		}).catch(function(error) {
-			dispatch(commonActions.loadingEnd());
-			showAPIErrorAlert(error);
-		});
+	return async(dispatch) => {
+		try {
+			const deviceId = await getDeviceId();
+			dispatch(commonActions.loadingStart());
+			// console.log("Caleld logout>>>>");
+			AuthService.handleLogout({
+				device_id: deviceId
+			}).then(function() {
+				dispatch(resetAuthState());
+				// console.log("Called logout");
+				dispatch(commonActions.loadingEnd());
+			}).catch(function(error) {
+				dispatch(resetAuthState());
+				// console.log("LOGOUT ERROR", error);
+				dispatch(commonActions.loadingEnd());
+			});
+		} catch(e) {
+			console.log(e);
+		}
 	};
 }

@@ -176,4 +176,21 @@ export default StyleSheet.create({
 		top: 18,
 		right: 5
 	},
+	weightPicker: {
+		borderWidth: 1,
+		borderColor: "#999",
+		borderRadius: 5,
+		fontSize: 20,
+		lineHeight: 24,
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	weightLBPicker: {
+		width: "50%",
+		// borderRightColor: "#fff",
+		// borderRightWidth: 1,
+	},
+	weightOZPicker: {
+		width: "50%",
+	},
 });

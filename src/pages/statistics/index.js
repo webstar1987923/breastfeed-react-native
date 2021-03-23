@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import LanguageSwitcher from "src/components/LanguageSwitcher";
 import HeaderComponent from "src/components/HeaderComponent";
-import { VictoryBar, VictoryAxis, VictoryStack, VictoryLabel, VictoryChart, VictoryLine, VictoryTheme, VictoryScatter, VictoryGroup } from "victory-native";
+import { VictoryBar, VictoryAxis, VictoryStack, VictoryChart, VictoryLine, VictoryScatter, VictoryGroup } from "victory-native";
 import { Images } from "src/assets/images";
-import { translate } from "src/locales/i18n";
 import moment from "moment";
 import { getActiveBaby, getActiveScreen } from "src/redux/selectors";
 import { isEmptyObject } from "src/utils/native";
@@ -40,8 +38,9 @@ class StatisticsScreen extends React.Component {
 		}
 		if (activeScreen !== null && (activeScreen === "Statistics" && routeName === "Statistics")) {
 			if (!isEmptyObject(activeBaby)) {
-				let startDate = moment().subtract(7,'d').format('YYYY-MM-DD');;
-				let endDate = moment().add(1, 'd').format('YYYY-MM-DD');
+				console.log("callingpi", this.state.currentDate)
+				let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
+				let endDate = moment(this.state.currentDate).format('YYYY-MM-DD');
 				
 				let data = new FormData();
 				const activeBaby = this.props.activeBaby;
@@ -60,8 +59,8 @@ class StatisticsScreen extends React.Component {
 	componentDidMount() {
 
 		// console.log(">>>>>>>>")
-		let startDate = moment().subtract(7,'d').format('YYYY-MM-DD');;
-		let endDate = moment().add(1, 'd').format('YYYY-MM-DD');
+		let startDate = moment().subtract(6,'d').format('YYYY-MM-DD');;
+		let endDate = moment().format('YYYY-MM-DD');
 		
 		let data = new FormData();
 		const { activeBaby } = this.props;
@@ -76,6 +75,9 @@ class StatisticsScreen extends React.Component {
  	}
 
 	convertToSecound(hms) {
+		if(!hms) {
+			return '0 minute';
+		}
 		let a = hms.split(":"); // split it at the colons
 		let total = Number(a[0]) * 60 + Number(a[1]);
 		let temp = Math.ceil(Number(total / 60).toFixed(1));
@@ -105,9 +107,9 @@ class StatisticsScreen extends React.Component {
 	}
 
 	fetchData() {
-		let startDate = moment(this.state.currentDate).subtract(7,'d').format('YYYY-MM-DD');;
-		let endDate = moment(this.state.currentDate).add(1, 'd').format('YYYY-MM-DD');
-		
+		let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
+		let endDate = moment(this.state.currentDate).format('YYYY-MM-DD');
+		// console.log({startDate});
 		let data = new FormData();
 		const activeBaby = this.props.activeBaby;
 
@@ -118,23 +120,47 @@ class StatisticsScreen extends React.Component {
 		this.props.dispatchGetStatisticsList(data);
 	}
 
+	getRange(startDate, endDate, type) {
+		let fromDate = moment(startDate)
+		let toDate = moment(endDate)
+		let diff = toDate.diff(fromDate, type)
+		let range = []
+		for (let i = 0; i < diff; i++) {
+		  range.push(moment(startDate).add(i, type))
+		}
+		return range
+	}
+
+	getDaysArray(start, end) {
+		for(var arr=[],dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
+			arr.push(new Date(dt));
+		}
+		return arr;
+	};
+
 	render() {
 		// console.log(this.props);
 		const { statistics } = this.props;
 
 		let breastfeeds = null;
-		let breastfeedsItems = {};
+		let breastfeedsItems = {
+			left: [],
+			right: []
+		};
 		let breastfeeds_total_time_avg;
 		let breastfeeds_total_session_avg;
 
 		let pumps = null;
-		let pumpItems = [];
+		let pumpItems = {
+			left: [],
+			right: []
+		};
 		let pumps_total_time_avg;
 		let pump_total_session_avg;
 		let total_ounces_avg;
 
 		let bottles = null;
-		let bottleItems = [];
+		let bottleItems = []
 		let bottle_total_ounces_avg;
 
 		let diaper = null;
@@ -144,20 +170,116 @@ class StatisticsScreen extends React.Component {
 		const pee = [];
 		const poop = [];
 		// const diaperLabels = [];
+		let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
+		let endDate = moment(this.state.currentDate).format('YYYY-MM-DD');
 
+		// var range = moment().range(startDate, endDate);
+		// var diff = range.diff('days');
+		const tmpDateRanges = this.getDaysArray(new Date(startDate),new Date(endDate));
+		const dateRange = [];
+		for(let i in tmpDateRanges) {
+			let name = moment(tmpDateRanges[i]).format('ddd');
+			dateRange.push(name);
+		
+			breastfeedsItems.left.push({
+				x: name,
+				y: 0
+			})
+			breastfeedsItems.right.push({
+				x: name,
+				y: 0
+			})	
+			
+			pumpItems.left.push({
+				x: name,
+				y: 0
+			})
+			pumpItems.right.push({
+				x: name,
+				y: 0
+			})	
+
+			bottleItems.push({
+				x: name,
+				y: 0
+			})
+
+			pee.push({
+				x: name,
+				y: 0
+			})
+			poop.push({
+				x: name,
+				y: 0
+			})
+			both.push({
+				x: name,
+				y: 0
+			})
+			
+			
+		}
+
+		/// BreastFeet Default value assign
+
+
+		// console.log({dateRange});
 		if(statistics && statistics.Breastfeeds && statistics.Breastfeeds.Breastfeeds && statistics.Breastfeeds.Breastfeeds.length > 0) {
 			breastfeeds = statistics.Breastfeeds;
-			breastfeeds_total_time_avg = breastfeeds.breastfeeds_total_time_avg;
-			breastfeeds_total_session_avg = breastfeeds.breastfeeds_total_session_avg;
-			const left = [];
-			const right = [];
+			const todayItems = breastfeeds.Breastfeeds.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			console.log({todayItems});
+			if(todayItems.length > 0) {
+				let totalMin = 0;
+				let totalSec = 0;
+
+				for(let i in todayItems) {
+					const _tmp = todayItems[i].total_time.split(":");
+					totalMin += Number(_tmp[0]);
+					totalSec += Number(_tmp[1]);
+				}
+				let _tmpTotal = (totalMin*60) + totalSec
+				if(_tmpTotal < 60) {
+					breastfeeds_total_time_avg = `${_tmpTotal}`
+					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/todayItems.length))}`
+
+					if(breastfeeds_total_time_avg > 1) {
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} secounds`
+					} else {
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} secound`
+					}
+
+					if(breastfeeds_total_session_avg > 1) {
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} secounds`
+					} else {
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} secound`
+					}
+
+
+				} else {
+					breastfeeds_total_time_avg = `${Math.round(_tmpTotal/60)}`;
+					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/todayItems.length)/60)}`;
+
+					if(breastfeeds_total_time_avg > 1) {
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} minutes`
+					} else {
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} minute`
+					}
+
+					if(breastfeeds_total_session_avg > 1) {
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} minutes`
+					} else {
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} minute`
+					}
+				}
+			}
+
+			const left = JSON.parse(JSON.stringify(breastfeedsItems.left));
+			const right = JSON.parse(JSON.stringify(breastfeedsItems.right));
 
 			for(let i in breastfeeds.Breastfeeds) {
 				const index = left.findIndex((x) => x.x === moment(breastfeeds.Breastfeeds[i].created_at).format("ddd"));
-
 				if(index > -1) {
 					// Need to add in prev record
-
 					let tmpLeft = this.convertToGraph(breastfeeds.Breastfeeds[i].left_breast) + left[index].y;
 					let tmpRight = this.convertToGraph(breastfeeds.Breastfeeds[i].right_breast) + right[index].y;
 
@@ -169,42 +291,72 @@ class StatisticsScreen extends React.Component {
 						x: moment(breastfeeds.Breastfeeds[i].created_at).format("ddd"),
 						y: tmpRight
 					};
-				} else {
-					left.push({
-						x: moment(breastfeeds.Breastfeeds[i].created_at).format("ddd"),
-						y: this.convertToGraph(breastfeeds.Breastfeeds[i].left_breast)
-					});
-
-					right.push({
-						x: moment(breastfeeds.Breastfeeds[i].created_at).format("ddd"),
-						y: this.convertToGraph(breastfeeds.Breastfeeds[i].right_breast)
-					});
 				}
 			}
 			breastfeedsItems = {
 				left,
 				right
 			};
-
-			// console.log({left, right});
 		}
 
 		if(statistics && statistics.pumps && statistics.pumps.pumps && statistics.pumps.pumps.length > 0) {
 			pumps = statistics.pumps;
-			// breastfeeds_total_time_avg = breastfeeds.breastfeeds_total_time_avg;
-			// breastfeeds_total_session_avg = breastfeeds.breastfeeds_total_session_avg;
-			pumps_total_time_avg = pumps.pumps_total_time_avg;
-			pump_total_session_avg = pumps.pump_total_session_avg;
-			total_ounces_avg = pumps.total_ounces_avg;
-			const left = [];
-			const right = [];
+			const todayItems = pumps.pumps.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+
+			if(todayItems.length > 0) {
+				let totalMin = 0;
+				let totalSec = 0;
+				let totalOz = 0;
+
+				for(let i in todayItems) {
+					const _tmp = todayItems[i].total_time.split(":");
+					totalMin += Number(_tmp[0]);
+					totalSec += Number(_tmp[1]);
+					totalOz += (Number(todayItems[i].left_amount) + Number(todayItems[i].right_amount));
+				}
+				let _tmpTotal = (totalMin*60) + totalSec
+
+				if(_tmpTotal < 60) {
+					pumps_total_time_avg = `${_tmpTotal}`
+					pump_total_session_avg = `${Math.round((_tmpTotal/todayItems.length))}`
+					if(pumps_total_time_avg > 1) {
+						pumps_total_time_avg = `${pumps_total_time_avg} secounds`
+					} else {
+						pumps_total_time_avg = `${pumps_total_time_avg} secound`
+					}
+
+					if(pump_total_session_avg > 1) {
+						pump_total_session_avg = `${pump_total_session_avg} secounds`
+					} else {
+						pump_total_session_avg = `${pump_total_session_avg} secound`
+					}
+				} else {
+					pumps_total_time_avg = `${Math.round(_tmpTotal/60)}`;
+					pump_total_session_avg = `${Math.round((_tmpTotal/todayItems.length)/60)}`;
+
+					if(pumps_total_time_avg > 1) {
+						pumps_total_time_avg = `${pumps_total_time_avg} minutes`
+					} else {
+						pumps_total_time_avg = `${pumps_total_time_avg} minute`
+					}
+
+					if(pump_total_session_avg > 1) {
+						pump_total_session_avg = `${pump_total_session_avg} minutes`
+					} else {
+						pump_total_session_avg = `${pump_total_session_avg} minute`
+					}
+				}
+				total_ounces_avg = totalOz;
+			}
+
+			const left = JSON.parse(JSON.stringify(pumpItems.left));
+			const right = JSON.parse(JSON.stringify(pumpItems.right));
 
 			for(let i in pumps.pumps) {
 				const index = left.findIndex((x) => x.x === moment(pumps.pumps[i].created_at).format("ddd"));
 
 				if(index > -1) {
-					// Need to add in prev record
-
+					// Need to add in prev recorf
 					let tmpLeft = Number(pumps.pumps[i].left_amount) + left[index].y;
 					let tmpRight = Number(pumps.pumps[i].right_amount) + right[index].y;
 
@@ -216,16 +368,6 @@ class StatisticsScreen extends React.Component {
 						x: moment(pumps.pumps[i].created_at).format("ddd"),
 						y: tmpRight
 					};
-				} else {
-					left.push({
-						x: moment(pumps.pumps[i].created_at).format("ddd"),
-						y: Number(pumps.pumps[i].left_amount)
-					});
-
-					right.push({
-						x: moment(pumps.pumps[i].created_at).format("ddd"),
-						y: Number(pumps.pumps[i].right_amount)
-					});
 				}
 			}
 			pumpItems = {
@@ -236,38 +378,54 @@ class StatisticsScreen extends React.Component {
 
 		if(statistics && statistics.bottles && statistics.bottles.bottles && statistics.bottles.bottles.length > 0) {
 			bottles = statistics.bottles;
-			bottle_total_ounces_avg = bottles.bottle_total_ounces_avg;
-			const items = [];
+			bottle_total_ounces_avg;
+			const todayItems = bottles.bottles.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			if(todayItems.length > 0) {
+				let totalOz = 0;
+
+				for(let i in todayItems) {
+					totalOz += (Number(todayItems[i].amount))
+				}
+
+				bottle_total_ounces_avg = Math.round(totalOz/todayItems.length);
+			}
+			const items = JSON.parse(JSON.stringify(bottleItems));
 
 			for(let i in bottles.bottles) {
 				const index = items.findIndex((x) => x.x === moment(bottles.bottles[i].created_at).format("ddd"));
-
 				if(index > -1) {
 					// Need to add in prev record
-
 					let tmpLeft = Number(bottles.bottles[i].amount) + items[index].y;
-
 					items[index] = {
 						x: moment(bottles.bottles[i].created_at).format("ddd"),
 						y: tmpLeft
 					};
-				} else {
-					items.push({
-						x: moment(bottles.bottles[i].created_at).format("ddd"),
-						y: Number(bottles.bottles[i].amount)
-					});
 				}
 			}
-
 			bottleItems = items;
 		}
 
 		if(statistics && statistics.Diaper && statistics.Diaper.Diaper && statistics.Diaper.Diaper.length > 0) {
 			diaper = statistics.Diaper;
-			daily_average_poop = diaper.daily_average_poop;
-			daily_average_pee = diaper.daily_average_pee;
+			const todayItemsPoop = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Poop');
+			const todayItemsPee = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Pee');
+			
+			
+			if(todayItemsPoop.length > 0) {
+				let totalPee = 0;
+				for(let i in todayItemsPoop) {
+					totalPee += 1
+				}
+				daily_average_poop = Math.round(totalPee/todayItemsPoop.length);
+			}
 
-			// const items = [];
+			if(todayItemsPee.length > 0) {
+				let totalPee = 0;
+				for(let i in todayItemsPee) {
+					totalPee += 1
+				}
+				daily_average_pee = Math.round(totalPee/todayItemsPee.length);
+			}
 
 			for(let i in diaper.Diaper) {
 				let type = diaper.Diaper[i].type_of_diaper;
@@ -344,13 +502,13 @@ class StatisticsScreen extends React.Component {
 					}
 				}
 			}
-			// bottleItems = items;
 		}
-		// console.log("bottles", breastfeedsItems)
+		
 		const { currentDate } = this.state;
 		return (
+
 			<ScrollView>
-				<View style={styles.container}>
+			<View style={styles.container}>
 					<View style={styles.statisticsHeader}>
 						<TouchableOpacity style={styles.prevArrow} onPress={() => { this.prevClick(currentDate); }}>
 							<View style={styles.prevArrow}>
@@ -384,152 +542,147 @@ class StatisticsScreen extends React.Component {
 							)
 						}
 					</View>
-					{
-						(!breastfeeds && !pumps && !bottles && !diaper) && (
-							<View>
-								<Text>No Record found</Text>
-							</View>
-						)
-					}
+				
 					{/* 1 */}
 
-					{
-						breastfeeds && (
-							<View style={styles.statisticsgraphBox}>
-								<Text style={styles.statisticsgraphTitle}>Breastfeeding:</Text>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>{this.convertToSecound(breastfeeds_total_time_avg)}</Text>
+					<View style={styles.statisticsgraphBox}>
+						<Text style={styles.statisticsgraphTitle}>Breastfeeding:</Text>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{( breastfeeds_total_session_avg || "0 minute")}</Text>
+						</View>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{( breastfeeds_total_time_avg || "0 minute")}</Text>
+						</View>
+						<View style={styles.statisticsgraphchart}>
+							<View style={styles.statisticsVictoryStack}>
+								<VictoryChart
+									height={160}
+									domainPadding={10}
+								>
+									<VictoryStack
+										colorScale={["#4B2785", "#E4B167"]}
+										height={160}
+									>
+										<VictoryBar
+											barRatio={1}
+											data={breastfeedsItems.left}
+										/>
+										<VictoryBar
+											barRatio={1}
+											labels={({ datum }) => {
+												return `${datum._y1}m`;
+											}}
+											style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
+											data={breastfeedsItems.right}
+										/>
+										
+									</VictoryStack>
+									<VictoryAxis
+										tickValues={[1, 2, 3, 4, 5, 6, 7]}
+										tickFormat={dateRange}
+										style={{
+											axis: { stroke: "#fff"},
+											tickLabels: { fontSize: 12 }
+										}}
+									/>
+								</VictoryChart>
+							</View>
+							<View style={styles.maincolorscaleStatic}>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleblue} />
+									<Text style={styles.statisticsgraphcolorTitle}>Left Breast</Text>
 								</View>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>{this.convertToSecound(breastfeeds_total_session_avg)}</Text>
-								</View>
-								<View style={styles.statisticsgraphchart}>
-									<View style={styles.statisticsVictoryStack}>
-										<VictoryStack
-											colorScale={["#4B2785", "#E4B167"]}
-											height={160}
-										>
-											<VictoryBar
-												barRatio={1}
-												data={breastfeedsItems.left}
-											/>
-											<VictoryBar
-												barRatio={1}
-												labels={({ datum }) => {
-													// console.log(datum)
-													return `${datum._y1}m`;
-												}}
-												style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
-												data={breastfeedsItems.right}
-											/>
-											<VictoryAxis
-												tickValues={[1, 2, 3, 4, 5, 6, 7]}
-												tickFormat={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
-												tickLabelComponent={(
-													<VictoryLabel
-														dy={-5}
-														style={[
-															{ fill: "#000", fontSize: 12, lineHeight: 16, letterSpacing: 0.4 }
-														]}
-													/>
-												)}
-											/>
-										</VictoryStack>
-									</View>
-									<View style={styles.maincolorscaleStatic}>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleblue} />
-											<Text style={styles.statisticsgraphcolorTitle}>Left Breast</Text>
-										</View>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleorange} />
-											<Text style={styles.statisticsgraphcolorTitle}>Right Breast</Text>
-										</View>
-									</View>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleorange} />
+									<Text style={styles.statisticsgraphcolorTitle}>Right Breast</Text>
 								</View>
 							</View>
-						)
-					}
+						</View>
+					</View>
+				
 					{/* 2 */}
-					{
-						pumps && (
-							<View style={styles.statisticsgraphBox}>
-								<Text style={styles.statisticsgraphTitle}>Pumping:</Text>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average Ounces:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>
-										{total_ounces_avg}
-										{" "}
-										ounces
-									</Text>
+					
+					<View style={styles.statisticsgraphBox}>
+						<Text style={styles.statisticsgraphTitle}>Pumping:</Text>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average Ounces:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>
+								{total_ounces_avg || 0}
+								{" "}
+								{total_ounces_avg && total_ounces_avg > 1 ? 'ounces' : 'ounce'}
+							</Text>
+						</View>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>
+								{(pump_total_session_avg || '0 minute')}
+							</Text>
+						</View>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{(pumps_total_time_avg || '0 minute')}</Text>
+						</View>
+						<View style={styles.statisticsgraphchart}>
+							<View style={styles.statisticsVictoryStack}>
+								<VictoryChart
+									height={160}
+									domainPadding={10}
+								>
+									<VictoryStack
+										colorScale={["#4B2785", "#E4B167"]}
+										height={160}
+									>
+										<VictoryBar
+											barRatio={1}
+											data={pumpItems.left}
+										/>
+										<VictoryBar
+											barRatio={1}
+											labels={({ datum }) => `${datum._y1} oz`}
+											style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
+											data={pumpItems.right}
+										/>
+									</VictoryStack>
+									<VictoryAxis
+										tickValues={[1, 2, 3, 4, 5, 6, 7]}
+										tickFormat={dateRange}
+										style={{
+											axis: { stroke: "#fff"},
+											tickLabels: { fontSize: 12 }
+										}}
+									/>
+								</VictoryChart>
+							</View>
+							<View style={styles.maincolorscaleStatic}>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleblue} />
+									<Text style={styles.statisticsgraphcolorTitle}>Left Breast</Text>
 								</View>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>{this.convertToSecound(pump_total_session_avg)}</Text>
-								</View>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>{this.convertToSecound(pumps_total_time_avg)}</Text>
-								</View>
-								<View style={styles.statisticsgraphchart}>
-									<View style={styles.statisticsVictoryStack}>
-										<VictoryStack
-											colorScale={["#4B2785", "#E4B167"]}
-											height={160}
-										>
-											<VictoryBar
-												barRatio={1}
-												data={pumpItems.left}
-											/>
-											<VictoryBar
-												barRatio={1}
-												labels={({ datum }) => `${datum._y1}oz`}
-												style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
-												data={pumpItems.right}
-											/>
-											<VictoryAxis
-												tickValues={[1, 2, 3, 4, 5, 6, 7]}
-												tickFormat={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", ""]}
-												tickLabelComponent={(
-													<VictoryLabel
-														dy={-5}
-														style={[
-															{ fill: "#000", fontSize: 12, lineHeight: 16, letterSpacing: 0.4 }
-														]}
-													/>
-												)}
-											/>
-										</VictoryStack>
-									</View>
-									<View style={styles.maincolorscaleStatic}>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleblue} />
-											<Text style={styles.statisticsgraphcolorTitle}>Left Breast</Text>
-										</View>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleorange} />
-											<Text style={styles.statisticsgraphcolorTitle}>Right Breast</Text>
-										</View>
-									</View>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleorange} />
+									<Text style={styles.statisticsgraphcolorTitle}>Right Breast</Text>
 								</View>
 							</View>
-						)
-					}
+						</View>
+					</View>
+				
 
 					{/* 3 */}
-					{
-						bottles && (
+					
 							<View style={styles.statisticsgraphBox}>
 								<Text style={styles.statisticsgraphTitle}>Bottles:</Text>
 								<View style={styles.statisticsgraphContent}>
 									<Text style={styles.statisticsgraphText}>Daily Average Ounces:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>12 ounces</Text>
+									<Text style={styles.statisticsgraphTextOrange}>
+									{bottle_total_ounces_avg || 0} 
+									{bottle_total_ounces_avg && bottle_total_ounces_avg > 1 ? 'ounces' : 'ounce'}
+									</Text>
 								</View>
 								<View style={styles.statisticsgraphchart}>
 									<VictoryChart
-										theme={VictoryTheme.material}
+										domainPadding={30}
 									>
 										<VictoryGroup>
 											<VictoryLine
@@ -541,88 +694,87 @@ class StatisticsScreen extends React.Component {
 											/>
 											<VictoryScatter
 												style={{ data: { fill: "#E4B167", stroke: "#E4B167" } }}
-												size={4}
+												size={5}
 												data={bottleItems}
 											/>
 										</VictoryGroup>
 									</VictoryChart>
 								</View>
 							</View>
-						)
-					}
+						
 					{/* 4 */}
-					{
-						diaper && (
-							<View style={styles.statisticsgraphBox}>
-								<Text style={styles.statisticsgraphTitle}>Diapers:</Text>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average of Pee:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>
-										{daily_average_pee}
-										{" "}
-										diapers
-									</Text>
+					
+					<View style={styles.statisticsgraphBox}>
+						<Text style={styles.statisticsgraphTitle}>Diapers:</Text>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average of Pee:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>
+								{daily_average_pee || 0}
+								{" "}
+								{daily_average_pee && daily_average_pee > 1 ? 'diapers' : 'diaper'}
+							</Text>
+						</View>
+						<View style={styles.statisticsgraphContent}>
+							<Text style={styles.statisticsgraphText}>Daily Average of Poop:</Text>
+							<Text style={styles.statisticsgraphTextOrange}>
+								{daily_average_poop || 0}
+								{" "}
+								
+								{daily_average_poop && daily_average_poop > 1 ? 'diapers' : 'diaper'}
+							</Text>
+						</View>
+						<View style={styles.statisticsgraphchart}>
+							<View style={styles.statisticsVictoryStack}>
+								<VictoryChart
+									height={260}
+								>
+									<VictoryStack
+										colorScale={["#4B2785", "#E4B167", "#F3921F"]}
+										height={260}
+									>
+										<VictoryBar
+											barRatio={0.8}
+											data={pee}
+										/>
+										<VictoryBar
+											barRatio={0.8}
+											data={poop}
+										/>
+										<VictoryBar
+											barRatio={0.8}
+											data={both}
+										/>
+									</VictoryStack>
+									<VictoryAxis
+										tickValues={[1, 2, 3, 4, 5, 6, 7]}
+										tickFormat={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", ""]}
+										style={{
+											axis: { stroke: "#fff"},
+											tickLabels: { fontSize: 12 }
+										}}
+									/>
+								</VictoryChart>
+							</View>
+							<View style={styles.maincolorscaleStatic}>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleblue} />
+									<Text style={styles.statisticsgraphcolorTitle}>Pee</Text>
 								</View>
-								<View style={styles.statisticsgraphContent}>
-									<Text style={styles.statisticsgraphText}>Daily Average of Poop:</Text>
-									<Text style={styles.statisticsgraphTextOrange}>
-										{daily_average_poop}
-										{" "}
-										diapers
-									</Text>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaleorange} />
+									<Text style={styles.statisticsgraphcolorTitle}>Poop</Text>
 								</View>
-								<View style={styles.statisticsgraphchart}>
-									<View style={styles.statisticsVictoryStack}>
-										<VictoryStack
-											colorScale={["#4B2785", "#E4B167", "#F3921F"]}
-											height={260}
-										>
-											<VictoryBar
-												barRatio={0.8}
-												data={pee}
-											/>
-											<VictoryBar
-												barRatio={0.8}
-												data={poop}
-											/>
-											<VictoryBar
-												barRatio={0.8}
-												data={both}
-											/>
-											<VictoryAxis
-												tickValues={[1, 2, 3, 4, 5, 6, 7]}
-												tickFormat={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", ""]}
-												tickLabelComponent={(
-													<VictoryLabel
-														dy={-5}
-														style={[
-															{ fill: "#999", fontSize: 12, lineHeight: 16, letterSpacing: 0.4 }
-														]}
-													/>
-												)}
-											/>
-										</VictoryStack>
-									</View>
-									<View style={styles.maincolorscaleStatic}>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleblue} />
-											<Text style={styles.statisticsgraphcolorTitle}>Pee</Text>
-										</View>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaleorange} />
-											<Text style={styles.statisticsgraphcolorTitle}>Poop</Text>
-										</View>
-										<View style={styles.colorscaleStatic}>
-											<View style={styles.colorscaledarkorange} />
-											<Text style={styles.statisticsgraphcolorTitle}>Both</Text>
-										</View>
-									</View>
+								<View style={styles.colorscaleStatic}>
+									<View style={styles.colorscaledarkorange} />
+									<Text style={styles.statisticsgraphcolorTitle}>Both</Text>
 								</View>
 							</View>
-						)
-					}
+						</View>
+					</View>
+					
 				</View>
-			</ScrollView>
+				</ScrollView>
+			
 		);
 	}
 }

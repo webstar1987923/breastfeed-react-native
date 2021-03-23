@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { View, Text, Image, ScrollView, Modal, Button, TouchableOpacity } from "react-native";
 import * as authActions from "src/redux/actions/authActions";
+import { updateDeviceToken } from "../../redux/actions/userAction";
 // import LanguageSwitcher from "src/components/LanguageSwitcher";
 import HeaderComponent from "src/components/HeaderComponent";
 import ButtonComponent from "src/components/ButtonComponent";
@@ -13,7 +14,7 @@ import Moment from "moment";
 import { getActiveBaby, getActiveScreen } from "src/redux/selectors";
 import moment from "moment";
 import styles from "./styles";
-
+import messaging from '@react-native-firebase/messaging';
 
 
 
@@ -45,6 +46,21 @@ class dashboardScreen extends React.Component {
 		}
 
 		this.getLeftBreastValue();
+
+
+		messaging().getToken().then(token => {
+			// return saveTokenToDatabase(token);
+			updateDeviceToken();
+		});
+		
+		// If using other push notification providers (ie Amazon SNS, etc)
+		// you may need to get the APNs token instead for iOS:
+		// if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
+
+		// Listen to whether the token changes
+		messaging().onTokenRefresh(token => {
+			updateDeviceToken();
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -107,10 +123,12 @@ class dashboardScreen extends React.Component {
 		dispatchResetAuthState();
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertTime(data) {
 		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertDataIntoHM(data) {
 		let tmp = data.split(":");
 		// console.log("tmp", tmp,data);
@@ -123,10 +141,10 @@ class dashboardScreen extends React.Component {
 		return `${Number(tmp[1])}s`;
 	}
 
-
+	// eslint-disable-next-line class-methods-use-this
 	hasValue(data) {
 		let _t = data.split(":");
-		return (Number(_t[0]) > 0 || Number(_t[1]) > 0)
+		return (Number(_t[0]) > 0 || Number(_t[1]) > 0);
 	}
 
 	render() {
@@ -230,7 +248,7 @@ class dashboardScreen extends React.Component {
 								/>
 							</View>
 							<View style={styles.dashboardboxsessionTitle}>
-								<Text style={styles.dashboardboxTitle}>{translate("dashboardScreen.breastfeedingTitle")}</Text>
+								<Text style={[styles.dashboardboxTitle, {color: "#4B2785"}]}>{translate("dashboardScreen.breastfeedingTitle")}</Text>
 								{
 									dashboardData && dashboardData.breastfeeds_session_count > 0
 										? (
@@ -401,7 +419,7 @@ class dashboardScreen extends React.Component {
 								/>
 							</View>
 							<View>
-								<Text style={styles.dashboardboxTitle}>{translate("dashboardScreen.feedingTitle")}</Text>
+								<Text style={[styles.dashboardboxTitle, {color: "#4B2785"}]}>{translate("dashboardScreen.feedingTitle")}</Text>
 							</View>
 						</View>
 						{

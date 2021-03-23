@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Keyboard, LayoutAnimation } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RNPickerSelect from "react-native-picker-select";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import TextInput from "src/components/TextInput";
@@ -12,27 +13,13 @@ import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import moment from "moment";
 import styles from "./styles";
+import { cos } from "react-native-reanimated";
+
 
 class EditPumpEntry extends React.Component {
 	constructor(props) {
 		super(props);
 		const { card } = this.props;
-		// var getMinutes = card.pumpEdit.left_breast.split("m",1)[0];
-		// var minutesToSeconds = getMinutes * 60;
-		// var getSeconds = card.pumpEdit.left_breast.split(" ",2)[1].split("s",1)[0];
-		// var LeftTotalSeconds = parseInt(minutesToSeconds)+parseInt(getSeconds);
-		// console.log("mmmm+ssss", LeftTotalSeconds);
-
-		// var getMinutesRight = card.pumpEdit.right_breast.split("m",1)[0];
-		// var minutesToSecondsRight = getMinutesRight * 60;
-		// var getSecondsRight = card.pumpEdit.right_breast.split(" ",2)[1].split("s",1)[0];
-		// var RightTotalSeconds = parseInt(minutesToSecondsRight)+parseInt(getSecondsRight);
-		// console.log("mmmm+ssss Rihgt:;", RightTotalSeconds);
-
-		// var TotalMinutes = parseInt(getMinutes)+parseInt(getMinutesRight);
-		// var TotalSeconds = parseInt(getSeconds)+parseInt(getSecondsRight);
-		// var TotalTimeMinutes = TotalMinutes;
-		// var TotalTimeSeconds = TotalSeconds;
 
 		let tmpLeft = this.checkTimeLen(card.pumpEdit.left_breast).split(":");
 		let leftTimeCount = `${tmpLeft[0]}m ${tmpLeft[1]}s`;
@@ -67,6 +54,8 @@ class EditPumpEntry extends React.Component {
 			ManualTotalTime: "0m 0s",
 			selectedAmount: card.pumpEdit.left_amount,
 			selectedAmountSec: card.pumpEdit.right_amount,
+			isKeyboardShow: false,
+			ozList: null
 		};
 	}
 
@@ -92,11 +81,6 @@ class EditPumpEntry extends React.Component {
 		};
 	};
 
-	componentDidMount() {
-		const { card } = this.props;
-		console.warn("card", card.pumpEdit);
-	}
-
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
 		if(msg === "EDIT_PUMP_SUCCESS") {
@@ -107,6 +91,28 @@ class EditPumpEntry extends React.Component {
 				});
 			});
 		}
+	}
+
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+
+		let oz = [];
+		for (let i = 0; i < 31; i++) {
+			oz.push({label: `${i}.0 OZ`, value: i})
+		}
+		this.setState({ ozList: oz });
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
 	}
 
 	getMinutes() {
@@ -246,6 +252,11 @@ class EditPumpEntry extends React.Component {
 			const minutesLeft = left.split("m")[0];
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
 		}
 		return `${TotlaMinur}:${TotalSeconf}`;
 	}
@@ -260,8 +271,18 @@ class EditPumpEntry extends React.Component {
 			const seconsLeft = left.split("s")[0];
 			const valueLeft = seconsLeft.split("m")[1];
 			const minutesLeft = left.split("m")[0];
+			
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
+
+			if(TotalSeconf.toString().length === 1 && TotalSeconf > 0) {
+				TotalSeconf = `0${TotalSeconf}`
+			}
 		}
 		return `${TotlaMinur}m ${TotalSeconf}s`;
 	}
@@ -326,15 +347,18 @@ class EditPumpEntry extends React.Component {
 	}
 
 	render() {
-		const { selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { ozList, isKeyboardShow, selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
 		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
 		
-		console.log({timeCountLeftConvert, timeCountRightConvert});
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
+
+		// console.log(time);
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Edit a Pump Entry</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
@@ -348,14 +372,15 @@ class EditPumpEntry extends React.Component {
 											<Text style={styles.pickerInput}>
 												{this.getTimeAMPM(time)}
 											</Text>
-										</TouchableOpacity>
+										
 										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+										</TouchableOpacity>
 										<TimePicker
 											ref={(ref) => {
 												this.TimePicker = ref;
 											}}
-											selectedHour="9"
-											selectedMinute="00"
+											selectedHour={selectedTime[0] || "00"}
+											selectedMinute={selectedTime[1] || "00"}
 											onCancel={() => this.onCancel()}
 											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 										/>
@@ -450,7 +475,7 @@ class EditPumpEntry extends React.Component {
 													}}
 													selectedHour={timeCountLeftConvert[0] || '0'}
 													selectedMinute={timeCountLeftConvert[1] || '0'}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountCancel()}
 													onConfirm={(minute, second) => this.ontimeCountConfirm(minute, second)}
@@ -467,7 +492,7 @@ class EditPumpEntry extends React.Component {
 											{TotalTimeMinute}
 											m
 											{" "}
-											{TotalTimeSecond}
+											{TotalTimeSecond != 0 && TotalTimeSecond.toString().length === 1 ? '0' : ''}{TotalTimeSecond}
 											s
 										</Text>
 									</View>
@@ -534,7 +559,7 @@ class EditPumpEntry extends React.Component {
 													}}
 													selectedHour={timeCountRightConvert[0] || '0'}
 													selectedMinute={timeCountRightConvert[1] || '0'}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountRightCancel()}
 													onConfirm={(minute, second) => this.ontimeCountRightConfirm(minute, second)}
@@ -558,43 +583,41 @@ class EditPumpEntry extends React.Component {
 						<View style={styles.amountPicker}>
 							<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 							<View style={styles.picker}>
-								<RNPickerSelect
-									onValueChange={(value) => {
-										this.setState({ selectedAmount: value });
-									}}
-									value={selectedAmount}
-									style={{
-										inputIOS: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										},
-										inputAndroid: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										}
-									}}
-									useNativeAndroidPickerStyle={false}
-									Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
-									placeholder={{
-										label: "Select Amount",
-										color: "#999999"
-									}}
-									items={[
-										{ label: "1.0 OZ", value: "1.0" },
-										{ label: "2.0 OZ", value: "2.0" },
-										{ label: "3.0 OZ", value: "3.0" },
-										{ label: "4.0 OZ", value: "4.0" },
-										{ label: "5.0 OZ", value: "5.0" },
-									]}
-								/>
+								{
+									ozList ?
+										<RNPickerSelect
+											onValueChange={(value) => {
+												this.setState({ selectedAmount: value });
+											}}
+											value={selectedAmount}
+											style={{
+												inputIOS: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												},
+												inputAndroid: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												}
+											}}
+											useNativeAndroidPickerStyle={false}
+											Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+											placeholder={{
+												label: "Select Amount",
+												color: "#999999"
+											}}
+											items={ozList}
+										/>
+									:null
+								}								
 							</View>
 						</View>
 						<View style={styles.amountPicker}>
@@ -653,7 +676,7 @@ class EditPumpEntry extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

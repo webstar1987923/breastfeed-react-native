@@ -19,21 +19,45 @@ class GetStartedForm extends React.Component {
 			fullName: "",
 			DOB: "",
 			selectedHeight: "",
-			selectedWeight: "",
 			avatarSource: null,
 			Babys: [{
 				index: 1,
 				fullName: "",
 				DOB: Moment().format("MMM DD, YYYY"),
 				selectedHeight: "",
-				selectedWeight: "",
+				selectedLBWeight: 0,
+				selectedOZWeight: 0,
 				avatarSource: null,
-				selectedWeightErrMsg: "",
+				selectedOZWeightErrMsg: "",
+				selectedLBWeightErrMsg: "",
 				isDatePickerVisible: false,
 			}],
 			isDatePickerVisible: false,
-			value: "August 22, 2020"
+			value: "August 22, 2020",
+			heightList: null,
+			weightLBList: null,
+			weightOZList: null
 		};
+	}
+
+	componentDidMount() {
+		let height = [];
+		for (let i = 0; i < 100; i++) {
+			height.push({label: `${i/2} Inches`, value: i/2})
+		}
+		this.setState({ heightList: height });
+
+		let weightLB = [];
+		for (let i = 0; i < 50; i++) {
+			weightLB.push({label: `${i} lb`, value: i})
+		}
+		this.setState({ weightLBList: weightLB });
+
+		let weightOZ = [];
+		for (let i = 0; i < 50; i++) {
+			weightOZ.push({label: `${i} oz`, value: i})
+		}
+		this.setState({ weightOZList: weightOZ });
 	}
 
 	isValid = () => {
@@ -54,11 +78,15 @@ class GetStartedForm extends React.Component {
 				el.avatarSourceErrMsg = "Image is required";
 				ErrorMsg = false;
 			}
-			if(isEmpty(el.selectedWeight)) {
-				el.selectedWeightErrMsg = "Weight is requied";
+			if(isEmpty(el.selectedLBWeight)) {
+				el.selectedLBWeightErrMsg = "Weight is requied";
 				ErrorMsg = false;
 			}
-			if(!isEmpty(el.fullName) && !isEmpty(el.selectedHeight) && !isEmpty(el.avatarSource) && !isEmpty(el.selectedWeight)) {
+			if(isEmpty(el.selectedOZWeight)) {
+				el.selectedOZWeightErrMsg = "Weight is requied";
+				ErrorMsg = false;
+			}
+			if(!isEmpty(el.fullName) && !isEmpty(el.selectedHeight) && !isEmpty(el.avatarSource) && !isEmpty(el.selectedOZWeight) && !isEmpty(el.selectedLBWeight)) {
 				ErrorMsg = true;
 			}
 			return el;
@@ -85,7 +113,8 @@ class GetStartedForm extends React.Component {
 					data.append(`profile[${index}][name]`, el.fullName);
 					data.append(`profile[${index}][birthday]`, el.DOB ? el.DOB : Moment().format("MMM DD, YYYY"));
 					data.append(`profile[${index}][height]`, el.selectedHeight);
-					data.append(`profile[${index}][weight]`, el.selectedWeight);
+					data.append(`profile[${index}][weight_lb]`, el.selectedLBWeight);
+					data.append(`profile[${index}][weight_oz]`, el.selectedOZWeight);
 				});
 			} else {
 				data.append("baby_profileupload", {
@@ -96,7 +125,8 @@ class GetStartedForm extends React.Component {
 				data.append("name", Babys[0].fullName);
 				data.append("birthday", Babys[0].DOB);
 				data.append("height", Babys[0].selectedHeight);
-				data.append("weight", Babys[0].selectedWeight);
+				data.append("weight_lb", Babys[0].selectedLBWeight);
+				data.append("weight_oz", Babys[0].selectedOZWeight);
 			}
 			submitForm(data);
 		}
@@ -108,7 +138,7 @@ class GetStartedForm extends React.Component {
 	}
 
 	resetForm = () => {
-		this.setState({ fullName: "", DOB: "", selectedHeight: "", selectedWeight: "", validateInput: false });
+		this.setState({ fullName: "", DOB: "", selectedHeight: "", selectedLBWeight: 0, selectedOZWeight: 0, validateInput: false });
 	}
 
 	showDatePicker(value) {
@@ -202,12 +232,24 @@ class GetStartedForm extends React.Component {
 		this.setState({ Babys: data });
 	}
 
-	onChangeWeight(text, value) {
+	onChangeWeightLB(text, value) {
 		const { Babys } = this.state;
 
 		const data = Babys.filter((el) => {
 			if(el.index === value.index) {
-				el.selectedWeight = text;
+				el.selectedLBWeight = text;
+			}
+			return el;
+		});
+		this.setState({ Babys: data });
+	}
+
+	onChangeWeightOZ(text, value) {
+		const { Babys } = this.state;
+
+		const data = Babys.filter((el) => {
+			if(el.index === value.index) {
+				el.selectedOZWeight = text;
 			}
 			return el;
 		});
@@ -221,7 +263,8 @@ class GetStartedForm extends React.Component {
 			index: this.state.Babys.length + 1,
 			DOB: Moment().format("MMM DD, YYYY"),
 			selectedHeight: "",
-			selectedWeight: "",
+			selectedLBWeight: 0,
+			selectedOZWeight: 0,
 			avatarSource: null,
 			isDatePickerVisible: false
 		});
@@ -229,7 +272,7 @@ class GetStartedForm extends React.Component {
 	}
 
 	render() {
-		const { validateInput, avatarSource, Babys, fullName, DOB, selectedHeight, selectedWeight, isDatePickerVisible, value } = this.state;
+		const { weightLBList, weightOZList, heightList, validateInput, avatarSource, Babys, fullName, DOB, selectedHeight, isDatePickerVisible, value } = this.state;
 		return (
 			<View style={styles.formContainer}>
 				{Babys.map((el, index) => {
@@ -298,92 +341,122 @@ class GetStartedForm extends React.Component {
 							<View style={styles.pickerInputContainer}>
 								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Height</Text>
 								<View style={styles.picker}>
-									<RNPickerSelect
-										onValueChange={(value) => this.onChangeHeight(value, el)
-											// this.setState({ selectedHeight: itemValue });
-										}
-										value={el.selectedHeight}
-										style={{
-											inputIOS: {
-												height: 60,
-												width: "100%",
-												color: "#fff",
-												fontSize: 20,
-												lineHeight: 24,
-												paddingHorizontal: 12
-											},
-											inputAndroid: {
-												height: 60,
-												width: "100%",
-												color: "#fff",
-												fontSize: 20,
-												lineHeight: 24,
-												paddingHorizontal: 12
-											}
-										}}
-										useNativeAndroidPickerStyle={false}
-										Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
-										placeholder={{
-											label: "",
-										}}
-										items={[
-											{ label: "10 inches", value: "10" },
-											{ label: "10.5 inches", value: "10.5" },
-											{ label: "11 inches", value: "11" },
-											{ label: "11.5 inches", value: "11.5" },
-											{ label: "12 inches", value: "12" },
-											{ label: "12.5 inches", value: "12.5" },
-											{ label: "13 inches", value: "13" },
-											{ label: "13.5 inches", value: "13.5" },
-										]}
-									/>
+									{
+										heightList ? 
+											<RNPickerSelect
+												onValueChange={(value) => this.onChangeHeight(value, el)
+													// this.setState({ selectedHeight: itemValue });
+												}
+												value={el.selectedHeight}
+												style={{
+													inputIOS: {
+														height: 60,
+														width: "100%",
+														color: "#fff",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													},
+													inputAndroid: {
+														height: 60,
+														width: "100%",
+														color: "#fff",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													}
+												}}
+												useNativeAndroidPickerStyle={false}
+												Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+												placeholder={{
+													label: "",
+												}}
+												items={heightList}
+											/>
+										:null
+									}
+									
 								</View>
 								{isEmpty(el.selectedHeight) && el.selectedHeightErrMsg && <Text style={styles.error}>{isEmpty(el.selectedHeightErrMsg) ? "" : el.selectedHeightErrMsg}</Text>}
 							</View>
 							<View style={styles.pickerInputContainer}>
 								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Weight</Text>
-								<View style={styles.picker}>
-									<RNPickerSelect
-										onValueChange={(value) => this.onChangeWeight(value, el)
-											// this.setState({ selectedHeight: itemValue });
+								<View style={styles.weightPicker}>
+									<View style={styles.weightLBPicker}>
+										{
+											weightLBList ?
+												<RNPickerSelect
+													onValueChange={(value) => this.onChangeWeightLB(value, el)
+														// this.setState({ selectedHeight: itemValue });
+													}
+													value={el.selectedLBWeight}
+													style={{
+														inputIOS: {
+															height: 60,
+															width: "100%",
+															color: "#fff",
+															fontSize: 20,
+															lineHeight: 24,
+															paddingHorizontal: 12
+														},
+														inputAndroid: {
+															height: 60,
+															width: "100%",
+															color: "#fff",
+															fontSize: 20,
+															lineHeight: 24,
+															paddingHorizontal: 12
+														}
+													}}
+													useNativeAndroidPickerStyle={false}
+													Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+													placeholder={{
+														label: "",
+													}}
+													items={weightLBList}
+												/>
+											:null
 										}
-										value={el.selectedWeight}
-										style={{
-											inputIOS: {
-												height: 60,
-												width: "100%",
-												color: "#fff",
-												fontSize: 20,
-												lineHeight: 24,
-												paddingHorizontal: 12
-											},
-											inputAndroid: {
-												height: 60,
-												width: "100%",
-												color: "#fff",
-												fontSize: 20,
-												lineHeight: 24,
-												paddingHorizontal: 12
-											}
-										}}
-										useNativeAndroidPickerStyle={false}
-										Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
-										placeholder={{
-											label: "",
-										}}
-										items={[
-											{ label: "0 lb 0 oz", value: "0" },
-											{ label: "1 lb 1 oz", value: "1" },
-											{ label: "2 lb 2 oz", value: "2" },
-											{ label: "3 lb 3 oz", value: "3" },
-											{ label: "4 lb 4 oz", value: "4" },
-											{ label: "5 lb 5 oz", value: "5" },
-											{ label: "6 lb 6 oz", value: "6" },
-											{ label: "7 lb 7 oz", value: "7" },
-										]}
-									/>
+									</View>
+									<View style={styles.weightOZPicker}>
+										{
+											weightOZList ?
+												<RNPickerSelect
+													onValueChange={(value) => this.onChangeWeightOZ(value, el)
+														// this.setState({ selectedHeight: itemValue });
+													}
+													value={el.selectedOZWeight}
+													style={{
+														inputIOS: {
+															height: 60,
+															width: "100%",
+															color: "#fff",
+															fontSize: 20,
+															lineHeight: 24,
+															paddingHorizontal: 12
+														},
+														inputAndroid: {
+															height: 60,
+															width: "100%",
+															color: "#fff",
+															fontSize: 20,
+															lineHeight: 24,
+															paddingHorizontal: 12
+														}
+													}}
+													useNativeAndroidPickerStyle={false}
+													Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+													placeholder={{
+														label: "",
+													}}
+													items={weightOZList}
+												/>
+											:null
+										}
+									</View>
 								</View>
-								{isEmpty(el.selectedWeight) && <Text style={styles.error}>{isEmpty(el.selectedWeightErrMsg) ? "" : el.selectedWeightErrMsg}</Text>}
+								{isEmpty(el.selectedLBWeight) && <Text style={styles.error}>{isEmpty(el.selectedLBWeightErrMsg) ? "" : el.selectedOZWeightErrMsg}</Text>}
+								{isEmpty(el.selectedOZWeight) && <Text style={styles.error}>{isEmpty(el.selectedOZWeightErrMsg) ? "" : el.selectedOZWeightErrMsg}</Text>}
 							</View>
 						</View>
 					);

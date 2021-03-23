@@ -13,14 +13,18 @@ import { isEmptyObject } from "src/utils/native";
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from "react-native-popup-menu";
 import { getActiveBaby } from "src/redux/selectors";
 import moment from "moment";
+import { withNavigationFocus } from "react-navigation";
 import styles from "../styles";
+import SetAlarmComponent from "../components/SetAlarmComponent";
+import { fetchPrevAlarmValue } from "../../../redux/actions/trackAction";
 
 class PumpCards extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			opened: "",
-			ViewNoteModal: false
+			ViewNoteModal: false,
+			isAlarmModal: false
 		};
 	}
 
@@ -46,6 +50,35 @@ class PumpCards extends React.Component {
 		if(currentDate !== prevProps.currentDate || prevProps.activeBaby && activeBaby && prevProps.activeBaby.id !== activeBaby.id) {
 			this.pumpFunction(currentDate, activeBaby);
 		}
+
+		// eslint-disable-next-line react/destructuring-assignment
+		if(prevProps.tabReducer.activeTab !== this.props.tabReducer.activeTab && activeBaby && activeBaby.id) {
+			// eslint-disable-next-line react/destructuring-assignment
+			if(this.props.tabReducer.activeTab === "Track") {
+				this.fetchAlarmValue(activeBaby);
+			}
+		}
+		// if(prevProps.tabReducer.activeT)
+
+		// eslint-disable-next-line react/destructuring-assignment
+		if(prevProps.tabReducer.trackActiveTab !== this.props.tabReducer.trackActiveTab && activeBaby && activeBaby.id) {
+			// eslint-disable-next-line react/destructuring-assignment
+			if(this.props.tabReducer.trackActiveTab === "Pump") {
+				/// FETCH ALARA HERE
+				this.fetchAlarmValue(activeBaby);
+			}
+		}
+	}
+
+	fetchAlarmValue(activeBaby) {
+		const { dispatchGetAlarm } = this.props;
+		if(activeBaby) {
+			const data = {
+				baby_id: activeBaby.id,
+				type: "pump"
+			};
+			dispatchGetAlarm(data);
+		}
 	}
 
 	pumpFunction(currentDate, activeBaby) {
@@ -61,17 +94,15 @@ class PumpCards extends React.Component {
 
 	redirectToAddEntry() {
 		const { navigation } = this.props;
-		navigation.navigate("AddPumpEntry",{date: this.props.currentDate});
+		navigation.navigate("AddPumpEntry", { date: this.props.currentDate });
 	}
 
 	HandleViewNotes(data) {
-		console.warn("data", data.note);
 		const { ViewNoteModal } = this.state;
 		this.setState({ opened: false, ViewNoteModal: data.id });
 	}
 
 	HandleDeletePump(key) {
-		console.warn("key", key);
 		const data = {
 			pump_id: key,
 		};
@@ -84,7 +115,6 @@ class PumpCards extends React.Component {
 	}
 
 	HandleEditPump(data) {
-		console.warn("data", data.id);
 		const { navigation, dispatchEditPump } = this.props;
 		if(!isEmptyObject(data)) {
 			dispatchEditPump(data);
@@ -99,10 +129,12 @@ class PumpCards extends React.Component {
 		this.setState({ ViewNoteModal: visible });
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertTime(data) {
 		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertDataIntoHM(data) {
 		let tmp = data.split(":");
 
@@ -115,6 +147,7 @@ class PumpCards extends React.Component {
 		return `${tmp[1]}s`;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	hasTime(data) {
 		// console.log(data);
 		let _l = data.split(":");
@@ -124,11 +157,40 @@ class PumpCards extends React.Component {
 		return false;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
+	getTime(time) {
+		return moment(time.user_datetime).format("hh:mm A");
+	}
+
+
 	render() {
-		const { pump } = this.props;
-		const { ViewNoteModal } = this.state;
+		const { pump, isFocused, track } = this.props;
+		const { ViewNoteModal, isAlarmModal } = this.state;
+		const alarm = track.pump || [];
+
 		return (
 			<View style={styles.trackContainer}>
+				{
+					isAlarmModal && (
+						<SetAlarmComponent
+							isOpen={isAlarmModal}
+							prevAlarm={(alarm.length > 0) ? alarm[0] : null}
+							onClose={() => {
+								this.setState({
+									isAlarmModal: false
+								});
+							}}
+							isFocused={isFocused}
+							type="pump"
+							onValueSelect={() => {
+								console.log("called");
+							}}
+							title="Pump alarm"
+							notificationTitle="Pumping Alarm"
+						/>
+					)
+				}
+
 				<View style={styles.trackTop}>
 					<View style={styles.sessionsBox}>
 						<View style={styles.sessionsIcon}>
@@ -140,13 +202,15 @@ class PumpCards extends React.Component {
 							Sessions
 						</Text>
 					</View>
-					<View style={styles.setAlarm}>
-						<Image
-							source={Images.BreastfeedCards.alarmIcon}
-							style={styles.setAlarmIcon}
-						/>
-						<Text style={styles.setAlarmTitle}>set</Text>
-					</View>
+					<TouchableOpacity onPress={() => this.setState({ isAlarmModal: true })}>
+						<View style={styles.setAlarm}>
+							<Image
+								source={Images.BreastfeedCards.alarmIcon}
+								style={styles.setAlarmIcon}
+							/>
+							<Text style={styles.setAlarmTitle}>{ alarm.length > 0 ? this.getTime(alarm[0]) : "set"}</Text>
+						</View>
+					</TouchableOpacity>
 				</View>
 
 				<ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 70 }}>
@@ -277,14 +341,18 @@ class PumpCards extends React.Component {
 
 const mapStateToProps = (state) => ({
 	pump: state.pumpReducer,
-	activeBaby: getActiveBaby(state)
+	activeBaby: getActiveBaby(state),
+	activeTab: state.tabReducer,
+	tabReducer: state.tabReducer,
+	track: state.trackReducer
 });
 
 const mapDispatchToProps = {
 	dispatchPumpListing: (data) => pumpActions.handlePumpListing(data),
 	dispatchPumpDelete: (data) => pumpActions.handlePumpDelete(data),
 	dispatchEditPump: (data) => pumpActions.EditGetDataPump(data),
-	dispatchResetAuthState: () => authActions.resetAuthState()
+	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data)
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PumpCards);
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(PumpCards));

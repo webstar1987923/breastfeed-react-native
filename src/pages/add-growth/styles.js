@@ -120,11 +120,11 @@ export default StyleSheet.create({
 		paddingTop: 8,
 	},
 	pickerIcon: {
-		color: "#000",
+		color: "#999",
 		fontSize: 30,
 		position: "absolute",
 		top: 15,
-		right: 15
+		right: 20
 	},
 	manualEentry: {
 		flex: 1,
@@ -283,5 +283,35 @@ export default StyleSheet.create({
 		textTransform: "uppercase",
 		zIndex: 1,
 		paddingHorizontal: 5
+	},
+	pickerInputContainer: {
+		width: "100%",
+		marginTop: 30,
+		position: "relative",
+		paddingHorizontal: dimensions.width / 4 - 10
+	},
+	RNPickerIcon: {
+		color: "#999",
+		fontSize: 30,
+		position: "absolute",
+		top: 18,
+		right: 5
+	},
+	weightPicker: {
+		borderWidth: 1,
+		borderColor: "#999",
+		borderRadius: 5,
+		fontSize: 20,
+		lineHeight: 24,
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	weightLBPicker: {
+		width: "50%",
+		// borderRightColor: "#fff",
+		// borderRightWidth: 1,
+	},
+	weightOZPicker: {
+		width: "50%",
 	},
 });

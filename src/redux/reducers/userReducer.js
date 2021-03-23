@@ -7,7 +7,8 @@ import {
 	EDIT_GET_DATA_BABY,
 	DELETE_BABY_START,
 	DELETE_BABY_SUCCESS,
-	DELETE_BABY_FAILED
+	DELETE_BABY_FAILED,
+	UPDATE_USER_NOTIFICATION
 } from "../actions/userAction";
 
 const initialState = {
@@ -17,6 +18,11 @@ const initialState = {
 	loadingError: null,
 	isBabyLoaded: false,
 	babyEdit: {},
+	notification: {
+		"breastfeed": true,
+		"pump": true,
+		"bottle": true
+	}
 };
 
 const userReducer = (state = initialState, action) => {
@@ -39,6 +45,31 @@ const userReducer = (state = initialState, action) => {
 			return { ...state, babyDetails: action.data, isLoading: false, loadingError: null };
 		case UPDATE_PROFILE_START:
 			return { ...state, isLoading: true };
+		case UPDATE_USER_NOTIFICATION: {
+
+			let obj = {
+				"breastfeed": true,
+				"pump": true,
+				"bottle": true
+			};
+			const breastfeed = action.data.find((x) => x.notification_type === "breastfeed");
+			if(breastfeed) {
+				obj.breastfeed = breastfeed.notification === "on" ? true : false;
+			}
+			const pump = action.data.find((x) => x.notification_type === "pump");
+			if(pump) {
+				obj.pump = pump.notification === "on" ? true : false;
+			}
+			const bottle = action.data.find((x) => x.notification_type === "bottle");
+			if(bottle) {
+				obj.bottle = bottle.notification === "on" ? true : false;
+			}
+
+			return {
+				...state,
+				notification: obj
+			};
+		}
 		default:
 			return state;
 	}

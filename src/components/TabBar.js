@@ -66,7 +66,6 @@ class TabBar extends Component {
 	}
 
 	render() {
-		console.log("TA BAR AXTRIOn", this.props);
 		return (
 			<View>
 				<Footer style={styles.footer}>

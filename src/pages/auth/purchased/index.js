@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Linking } from "react-native";
 import { Images } from "src/assets/images";
 import LinearGradient from "react-native-linear-gradient";
 import ButtonComponent from "src/components/ButtonComponent";
@@ -31,6 +31,7 @@ class PurchasedScreen extends React.Component {
 						buttonStyle={styles.buttonStyle}
 						buttonTextStyle={styles.buttonTextStyle}
 						buttonText="No, I'd Like to order one"
+						buttonClicked={() => Linking.openURL("https://form.hygeiahealth.com/?source=Mobile App")}
 					/>
 
 					<ButtonComponent

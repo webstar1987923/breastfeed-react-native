@@ -12,6 +12,8 @@ import userReducer from "./userReducer";
 import createBabyReducer from "./createBabyReducer";
 import statisticsReducer from "./statisticsReducer";
 import tabReducer from "./tabReducer";
+import alarmReducer from "./alarmReducer";
+import trackReducer from "./trackReducer";
 
 export default combineReducers({
 	authReducer,
@@ -26,5 +28,7 @@ export default combineReducers({
 	dashboardReducer,
 	createBabyReducer,
 	statisticsReducer,
-	tabReducer
+	tabReducer,
+	alarmReducer,
+	trackReducer
 });

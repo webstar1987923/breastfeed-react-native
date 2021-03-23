@@ -120,13 +120,13 @@ const TrackTabStack = createStackNavigator(trackRouteConfig, {
 TrackTabStack.navigationOptions = ({ navigation }) => {
 	let tabBarVisible = true;
 	if(navigation.state.index > 0) {
-	  const currentScreen = getActiveRouteName(navigation.state);
-	  if(currentScreen === "AddBreastfeedEntry" || currentScreen === "BreastfeedEntryDetails" || currentScreen === "AddPumpEntry" || currentScreen === "AddBottle" || currentScreen === "AddDiaper" || currentScreen === "AddGrowth") {
+		const currentScreen = getActiveRouteName(navigation.state);
+		if(currentScreen === "AddBreastfeedEntry" || currentScreen === "BreastfeedEntryDetails" || currentScreen === "AddPumpEntry" || currentScreen === "AddBottle" || currentScreen === "AddDiaper" || currentScreen === "AddGrowth") {
 			tabBarVisible = false;
-	  }
+		}
 	}
 	return {
-	  tabBarVisible,
+		tabBarVisible,
 	};
 };
 /* SUPPORT STACK */
@@ -246,13 +246,13 @@ function getActiveRouteName(navigationState) {
 DashboardTabStack.navigationOptions = ({ navigation }) => {
 	let tabBarVisible = true;
 	if(navigation.state.index > 0) {
-	  const currentScreen = getActiveRouteName(navigation.state);
-	  if(currentScreen === "EditProfile" || currentScreen === "Settings" || currentScreen === "ChangePassword" || currentScreen === "AddProfile") {
+		const currentScreen = getActiveRouteName(navigation.state);
+		if(currentScreen === "EditProfile" || currentScreen === "Settings" || currentScreen === "ChangePassword" || currentScreen === "AddProfile") {
 			tabBarVisible = false;
-	  }
+		}
 	}
 	return {
-	  tabBarVisible,
+		tabBarVisible,
 	};
 };
 

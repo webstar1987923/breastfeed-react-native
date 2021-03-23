@@ -9,6 +9,7 @@ import { Images } from "src/assets/images";
 import * as userAction from "src/redux/actions/userAction";
 import { translate } from "src/locales/i18n";
 import styles from "./styles";
+import { checkPasswordStrength } from "../../utils/passwordCheck";
 
 class ChangePasswordScreen extends React.Component {
 	static navigationOptions = ({ navigation, screenProps: { } }) => {
@@ -74,12 +75,18 @@ class ChangePasswordScreen extends React.Component {
     	}
 
     	this.setState({ currentPasswordErrorMessage: "", passwordErrorMessage: "", cPasswordErrorMessage: "", validateInput: false, isPasswordInvalid: false, iscPasswordInvalid: false, isCurrentPasswordInvalid: false });
-
+		console.log(password.length, "")
     	/* PASSWORD VALIDATION */
-    	if(password.length < 4) {
-    		this.setState({ passwordErrorMessage: translate("signupScreen.passwordRequired"), isPasswordInvalid: true });
+    	if(password.length < 6) {
+    		this.setState({ passwordErrorMessage: translate("formErrorMessage.passwordErrorMessage"), isPasswordInvalid: true });
     		return false;
     	}
+
+		let passwordFlag = checkPasswordStrength(password);
+		if(passwordFlag) {
+			this.setState({ passwordErrorMessage: passwordFlag, isPasswordInvalid: true });
+			return false;
+		}
 
     	/* CONFIRM PASSWORD VALIDATION */
     	if(password !== cpassword) {

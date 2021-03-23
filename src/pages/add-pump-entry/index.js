@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard, LayoutAnimation } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -40,7 +41,9 @@ class AddPumpEntry extends React.Component {
 			TotalTimeSecond: 0,
 			ManualTotalTime: "0m 0s",
 			selectedAmount: "1.0",
-			selectedAmountSec: "1.0"
+			selectedAmountSec: "1.0",
+			isKeyboardShow: false,
+			ozList: null
 		};
 	}
 
@@ -65,6 +68,28 @@ class AddPumpEntry extends React.Component {
 			)
 		};
 	};
+
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+
+		let oz = [];
+		for (let i = 0; i < 31; i++) {
+			oz.push({label: `${i}.0 OZ`, value: i})
+		}
+		this.setState({ ozList: oz });
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
+	}
 
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
@@ -132,6 +157,7 @@ class AddPumpEntry extends React.Component {
 			TotalTimeMinute: 0,
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
+			time: "9:00"
 		});
 	}
 
@@ -175,8 +201,8 @@ class AddPumpEntry extends React.Component {
 	}
 
 	onConfirm(hour, minute) {
-		let AMPM = hour < 12 ? "AM" : "PM";
-		this.setState({ time: `${hour}:${minute} ${AMPM}` });
+		// let AMPM = hour < 12 ? "AM" : "PM";
+		this.setState({ time: `${hour}:${minute}` });
 		this.TimePicker.close();
 	}
 
@@ -210,6 +236,14 @@ class AddPumpEntry extends React.Component {
 			const minutesLeft = left.split("m")[0];
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+			
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
+			// if(TotalSeconf.toString().length === 1) {
+			// 	TotalSeconf = `0${TotalSeconf}`
+			// }
 		}
 		return `${TotlaMinur}:${TotalSeconf}`;
 	}
@@ -226,6 +260,16 @@ class AddPumpEntry extends React.Component {
 			const minutesLeft = left.split("m")[0];
 			TotalSeconf = parseInt(valueLeft) + parseInt(value);
 			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+
+			if(TotalSeconf > 59) {
+				TotlaMinur += Math.floor(TotalSeconf / 60);
+				TotalSeconf = TotalSeconf % 60;
+			}
+
+			
+			if(TotalSeconf.toString().length === 1 && TotalSeconf > 0) {
+				TotalSeconf = `0${TotalSeconf}`
+			}
 		}
 		return `${TotlaMinur}m ${TotalSeconf}s`;
 	}
@@ -292,14 +336,17 @@ class AddPumpEntry extends React.Component {
 	}
 
 	render() {
-		const { selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { ozList, isKeyboardShow, selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
 		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
+
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
 		
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Pump Entry</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
@@ -313,14 +360,15 @@ class AddPumpEntry extends React.Component {
 											<Text style={styles.pickerInput}>
 												{this.getTimeAMPM(time)}
 											</Text>
-										</TouchableOpacity>
+										
 										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+										</TouchableOpacity>
 										<TimePicker
 											ref={(ref) => {
 												this.TimePicker = ref;
 											}}
-											selectedHour="9"
-											selectedMinute="00"
+											selectedHour={selectedTime[0] || "00"}
+											selectedMinute={selectedTime[1] || "00"}
 											onCancel={() => this.onCancel()}
 											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 										/>
@@ -415,7 +463,7 @@ class AddPumpEntry extends React.Component {
 													}}
 													selectedHour={timeCountLeftConvert[0] || "0"}
 													selectedMinute={timeCountLeftConvert[1] || "0"}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountCancel()}
 													onConfirm={(minute, second) => this.ontimeCountConfirm(minute, second)}
@@ -432,7 +480,7 @@ class AddPumpEntry extends React.Component {
 											{TotalTimeMinute}
 											m
 											{" "}
-											{TotalTimeSecond}
+											{TotalTimeSecond != 0 && TotalTimeSecond.toString().length === 1 ? '0' : ''}{TotalTimeSecond}
 											s
 										</Text>
 									</View>
@@ -499,7 +547,7 @@ class AddPumpEntry extends React.Component {
 													}}
 													selectedHour={timeCountRightConvert[0] || "0"}
 													selectedMinute={timeCountRightConvert[1] || "0"}
-													maxMinute="60"
+													maxMinute="59"
 													maxHour="60"
 													onCancel={() => this.ontimeCountRightCancel()}
 													onConfirm={(minute, second) => this.ontimeCountRightConfirm(minute, second)}
@@ -523,85 +571,82 @@ class AddPumpEntry extends React.Component {
 						<View style={styles.amountPicker}>
 							<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 							<View style={styles.picker}>
-								<RNPickerSelect
-									onValueChange={(value) => {
-										this.setState({ selectedAmount: value });
-									}}
-									value={selectedAmount}
-									style={{
-										inputIOS: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										},
-										inputAndroid: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										}
-									}}
-									useNativeAndroidPickerStyle={false}
-									Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
-									placeholder={{
-										label: "Select Amount",
-										color: "#999999"
-									}}
-									items={[
-										{ label: "1.0 OZ", value: "1.0" },
-										{ label: "2.0 OZ", value: "2.0" },
-										{ label: "3.0 OZ", value: "3.0" },
-										{ label: "4.0 OZ", value: "4.0" },
-										{ label: "5.0 OZ", value: "5.0" },
-									]}
-								/>
+								{
+									ozList ?
+										<RNPickerSelect
+											onValueChange={(value) => {
+												this.setState({ selectedAmount: value });
+											}}
+											value={selectedAmount}
+											style={{
+												inputIOS: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												},
+												inputAndroid: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												}
+											}}
+											useNativeAndroidPickerStyle={false}
+											Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+											placeholder={{
+												label: "Select Amount",
+												color: "#999999"
+											}}
+											items={ozList}
+										/>
+									:null
+								}
+								
 							</View>
 						</View>
 						<View style={styles.amountPicker}>
 							<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 							<View style={styles.picker}>
-								<RNPickerSelect
-									onValueChange={(value) => {
-										this.setState({ selectedAmountSec: value });
-									}}
-									value={selectedAmountSec}
-									style={{
-										inputIOS: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 10
-										},
-										inputAndroid: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 10
-										}
-									}}
-									useNativeAndroidPickerStyle={false}
-									Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
-									placeholder={{
-										label: "Select Amount",
-										color: "#999999"
-									}}
-									items={[
-										{ label: "1.0 OZ", value: "1.0" },
-										{ label: "2.0 OZ", value: "2.0" },
-										{ label: "3.0 OZ", value: "3.0" },
-										{ label: "4.0 OZ", value: "4.0" },
-										{ label: "5.0 OZ", value: "5.0" },
-									]}
-								/>
+								{
+									ozList ?
+										<RNPickerSelect
+											onValueChange={(value) => {
+												this.setState({ selectedAmountSec: value });
+											}}
+											value={selectedAmountSec}
+											style={{
+												inputIOS: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 10
+												},
+												inputAndroid: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 10
+												}
+											}}
+											useNativeAndroidPickerStyle={false}
+											Icon={() => <FontAwesomeIcon style={styles.RNPickerIcon} name="caret-down" />}
+											placeholder={{
+												label: "Select Amount",
+												color: "#999999"
+											}}
+											items={ozList}
+										/>
+									:null
+								}								
 							</View>
 						</View>
 					</View>
@@ -619,7 +664,7 @@ class AddPumpEntry extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

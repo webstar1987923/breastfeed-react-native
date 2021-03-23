@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard, LayoutAnimation } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -27,7 +28,8 @@ class AddDiaper extends React.Component {
 			// selectedStartTime: "",
 			// TimeValue: "",
 			time: "9:00 AM",
-			selectedFeed: "Both"
+			selectedFeed: "Both",
+			isKeyboardShow: false
 		};
 	}
 
@@ -64,14 +66,30 @@ class AddDiaper extends React.Component {
 			});
 		}
 	}
+	
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
+	}
 
 	onCancel() {
 		this.TimePicker.close();
 	}
 
 	onConfirm(hour, minute) {
-		let AMPM = hour < 12 ? "AM" : "PM";
-		this.setState({ time: `${hour}:${minute} ${AMPM}` });
+		// let AMPM = hour < 12 ? "AM" : "PM";
+		this.setState({ time: `${hour}:${minute}` });
 		this.TimePicker.close();
 	}
 
@@ -108,11 +126,16 @@ class AddDiaper extends React.Component {
 	}
 
 	render() {
-		const { NotesValue, time, selectedFeed } = this.state;
+		const { NotesValue, time, selectedFeed, isKeyboardShow } = this.state;
+
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
+
+
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Diaper</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
@@ -123,14 +146,15 @@ class AddDiaper extends React.Component {
 								<Text style={styles.pickerInput}>
 									{this.getTimeAMPM(time)}
 								</Text>
-							</TouchableOpacity>
+							
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+							</TouchableOpacity>
 							<TimePicker
 								ref={(ref) => {
 									this.TimePicker = ref;
 								}}
-								selectedHour="9"
-								selectedMinute="00"
+								selectedHour={selectedTime[0] || "00"}
+								selectedMinute={selectedTime[1] || "00"}
 								onCancel={() => this.onCancel()}
 								onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 							/>
@@ -189,7 +213,7 @@ class AddDiaper extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

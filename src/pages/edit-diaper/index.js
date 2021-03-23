@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard, LayoutAnimation } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RNPickerSelect from "react-native-picker-select";
 // import { Switch } from 'native-base';
 // import MaterialIcon from "react-native-vector-icons/MaterialIcons";
@@ -15,6 +16,7 @@ import * as diaperActions from "src/redux/actions/diaperActions";
 import { Images } from "src/assets/images";
 import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
+import moment from "moment";
 import styles from "./styles";
 
 class EditDiaper extends React.Component {
@@ -26,7 +28,8 @@ class EditDiaper extends React.Component {
 			// selectedStartTime: "",
 			// TimeValue: "",
 			time: card.diaperEdit.start_time,
-			selectedFeed: card.diaperEdit.type_of_diaper
+			selectedFeed: card.diaperEdit.type_of_diaper,
+			isKeyboardShow: false
 		};
 	}
 
@@ -52,11 +55,6 @@ class EditDiaper extends React.Component {
 		};
 	};
 
-	componentDidMount() {
-		const { card } = this.props;
-		console.warn("card", card.diaperEdit);
-	}
-
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
 		if(msg === "EDIT_DIAPER_SUCCESS") {
@@ -67,6 +65,22 @@ class EditDiaper extends React.Component {
 				});
 			});
 		}
+	}
+
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
 	}
 
 	onCancel() {
@@ -99,13 +113,20 @@ class EditDiaper extends React.Component {
 		}
 	}
 
+	getTimeAMPM(data) {
+		return moment(data, ["HH:mm"]).format("hh:mm A");
+	}
+
 	render() {
-		const { NotesValue, time, selectedFeed } = this.state;
-		const { card } = this.props;
+		const { NotesValue, time, selectedFeed, isKeyboardShow } = this.state;
+		
+		const selectedTime = time.split(":");
+		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
+
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Edit a Diaper</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
@@ -114,16 +135,17 @@ class EditDiaper extends React.Component {
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>
-									{time}
+									{this.getTimeAMPM(time)}
 								</Text>
-							</TouchableOpacity>
+							
 							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+							</TouchableOpacity>
 							<TimePicker
 								ref={(ref) => {
 									this.TimePicker = ref;
 								}}
-								selectedHour="9"
-								selectedMinute="00"
+								selectedHour={selectedTime[0] || "00"}
+								selectedMinute={selectedTime[1] || "00"}
 								onCancel={() => this.onCancel()}
 								onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
 							/>
@@ -182,7 +204,7 @@ class EditDiaper extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

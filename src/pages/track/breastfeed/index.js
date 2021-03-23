@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
-import { View, Text, Image, ScrollView, TouchableOpacity, Modal, TouchableHighlight } from "react-native";
-import { List, ListItem, Left, Right, Button } from "native-base";
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal, TouchableHighlight, Switch } from "react-native";
 import * as authActions from "src/redux/actions/authActions";
 import ButtonComponent from "src/components/ButtonComponent";
 import * as breastfeedActions from "src/redux/actions/breastfeedActions";
@@ -10,54 +9,10 @@ import { isEmptyObject } from "src/utils/native";
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from "react-native-popup-menu";
 import { getActiveBaby } from "src/redux/selectors";
 import moment from "moment";
+import { withNavigationFocus } from "react-navigation";
 import styles from "../styles";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-
-
-
-
-const SetAlarmComponent = ({isOpen, onClose, onValueSelect}) => {
-
-	const [isDateTimeOpen, setDateTimeModal] = useState(false);
-
-	return (
-		<Modal
-			animationType="slide"
-			transparent={true}
-			visible={isOpen}
-			onRequestClose={() => {
-				onClose()
-			}}
-		>
-			<View style={styles.setModalCentered}>
-				<View style={styles.setModalView}>
-					<View style={styles.setModalHeader}>
-						<Text style={styles.cancelText} onPress={() => onClose()}>Cancel</Text>
-						<Text style={styles.setModalTitle}>Breastfeed alarm</Text>
-						<Text style={styles.saveText} onPress={() => onClose()}>Save</Text>
-					</View>
-					<View style={styles.setModalBody}>
-						<Text style={styles.startsText} onPress={() => setDateTimeModal(true)}>Starts</Text>
-						<Text style={styles.startsText}>{onValueSelect}</Text>
-					</View>
-					<DateTimePickerModal
-						isVisible={isDateTimeOpen}
-						mode="datetime"
-						onConfirm={(value) => {
-							console.log("value", value);
-							setDateTimeModal(false);
-						}}
-						onCancel={() => {
-							setDateTimeModal(false);
-						}}
-					/>
-				</View>
-				
-			</View>
-		</Modal>
-	)
-}
-
+import SetAlarmComponent from "../components/SetAlarmComponent";
+import { fetchPrevAlarmValue } from "../../../redux/actions/trackAction";
 
 class BreastfeedCards extends React.Component {
 	constructor(props) {
@@ -73,12 +28,43 @@ class BreastfeedCards extends React.Component {
 	componentDidMount() {
 		const { currentDate, activeBaby } = this.props;
 		this.breastFeed(currentDate, activeBaby);
+		this.fetchAlarmValue(activeBaby);
 	}
 
 	componentDidUpdate(prevProps) {
 		const { currentDate, activeBaby } = this.props;
+		// eslint-disable-next-line no-mixed-operators
 		if(currentDate !== prevProps.currentDate || prevProps.activeBaby && activeBaby && prevProps.activeBaby.id !== activeBaby.id) {
 			this.breastFeed(currentDate, activeBaby);
+		}
+
+		// eslint-disable-next-line react/destructuring-assignment
+		if(prevProps.tabReducer.activeTab !== this.props.tabReducer.activeTab && activeBaby && activeBaby.id) {
+			// eslint-disable-next-line react/destructuring-assignment
+			if(this.props.tabReducer.activeTab === "Track") {
+				this.fetchAlarmValue(activeBaby);
+			}
+		}
+		// if(prevProps.tabReducer.activeT)
+
+		// eslint-disable-next-line react/destructuring-assignment
+		if(prevProps.tabReducer.trackActiveTab !== this.props.tabReducer.trackActiveTab && activeBaby && activeBaby.id) {
+			// eslint-disable-next-line react/destructuring-assignment
+			if(this.props.tabReducer.trackActiveTab === "Breastfeed") {
+				/// FETCH ALARA HERE
+				this.fetchAlarmValue(activeBaby);
+			}
+		}
+	}
+
+	fetchAlarmValue(activeBaby) {
+		const { dispatchGetAlarm } = this.props;
+		if(activeBaby) {
+			const data = {
+				baby_id: activeBaby.id,
+				type: "breastfeed"
+			};
+			dispatchGetAlarm(data);
 		}
 	}
 
@@ -95,11 +81,11 @@ class BreastfeedCards extends React.Component {
 
 	redirectToAddEntry() {
 		const { navigation } = this.props;
-		navigation.navigate("AddBreastfeedEntry",  {date: this.props.currentDate});
+		// eslint-disable-next-line react/destructuring-assignment
+		navigation.navigate("AddBreastfeedEntry", {date: this.props.currentDate });
 	}
 
 	HandleViewNotes(data) {
-		const { ViewNoteModal } = this.state;
 		this.setState({ opened: false, ViewNoteModal: data.id });
 	}
 
@@ -122,7 +108,8 @@ class BreastfeedCards extends React.Component {
 		this.setState({
 			opened: false,
 		});
-		navigation.navigate("EditBreastfeed", {date: this.props.currentDate});
+		// eslint-disable-next-line react/destructuring-assignment
+		navigation.navigate("EditBreastfeed", {date: this.props.currentDate });
 	}
 
 	setModalVisible = (visible) => {
@@ -133,10 +120,12 @@ class BreastfeedCards extends React.Component {
 		this.setState({ ViewNoteModal: visible });
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertTime(data) {
 		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	convertDataIntoHM(data) {
 		// console.log("dasda", data);
 		let tmp = data.split(":");
@@ -150,6 +139,7 @@ class BreastfeedCards extends React.Component {
 		return `${tmp[1]}s`;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	hasTime(data) {
 		// console.log(data);
 		let _l = data.split(":");
@@ -159,23 +149,38 @@ class BreastfeedCards extends React.Component {
 		return false;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
+	getTime(time) {
+		return moment(time.user_datetime).format("hh:mm A");
+	}
+
 	render() {
-		const { breastfeed } = this.props;
+		const { breastfeed, isFocused, track } = this.props;
 		const { modalVisible, ViewNoteModal, isAlarmModal } = this.state;
-		// console.log(this.props);
+		const alarm = track.breastfeed || [];
+
 		return (
 			<View style={styles.trackContainer}>
-				<SetAlarmComponent 
-					isOpen={isAlarmModal}
-					onClose={() => {
-						this.setState({
-							isAlarmModal: false
-						})
-					}}
-					onValueSelect={() => {
-						console.log("called")
-					}}
-				/>
+				{
+					isAlarmModal && (
+						<SetAlarmComponent
+							isOpen={isAlarmModal}
+							prevAlarm={(alarm.length > 0) ? alarm[0] : null}
+							onClose={() => {
+								this.setState({
+									isAlarmModal: false
+								});
+							}}
+							isFocused={isFocused}
+							type="breastfeed"
+							onValueSelect={() => {
+								console.log("called");
+							}}
+							title="Breastfeed Alarm"
+							notificationTitle="Breastfeeding Alarm"
+						/>
+					)
+				}
 				<View style={styles.trackTop}>
 					<View style={styles.sessionsBox}>
 						<View style={styles.sessionsIcon}>
@@ -188,15 +193,13 @@ class BreastfeedCards extends React.Component {
 						</Text>
 					</View>
 					<TouchableOpacity onPress={() => this.setState({isAlarmModal: true})}>
-					<View style={styles.setAlarm}>
-						
+						<View style={styles.setAlarm}>
 							<Image
 								source={Images.BreastfeedCards.alarmIcon}
 								style={styles.setAlarmIcon}
 							/>
-							<Text style={styles.setAlarmTitle}>set</Text>
-						
-					</View>
+							<Text style={styles.setAlarmTitle}>{ alarm.length > 0 ? this.getTime(alarm[0]) : "set"}</Text>
+						</View>
 					</TouchableOpacity>
 				</View>
 				<ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 70 }}>
@@ -336,14 +339,17 @@ class BreastfeedCards extends React.Component {
 
 const mapStateToProps = (state) => ({
 	breastfeed: state.breastfeedReducer,
-	activeBaby: getActiveBaby(state)
+	activeBaby: getActiveBaby(state),
+	tabReducer: state.tabReducer,
+	track: state.trackReducer
 });
 
 const mapDispatchToProps = {
 	dispatchBreastfeedListing: (data) => breastfeedActions.handleBreastfeedListing(data),
 	dispatchBreastfeedDelete: (data) => breastfeedActions.handleBreastfeedDelete(data),
 	dispatchEditBreastfeed: (data) => breastfeedActions.EditGetDataBreastfeed(data),
-	dispatchResetAuthState: () => authActions.resetAuthState()
+	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data)
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(BreastfeedCards);
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(BreastfeedCards));

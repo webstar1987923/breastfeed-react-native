@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from "react-native";
 import { Images } from "src/assets/images";
-import * as authActions from "src/redux/actions/authActions";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 // import LanguageSwitcher from "src/components/LanguageSwitcher";
 import ButtonComponent from "src/components/ButtonComponent";
@@ -10,15 +9,18 @@ import ButtonComponent from "src/components/ButtonComponent";
 import * as userAction from "src/redux/actions/userAction";
 import { isEmptyObject } from "src/utils/native";
 import { RadioGroup, RadioButton } from "../../components/radio";
+import { setActiveTab } from "../../redux/actions/tabAction";
+import { handleLogout } from "../../redux/actions/authActions";
 import styles from "./styles";
 
 class SettingsScreen extends React.Component {
 	constructor(props) {
 		super(props);
+		const { notification } = props.userDetails;
 		this.state = {
-			bottlesisEnabled: true,
-			breastfeedisEnabled: true,
-			pumpisEnabled: true
+			bottlesisEnabled: notification.bottle,
+			breastfeedisEnabled: notification.breastfeed,
+			pumpisEnabled: notification.pump
 		};
 	}
 
@@ -33,7 +35,12 @@ class SettingsScreen extends React.Component {
 				height: 50,
 			},
 			headerLeft: (
-				<TouchableOpacity onPress={() => { navigation.pop(); }} style={styles.backButton}>
+				<TouchableOpacity
+					onPress={() => {
+						navigation.pop();
+				 }}
+					style={styles.backButton}
+				>
 					<Image
 						source={Images.Track.prevIcon}
 						style={styles.backIcon}
@@ -44,10 +51,31 @@ class SettingsScreen extends React.Component {
 		};
 	};
 
+	componentWillUnmount() {
+		this.props.dispatchSetActiveTab("Dashboard");
+	}
+
+	componentDidMount() {
+		const { getUserNotification } = this.props;
+		getUserNotification();
+	}
+
 	componentDidUpdate(prevProps) {
 		const { userDetails, dispatchUserProfileGet } = this.props;
 		if(prevProps.userDetails.babyDelete === false && userDetails.babyDelete === true) {
 			dispatchUserProfileGet();
+		}
+
+		// eslint-disable-next-line prefer-destructuring
+		let notification = prevProps.userDetails.notification;
+		let newNotification = userDetails.notification;
+
+		if(JSON.stringify(notification) !== JSON.stringify(newNotification)) {
+			this.setState({
+				bottlesisEnabled: newNotification.bottle,
+				breastfeedisEnabled: newNotification.breastfeed,
+				pumpisEnabled: newNotification.pump
+			});
 		}
 	}
 
@@ -61,12 +89,22 @@ class SettingsScreen extends React.Component {
 		this.setState({
 			breastfeedisEnabled: !breastfeedisEnabled
 		});
+
+		this.updateNotification({
+			notification_type: "breastfeed",
+			notification: !breastfeedisEnabled ? "on" : "off"
+		});
 	}
 
 	pumptoggleSwitch() {
 		const { pumpisEnabled } = this.state;
 		this.setState({
 			pumpisEnabled: !pumpisEnabled
+		});
+
+		this.updateNotification({
+			notification_type: "pump",
+			notification: !pumpisEnabled ? "on" : "off"
 		});
 	}
 
@@ -75,6 +113,17 @@ class SettingsScreen extends React.Component {
 		this.setState({
 			bottlesisEnabled: !bottlesisEnabled
 		});
+		this.updateNotification({
+			notification_type: "bottle",
+			notification: !bottlesisEnabled ? "on" : "off"
+		});
+	}
+
+	// eslint-disable-next-line class-methods-use-this
+	updateNotification(data) {
+		console.log("DATA", data);
+		const { updateUserNotification } = this.props;
+		updateUserNotification(data);
 	}
 
 	unitsradioSelect() {
@@ -112,6 +161,7 @@ class SettingsScreen extends React.Component {
 		const { auth, userDetails } = this.props;
 		const { user } = auth;
 		const { babyDetails } = userDetails;
+
 		return (
 			<View style={styles.container}>
 				<ScrollView style={styles.scrollView}>
@@ -286,10 +336,13 @@ const mapStateToProps = (state) => ({
 	userDetails: state.userReducer
 });
 const mapDispatchToProps = {
-	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchResetAuthState: () => handleLogout(),
 	dispatchEditBaby: (data) => userAction.EditGetDataBaby(data),
 	dispatchDeleteBaby: (data) => userAction.deleteBadyProfile(data),
 	dispatchUserProfileGet: () => userAction.getBadyProfile(),
+	updateUserNotification: (data) => userAction.updateUserNotification(data),
+	getUserNotification: () => userAction.getUserNotification(),
+	dispatchSetActiveTab: (data) => setActiveTab(data)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);

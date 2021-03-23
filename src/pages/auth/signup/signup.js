@@ -11,6 +11,7 @@ import OtpInputs from "src/components/OtpInputs";
 import { translate } from "src/locales/i18n";
 import SignupForm from "./form";
 import styles from "./styles";
+import { getFirebaseToken, getDeviceId, getOS } from "../../../services/device";
 
 class SignupScreen extends React.Component {
 	static navigationOptions = {
@@ -64,12 +65,27 @@ class SignupScreen extends React.Component {
 		this.signupRef.resetForm();
 	}
 
-	submitForm(values) {
-		const { dispatchSignUp } = this.props;
-		if(!isEmptyObject(values)) {
-			this.setState({ email: values.email });
-			dispatchSignUp(values);
+	async submitForm(values) {
+		try {
+			const device_token = await getFirebaseToken();
+			const device_id = await getDeviceId();
+			const os_type = getOS();
+		
+			const { dispatchSignUp } = this.props;
+			if(!isEmptyObject(values)) {
+				values = {
+					...values,
+					device_id,
+					device_token,
+					os_type
+				}
+				this.setState({ email: values.email });
+				dispatchSignUp(values);
+			}
+		} catch (e) {
+			console.log(e);
 		}
+		
 	}
 
 	changePinHandler(otp) {

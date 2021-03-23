@@ -2,6 +2,7 @@ import Services from "src/services/services";
 import * as commonActions from "./commonActions";
 import { showAPIErrorAlert, showAlert } from "../../utils/native";
 import { getStartedSuccess } from "./authActions";
+import { getFirebaseToken, getDeviceId, getOS } from "../../services/device";
 
 export const BABY_LISTING_START = "BABY_LISTING_START";
 export const BABY_LISTING_SUCCESS = "BABY_LISTING_SUCCESS";
@@ -22,6 +23,8 @@ export const USER_PROFILE_CREATE_FAILED = "USER_PROFILE_CREATE_FAILED";
 export const BABY_PROFILE_LISTING_START = "BABY_PROFILE_LISTING_START";
 
 export const EDIT_GET_DATA_BABY = "EDIT_GET_DATA_BABY";
+
+export const UPDATE_USER_NOTIFICATION = "UPDATE_USER_NOTIFICATION";
 
 export const badyListingStart = () => ({
 	type: BABY_LISTING_START
@@ -159,3 +162,60 @@ export function changePassword(data) {
 		});
 	};
 }
+
+export function updateUserNotification(data) {
+	return (dispatch) => {
+		dispatch(commonActions.loadingStart());
+		// console.log("Dat afor updat notification", data);
+		Services.updateNotification(data).then(function() {
+			showAlert("Success", "Notification change updated sucessfully.", "", () => {});
+			dispatch(commonActions.loadingEnd());
+			// eslint-disable-next-line no-use-before-define
+			// dispatch(getUserNotification());
+		}).catch(function(error) {
+			console.log(error);
+			dispatch(commonActions.loadingFailed());
+			showAPIErrorAlert(error);
+		});
+	};
+}
+
+export function getUserNotification() {
+	return (dispatch) => {
+		dispatch(commonActions.loadingStart());
+		Services.getNotification().then(function(response) {
+			// console.log(response.data, "#####");
+			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: UPDATE_USER_NOTIFICATION,
+				data: response.data.result
+			});
+		}).catch(function(error) {
+			console.log(error);
+			dispatch(commonActions.loadingFailed());
+			showAPIErrorAlert(error);
+		});
+	};
+}
+
+export async function updateDeviceToken() {
+	try {
+		const device_token = await getFirebaseToken();
+		const device_id = await getDeviceId();
+		const os_type = getOS();
+
+		let obj = {
+			device_id,
+			device_token,
+			os_type
+		};
+		Services.updateDeviceToken(obj).then(function() {
+			console.log("call api for update otkne");
+		}).catch(function(error) {
+			console.log("ERROR TOKEN UPDATE", error);
+		});
+	} catch(e) {
+		console.log(e)
+	}
+}
+

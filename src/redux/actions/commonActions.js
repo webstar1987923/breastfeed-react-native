@@ -40,3 +40,15 @@ export function loadingError(error) {
 		showAlert("Error", errorMessage, "", () => {});
 	};
 }
+
+export function start() {
+	return (dispatch) => {
+		dispatch(loadingStart());
+	};
+}
+
+export function end() {
+	return (dispatch) => {
+		dispatch(loadingEnd());
+	};
+}

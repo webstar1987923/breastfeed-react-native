@@ -36,8 +36,8 @@ export default class AuthService {
 		return requestInstance.post("auth/facebook-authenticate", data);
 	};
 
-	static handleLogout = () => {
+	static handleLogout = (data) => {
 		const requestInstance = apiRequest.getAuthenticatedInstance();
-		return requestInstance.get("user/logout");
+		return requestInstance.post("api/logout", data);
 	};
 }

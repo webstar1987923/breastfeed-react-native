@@ -1,9 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { StackActions, NavigationActions } from "react-navigation";
-import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard } from "react-native";
+import { View, Text, ScrollView, Switch, TouchableOpacity, Image, Picker, Keyboard, LayoutAnimation } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 // import { Switch } from 'native-base';
-// import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import TextInput from "src/components/TextInput";
 import ButtonComponent from "src/components/ButtonComponent";
@@ -13,10 +14,9 @@ import LanguageSwitcher from "src/components/LanguageSwitcher";
 import * as growthActions from "src/redux/actions/growthActions";
 import { Images } from "src/assets/images";
 import { isEmptyObject, showAlert } from "src/utils/native";
-import TimePicker from "react-native-24h-timepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { getActiveBaby } from "src/redux/selectors";
-import Moment from "moment";
+import moment from "moment";
 import styles from "./styles";
 
 class AddGrowth extends React.Component {
@@ -26,11 +26,19 @@ class AddGrowth extends React.Component {
 			NotesValue: "",
 			// selectedStartTime: "",
 			// TimeValue: "",
-			time: "Dec 30, 2020",
+			time: moment().format("MMM DD, YYYY"),
 			selectedAmount: "31.4",
-			selectedFeed: "28",
+			selectedHeight: "28",
 			isDatePickerVisible: false,
-			value: "Dec 30, 2020"
+			value: moment().format("MMM DD, YYYY"),
+			isKeyboardShow: false,
+			heightList: null,
+			weightList: null,
+			// heightList: null,
+			weightLBList: null,
+			weightOZList: null,
+			selectedLBWeight: 0,
+			selectedOZWeight: 0,
 		};
 	}
 
@@ -55,6 +63,42 @@ class AddGrowth extends React.Component {
 			)
 		};
 	};
+
+	componentDidMount() {
+		this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+			this.setState({ isKeyboardShow: true });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+		this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+			this.setState({ isKeyboardShow: false });
+			LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		});
+
+		let height = [];
+		for(let i = 0; i < 100; i++) {
+			height.push({ label: `${i / 2} Inches`, value: i / 2 });
+		}
+
+		let weightLB = [];
+		for(let i = 0; i < 50; i++) {
+			weightLB.push({ label: `${i} lb`, value: i });
+		}
+
+		let weightOZ = [];
+		for(let i = 0; i < 50; i++) {
+			weightOZ.push({ label: `${i} oz`, value: i });
+		}
+		this.setState({
+			weightOZList: weightOZ,
+			weightLBList: weightLB,
+			heightList: height
+		});
+	}
+
+	componentWillUnmount() {
+		this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener.remove();
+	}
 
 	componentDidUpdate() {
 		const { card: { msg }, dispatchClearCard, navigation } = this.props;
@@ -84,13 +128,14 @@ class AddGrowth extends React.Component {
 	}
 
 	saveHandler() {
-		const { time, NotesValue, selectedAmount, selectedFeed, value } = this.state;
+		const { time, NotesValue, selectedAmount, selectedHeight, value, selectedLBWeight, selectedOZWeight } = this.state;
 		const { dispatchGrowthCreate, activeBaby } = this.props;
 		const data = {
 			babyprofile_id: activeBaby.id,
-			date: value ? new Date(Moment(value).format("MMM DD, YYYY")) : new Date(),
-			height: selectedFeed,
-			weight: selectedAmount,
+			date: value ? new Date(moment(value).format("MMM DD, YYYY")) : new Date(),
+			height: selectedHeight,
+			weight_lb: selectedLBWeight,
+			weight_oz: selectedOZWeight,
 			note: NotesValue,
 		};
 
@@ -107,20 +152,21 @@ class AddGrowth extends React.Component {
 
 	hideDatePicker(date) {
 		this.setState({ isDatePickerVisible: false });
-		this.setState({ value: Moment(date).format("MMM DD, YYYY") });
+		this.setState({ value: moment(date).format("MMM DD, YYYY") });
 	}
 
 	handleConfirm(date) {
 		this.hideDatePicker();
-		this.setState({ value: Moment(date).format("MMM DD, YYYY") });
+		this.setState({ value: moment(date).format("MMM DD, YYYY") });
 	}
 
 	render() {
-		const { NotesValue, time, selectedAmount, selectedFeed, isDatePickerVisible, value } = this.state;
+		const { weightLBList, weightOZList, heightList, selectedOZWeight, selectedLBWeight, NotesValue, time, selectedAmount, selectedHeight, isDatePickerVisible, value, isKeyboardShow } = this.state;
+		console.log(this.state);
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Growth Entry</Text>
-				<ScrollView style={styles.ScrollView}>
+				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Date</Text>
 						<View style={styles.picker}>
@@ -129,10 +175,11 @@ class AddGrowth extends React.Component {
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>
-									{Moment(value).format("MMM DD, YYYY")}
+									{moment(value).format("MMM DD, YYYY")}
 								</Text>
+
+								<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 							</TouchableOpacity>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 							<DateTimePickerModal
 								date={value ? new Date(value) : new Date()}
 								isVisible={isDatePickerVisible}
@@ -142,40 +189,127 @@ class AddGrowth extends React.Component {
 							/>
 						</View>
 					</View>
-					<View style={styles.feedPicker}>
-						<Text style={[styles.feedLabel, { backgroundColor: "#fff", color: "#999" }]}>Height</Text>
+					<View style={styles.pickerInputContainer}>
+						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Height</Text>
 						<View style={styles.picker}>
-							<Picker
-								selectedValue={selectedFeed}
-								style={styles.pickerInput}
-								itemTextStyle={{ fontSize: 20 }}
-								onValueChange={(itemValue) => {
-									this.setState({ selectedFeed: itemValue });
-								}}
-							>
-								<Picker.Item label="28 in" value="28" />
-								<Picker.Item label="30 in" value="30" />
-								<Picker.Item label="38 in" value="38" />
-							</Picker>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+							{
+								heightList
+									? (
+										<RNPickerSelect
+											onValueChange={(value) => {
+												this.setState({ selectedHeight: value });
+											}}
+											value={selectedHeight}
+											style={{
+												inputIOS: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												},
+												inputAndroid: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												}
+											}}
+											useNativeAndroidPickerStyle={false}
+											Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+											placeholder={{
+												label: "Select Height",
+												color: "#999999"
+											}}
+											items={heightList}
+										/>
+									)
+									: null
+							}
 						</View>
 					</View>
-					<View style={styles.amountPicker}>
-						<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Weight</Text>
-						<View style={styles.picker}>
-							<Picker
-								selectedValue={selectedAmount}
-								style={styles.pickerInput}
-								onValueChange={(itemValue) => {
-									this.setState({ selectedAmount: itemValue });
-								}}
-							>
-								<Picker.Item label="31.4 lbs" value="31.4" />
-								<Picker.Item label="31.5 lbs" value="31.5" />
-								<Picker.Item label="32.4 lbs" value="32.4" />
-								<Picker.Item label="33.4 lbs" value="33.4" />
-							</Picker>
-							<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
+					<View style={styles.pickerInputContainer}>
+						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Weight</Text>
+						<View style={styles.weightPicker}>
+							<View style={styles.weightLBPicker}>
+								{
+									weightLBList
+										? (
+											<RNPickerSelect
+												onValueChange={(value) => {
+													this.setState({ selectedLBWeight: value });
+												}}
+												value={selectedLBWeight}
+												style={{
+													inputIOS: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													},
+													inputAndroid: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													}
+												}}
+												useNativeAndroidPickerStyle={false}
+												Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+												placeholder={{
+													label: "",
+												}}
+												items={weightLBList}
+											/>
+										)
+										: null
+								}
+							</View>
+							<View style={styles.weightOZPicker}>
+								{
+									weightOZList
+										? (
+											<RNPickerSelect
+												onValueChange={(value) => {
+													this.setState({ selectedOZWeight: value });
+												}}
+												value={selectedOZWeight}
+												style={{
+													inputIOS: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													},
+													inputAndroid: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													}
+												}}
+												useNativeAndroidPickerStyle={false}
+												Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+												placeholder={{
+													label: "",
+												}}
+												items={weightOZList}
+											/>
+										)
+										: null
+								}
+							</View>
 						</View>
 					</View>
 					<View style={styles.notsInput}>
@@ -191,7 +325,7 @@ class AddGrowth extends React.Component {
 							placeholder="Notes"
 						/>
 					</View>
-				</ScrollView>
+				</KeyboardAwareScrollView>
 				<View style={styles.addbreastfeeddmButtons}>
 					<View style={styles.addbreastfeedbuttons}>
 						<ButtonComponent

@@ -142,4 +142,34 @@ export default class Services {
 		const requestInstance = apiRequest.getAuthenticatedInstance();
 		return requestInstance.post("api/statistics/allevent", data);
 	}
+
+	static setAlarm = (data) => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.post("api/track/alarm/create", data);
+	}
+
+	static getAlarm = (data) => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.post("api/track/alarm/list/type", data);
+	}
+
+	static updateAlarm = (data) => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.post("api/track/alarm/update", data);
+	}
+
+	static updateNotification = (data) => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.post("api/notification/update", data);
+	}
+
+	static getNotification = () => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.get("api/notification-setting/get");
+	}
+
+	static updateDeviceToken = (data) => {
+		const requestInstance = apiRequest.getAuthenticatedInstance();
+		return requestInstance.post("api/user/token/update", data);
+	}
 }

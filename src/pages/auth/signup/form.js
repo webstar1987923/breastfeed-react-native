@@ -7,6 +7,7 @@ import ButtonComponent from "src/components/ButtonComponent";
 import { isEmpty } from "src/utils/native";
 import { translate } from "src/locales/i18n";
 import styles from "./styles";
+import { checkPasswordStrength } from "../../../utils/passwordCheck";
 
 class SignupForm extends React.Component {
 	constructor(props) {
@@ -46,11 +47,16 @@ class SignupForm extends React.Component {
 		}
 
 		/* PASSWORD VALIDATION */
-		if(password.length < 4) {
+		if(password.length < 6) {
 			this.setState({ passwordErrorMessage: translate("formErrorMessage.passwordErrorMessage"), isPasswordInvalid: true });
 			return false;
 		}
 
+		let passwordFlag = checkPasswordStrength(password);
+		if(passwordFlag) {
+			this.setState({ passwordErrorMessage: passwordFlag, isPasswordInvalid: true });
+			return false;
+		}
 		/* CONFIRM PASSWORD VALIDATION */
 		if(password !== confirm_password) {
 			this.setState({ confirm_passwordErrorMessage: translate("formErrorMessage.cPasswordErrorMessage"), isconfirm_passwordInvalid: true });

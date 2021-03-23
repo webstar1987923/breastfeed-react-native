@@ -24,13 +24,17 @@ class EditProfileScreen extends React.Component {
 		this.state = {
 			selectedBirthday: "",
 			selectedHeight: "",
-			selectedWeight: "",
+			selectedLBWeight: 0,
+			selectedOZWeight: 0,
 			nameValue: "",
 			babyprofile_id: "",
 			imageUrl: null,
 			isDatePickerVisible: false,
 			value: new Date(),
-			avatarSource: ""
+			avatarSource: "",
+			heightList: null,
+			weightLBList: null,
+			weightOZList: null
 		};
 	}
 
@@ -58,16 +62,36 @@ class EditProfileScreen extends React.Component {
 
 	componentDidMount() {
 		const { navigation } = this.props;
+		console.warn("navigation.state.params.data", navigation.state.params.data);
+		console.warn("navigation.state.params", navigation.state.params);
 		if(navigation.state.params && navigation.state.params.data) {
 			this.setState({
-				babyprofile_id: this.props.navigation.state.params.data.id,
-				selectedHeight: this.props.navigation.state.params.data.height,
-				selectedWeight: this.props.navigation.state.params.data.weight,
-				nameValue: this.props.navigation.state.params.data.name,
-				value: this.props.navigation.state.params.data.birthday,
-				imageUrl: this.props.navigation.state.params.data.baby_profileupload
+				babyprofile_id: navigation.state.params.data.id,
+				selectedHeight: navigation.state.params.data.height,
+				selectedLBWeight: navigation.state.params.data.weight_lb,
+				selectedOZWeight: navigation.state.params.data.weight_oz,
+				nameValue: navigation.state.params.data.name,
+				value: navigation.state.params.data.birthday,
+				imageUrl: navigation.state.params.data.baby_profileupload
 			});
 		}
+		let height = [];
+		for (let i = 0; i < 100; i++) {
+			height.push({label: `${i/2} Inches`, value: i/2})
+		}
+		this.setState({ heightList: height });
+
+		let weightLB = [];
+		for (let i = 0; i < 50; i++) {
+			weightLB.push({label: `${i} lb`, value: i})
+		}
+		this.setState({ weightLBList: weightLB });
+
+		let weightOZ = [];
+		for (let i = 0; i < 50; i++) {
+			weightOZ.push({label: `${i} oz`, value: i})
+		}
+		this.setState({ weightOZList: weightOZ });
 	}
 
 	// componentDidUpdate(prevProps) {
@@ -98,7 +122,7 @@ class EditProfileScreen extends React.Component {
 	}
 
 	savebuttonClicked() {
-		const { avatarSource, nameValue, value, selectedHeight, selectedWeight, babyprofile_id } = this.state;
+		const { avatarSource, nameValue, value, selectedHeight, selectedLBWeight, selectedOZWeight, babyprofile_id } = this.state;
 		const { dispatchUpdateProfile, navigation } = this.props;
 		let data = new FormData();
 		if(avatarSource) {
@@ -115,7 +139,8 @@ class EditProfileScreen extends React.Component {
 		data.append("babyprofile_id", babyprofile_id);
 		data.append("birthday", value);
 		data.append("height", selectedHeight);
-		data.append("weight", selectedWeight);
+		data.append("weight_oz", selectedOZWeight);
+		data.append("weight_lb", selectedLBWeight);
 		dispatchUpdateProfile(data, navigation);
 		// navigation.navigate("Dashboard");
 	}
@@ -152,7 +177,8 @@ class EditProfileScreen extends React.Component {
 	}
 
 	render() {
-		const { selectedBirthday, imageUrl, avatarSource, selectedHeight, selectedWeight, nameValue, isDatePickerVisible, value } = this.state;
+		const { weightLBList, weightOZList, heightList, selectedLBWeight, selectedOZWeight, imageUrl, avatarSource, selectedHeight, nameValue, isDatePickerVisible, value } = this.state;
+		console.warn("selectedLBWeight", selectedLBWeight)
 		const { navigation } = this.props;
 		return (
 			<View style={styles.container}>
@@ -234,91 +260,118 @@ class EditProfileScreen extends React.Component {
 						<View style={styles.pickerInputContainer}>
 							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Height</Text>
 							<View style={styles.picker}>
-								<RNPickerSelect
-									onValueChange={(value) => {
-										this.setState({ selectedHeight: value });
-									}}
-									value={selectedHeight}
-									style={{
-										inputIOS: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										},
-										inputAndroid: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										}
-									}}
-									useNativeAndroidPickerStyle={false}
-									Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
-									placeholder={{
-										label: "Select Height",
-										color: "#999999"
-									}}
-									items={[
-										{ label: "10 inches", value: "10" },
-										{ label: "10.5 inches", value: "10.5" },
-										{ label: "11 inches", value: "11" },
-										{ label: "11.5 inches", value: "11.5" },
-										{ label: "12 inches", value: "12" },
-										{ label: "12.5 inches", value: "12.5" },
-										{ label: "13 inches", value: "13" },
-										{ label: "13.5 inches", value: "13.5" },
-									]}
-								/>
+								{
+									heightList ?
+										<RNPickerSelect
+											onValueChange={(value) => {
+												this.setState({ selectedHeight: value });
+											}}
+											value={selectedHeight}
+											style={{
+												inputIOS: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												},
+												inputAndroid: {
+													height: 60,
+													width: "100%",
+													color: "#000",
+													fontSize: 20,
+													lineHeight: 24,
+													paddingHorizontal: 12
+												}
+											}}
+											useNativeAndroidPickerStyle={false}
+											Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+											placeholder={{
+												label: "Select Height",
+												color: "#999999"
+											}}
+											items={heightList}
+										/>
+									:null
+								}								
 							</View>
 						</View>
 						<View style={styles.pickerInputContainer}>
 							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Weight</Text>
-							<View style={styles.picker}>
-								<RNPickerSelect
-									onValueChange={(value) => {
-										this.setState({ selectedWeight: value });
-									}}
-									value={selectedWeight}
-									style={{
-										inputIOS: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										},
-										inputAndroid: {
-											height: 60,
-											width: "100%",
-											color: "#000",
-											fontSize: 20,
-											lineHeight: 24,
-											paddingHorizontal: 12
-										}
-									}}
-									useNativeAndroidPickerStyle={false}
-									Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
-									placeholder={{
-										label: "Select Height",
-										color: "#999999"
-									}}
-									items={[
-										{ label: "0 lb 0 oz", value: "0" },
-										{ label: "1 lb 1 oz", value: "1" },
-										{ label: "2 lb 2 oz", value: "2" },
-										{ label: "3 lb 3 oz", value: "3" },
-										{ label: "4 lb 4 oz", value: "4" },
-										{ label: "5 lb 5 oz", value: "5" },
-										{ label: "6 lb 6 oz", value: "6" },
-										{ label: "7 lb 7 oz", value: "7" },
-									]}
-								/>
+							<View style={styles.weightPicker}>
+								<View style={styles.weightLBPicker}>
+									{
+										weightLBList ?
+											<RNPickerSelect
+												onValueChange={(value) => {
+													this.setState({ selectedLBWeight: value });
+												}}
+												value={selectedLBWeight}
+												style={{
+													inputIOS: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													},
+													inputAndroid: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													}
+												}}
+												useNativeAndroidPickerStyle={false}
+												Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+												placeholder={{
+													label: "",
+												}}
+												items={weightLBList}
+											/>
+										:null
+									}
+								</View>
+								<View style={styles.weightOZPicker}>
+									{
+										weightOZList ?
+											<RNPickerSelect
+												onValueChange={(value) => {
+													this.setState({ selectedOZWeight: value });
+												}}
+												value={selectedOZWeight}
+												style={{
+													inputIOS: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													},
+													inputAndroid: {
+														height: 60,
+														width: "100%",
+														color: "#000",
+														fontSize: 20,
+														lineHeight: 24,
+														paddingHorizontal: 12
+													}
+												}}
+												useNativeAndroidPickerStyle={false}
+												Icon={() => <MaterialIcon style={styles.RNPickerIcon}>keyboard_arrow_down</MaterialIcon>}
+												placeholder={{
+													label: "",
+												}}
+												items={weightOZList}
+											/>
+										:null
+									}
+								</View>
 							</View>
 						</View>
 					</View>

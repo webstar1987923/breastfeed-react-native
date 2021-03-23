@@ -25,7 +25,7 @@ const growthReducer = (state = initialState, action) => {
 		case GROWTH_LISTING_SUCCESS:
 			return { ...state, GrowthListingSuccessful: false, growthListing: action.data.result };
 		case GROWTH_LISTING_FAILURE:
-			return { ...state, GrowthListingSuccessful: false, growthListing: action.data };
+			return { ...state, GrowthListingSuccessful: false, growthListing: [] };
 		case CLEAR_MSG: {
 			return { ...state, msg: null };
 		}

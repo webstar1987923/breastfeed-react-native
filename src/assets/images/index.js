@@ -108,7 +108,12 @@ export const Images = {
 		tutorialsVideo: require("./video_image.png"),
 		tutorialsVideo1: require("./video1.jpg"),
 		tutorialsVideo2: require("./video2.jpg"),
-		tutorialsVideo3: require("./video3.jpg")
+		tutorialsVideo3: require("./video3.jpg"),
+		tutorialsVideo4: require("./video4.jpg"),
+		tutorialsVideo5: require("./video5.jpg"),
+		tutorialsVideo6: require("./video6.jpg"),
+		tutorialsVideo7: require("./video7.jpg"),
+		tutorialsVideo8: require("./video8.jpg"),
 	},
 	Breastpumps: {
 		leftarrowIcon: require("./leftarrow.png"),

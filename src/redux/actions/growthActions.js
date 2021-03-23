@@ -77,15 +77,24 @@ export function handleGrowthListing(data) {
 		dispatch(GrowthListingStart());
 		Services.handleGrowthListing(data).then(function(response) {
 			console.log("growth response", response.data);
+			if(response.data.result.error) {
+				// dispatch(GrowthListingSuccess(response.data));
+				dispatch(GrowthListingFailure(response));
+				dispatch(commonActions.loadingEnd());	
+			}
 			dispatch(GrowthListingSuccess(response.data));
 			dispatch(commonActions.loadingEnd());
 		}).catch(function(error) {
-			console.log("ERRERERERE", error);
-			console.log("error", error);
+			// console.log("ERRERERERE", error);
+			console.log("error", error.response);
 			dispatch(commonActions.loadingEnd());
 			// dispatch(GrowthListingFailure(error));
 			dispatch(GrowthListingFailure(error.response.data));
-			// showAPIErrorAlert(error);
+			// if(error && error.response) {
+			// 	showAPIErrorAlert(error.response);
+			// 	return
+			// }
+			showAPIErrorAlert(error);
 		});
 	};
 }

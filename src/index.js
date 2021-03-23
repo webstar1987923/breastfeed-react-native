@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
+import messaging from "@react-native-firebase/messaging";
+import { showAlert } from "src/utils/native";
 import HomeNavigator from "./homeNavigator";
 import AuthNavigator from "./authNavigator";
 import LoadingIndicator from "./components/LoadingIndicator";
@@ -11,6 +13,7 @@ import StatusBar from "./components/StatusBar";
 import { Keys, KeyValueStore } from "./utils/KeyValueStore";
 import GetStartedNavigator from "./getStartedNavigator";
 import * as commonActions from "./redux/actions/commonActions";
+import { isIOS } from "./utils/native";
 
 class App extends Component {
 	constructor(props) {
@@ -43,6 +46,15 @@ class App extends Component {
 		if(language !== null) {
 			i18n.changeLanguage(language);
 		}
+
+		if(isIOS()) {
+			messaging().requestPermission();
+		}
+
+		messaging().onMessage((data) => {
+			console.log(data,"NOTIFDS");
+			Alert.alert("Notification", data.notification.title);
+		});
 	}
 
 	getActiveRouteName(navigationState) {
@@ -89,7 +101,6 @@ class App extends Component {
 						</SafeAreaInsetsContext.Consumer>
 					) : <AuthNavigator screenProps={{ t, i18n }} />
 				}
-				{ (isLoading) && <LoadingIndicator isLoading={isLoading} /> }
 			</View>
 		);
 	}

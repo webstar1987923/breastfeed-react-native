@@ -27,7 +27,7 @@ export default StyleSheet.create({
 		position: "relative",
 		borderWidth: 1,
 		borderColor: "#E0E0E0"
-	},	
+	},
 	tutorialsVideoTime: {
 		position: "absolute",
 		bottom: 5,
@@ -41,7 +41,7 @@ export default StyleSheet.create({
 		paddingVertical: 1,
 		borderRadius: 2,
 		overflow: "hidden"
-	},	
+	},
 	tutorialsVideo: {
 		maxWidth: 150,
 		height: 100,
@@ -60,8 +60,8 @@ export default StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		marginTop: 22
-	  },
-	  modalView: {
+	},
+	modalView: {
 		margin: 20,
 		backgroundColor: "white",
 		borderRadius: 20,
@@ -69,31 +69,38 @@ export default StyleSheet.create({
 		alignItems: "center",
 		shadowColor: "#000",
 		shadowOffset: {
-		  width: 0,
-		  height: 2
+			width: 0,
+			height: 2
 		},
 		shadowOpacity: 0.25,
 		shadowRadius: 4,
 		elevation: 5
-	  },
-	  button: {
+	},
+	button: {
 		borderRadius: 20,
 		padding: 10,
 		elevation: 2
-	  },
-	  buttonOpen: {
+	},
+	buttonOpen: {
 		backgroundColor: "#F194FF",
-	  },
-	  buttonClose: {
+	},
+	buttonClose: {
 		backgroundColor: "#2196F3",
-	  },
-	  textStyle: {
+	},
+	textStyle: {
 		color: "white",
 		fontWeight: "bold",
 		textAlign: "center"
-	  },
-	  modalText: {
+	},
+	modalText: {
 		marginBottom: 15,
 		textAlign: "center"
-	  }
+	},
+	backgroundVideo: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		bottom: 0,
+		right: 0,
+	}
 });
