@@ -37,34 +37,11 @@ const chartData = [
 	["Mar", 2, 58],
 	["Mar", 3, ],
 	["Mar", 4, ],
-	["Apr", 1, ],
-	["Apr", 2, ],
-	["Apr", 3, ],
-	["Apr", 4, ],
-	["May", 1, ],
-	["May", 2, ],
-	["May", 3, ],
-	["May", 4, ],
-	["Jun", 1, ],
-	["Jun", 2, ],
-	["Jun", 3, ],
-	["Jun", 4, ],
-	["Jul", 1, ],
-	["Jul", 2, ],
-	["Jul", 3, ],
-	["Jul", 4, ],
-	["Aug", 1, ],
-	["Aug", 2, ],
-	["Aug", 3, ],
-	["Aug", 4, ],
-	["Sep", 1, ],
-	["Sep", 2, ],
-	["Sep", 3, ],
-	["Sep", 4, ],
-	["Oct", 1, ],
-	["Oct", 2, ],
-	["Oct", 3, ],
-	["Oct", 4, ]
+	// ["Apr", 1, ],
+	// ["Apr", 2, ],
+	// ["Apr", 3, ],
+	// ["Apr", 4, ],
+	
 ];
 class GrowthCards extends React.Component {
 	constructor(props) {
@@ -104,18 +81,28 @@ class GrowthCards extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
+		console.log("caelld>>>>>", prevProps.tabReducer, this.props.tabReducer)
 		const { currentDate, activeBaby } = this.props;
 		if(currentDate !== prevProps.currentDate || prevProps.activeBaby && activeBaby && prevProps.activeBaby.id !== activeBaby.id) {
 			this.growthFunction(currentDate, activeBaby);
 		}
+
+		// eslint-disable-next-line react/destructuring-assignment
+		if(prevProps.tabReducer.trackActiveTab !== this.props.tabReducer.trackActiveTab && activeBaby && activeBaby.id) {
+			// eslint-disable-next-line react/destructuring-assignment
+			if(this.props.tabReducer.trackActiveTab === "Growth") {
+				this.growthFunction(currentDate, activeBaby);
+			}			
+		}
 	}
 
 	growthFunction(currentDate, activeBaby) {
+		console.log("####");
 		const { dispatchGrowthListing } = this.props;
 		if(activeBaby) {
 			const data = {
 				babyprofile_id: activeBaby.id,
-				date: currentDate,
+				date: moment(currentDate).format("YYYY-MM-DD"),
 			};
 			dispatchGrowthListing(data);
 		}
@@ -157,165 +144,187 @@ class GrowthCards extends React.Component {
 	render() {
 		temp = [];
 		const { growth } = this.props;
-		const list = growth.growthListing || [];
-		const heightList = [];
-		const weightList = [];
+		let list = growth.growthListing || [];
+		console.log({growth})
+		list = list.sort(function compare(a, b) {
+			var dateA = new Date(a.date);
+			var dateB = new Date(b.date);
+			return dateA - dateB;
+		  });
+		  
+		// const heightList = [];
+		// const weightList = [];
+		// const graphItems = [];
+		// const graphItemMonths = [];
 
-		// eslint-disable-next-line no-restricted-syntax
-		for(let i in list) {
-			const index = heightList.findIndex((x) => x.x === list[i].date);
-			if(index === -1) {
-				heightList.push({
-					x: list[i].date,
-					y: Number(list[i].height)
-				});
+		const monthListings = [];
+		const itemsHeightWithMonths = [];
+		const itemsWeightWithMonths = [];
+		const itemsWeightLBSWithMonths = [];
+
+
+		const _itemHeight = [];
+		const _itemWeightWithLBS = [];
+		const _itemWeightWithOZ = [];
+
+		// Last 4 Months 
+		for(let i=4;i>=1; i--) {
+			let startMonth = moment().subtract(i, 'months').startOf("month");
+			let endMonth = moment().subtract(i, 'months').endOf("month");
+			console.log(">>>>>>>")
+			_itemHeight.push({
+				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+				values: []
+			})
+			_itemWeightWithLBS.push({
+				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+				values: []
+			})
+			_itemWeightWithOZ.push({
+				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+				values: []
+			})
+
+			const index = _itemHeight.findIndex((x) => x.month === moment().subtract(i, 'months').startOf("month").format("MMM"));
+			for(let j in list) {
+				
+				if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
+					
+					_itemHeight[index].values.push(Number(list[j].height));
+					_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+					_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
+
+					// OLD
+					itemsHeightWithMonths.push(Number(list[j].height));
+					itemsWeightWithMonths.push(Number(list[j].weight_oz));
+					itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
+				}
 			}
+			monthListings.push(moment().subtract(i, 'months').startOf("month").format("MMM"));
+		}
+		
 
-			const indexW = weightList.findIndex((x) => x.x === list[i].date);
-			if(indexW === -1) {
-				weightList.push({
-					x: list[i].date,
-					y: Number(list[i].weight_oz)
-				});
+		// CURRENT MONTH
+		monthListings.push(moment().format("MMM"));
+		let startMonth = moment().startOf("month");
+		let endMonth = moment().endOf("month");
+
+		_itemHeight.push({
+			month: moment().startOf("month").format("MMM"),
+			number: Number(moment().startOf("month").format("M")),
+			values: []
+		})
+		_itemWeightWithLBS.push({
+			month: moment().startOf("month").format("MMM"),
+			number: Number(moment().startOf("month").format("M")),
+			values: []
+		})
+		_itemWeightWithOZ.push({
+			month: moment().startOf("month").format("MMM"),
+			number: Number(moment().startOf("month").format("M")),
+			values: []
+		})
+		const index = _itemHeight.findIndex((x) => x.month === moment().startOf("month").format("MMM"));
+		for(let j in list) {
+			if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
+				
+
+				const startOfWeek = moment().startOf('month').week();
+				const endOfWeek = moment().endOf('month').week();
+				const currentWeek = moment().week();
+				console.log(">>>>>>>>>>>>>", list[j].date, moment(list[j].date).week(), currentWeek)
+				// for(let i = startOfWeek; i<=currentWeek; i++) {
+					
+					if(moment(list[j].date).week() == currentWeek) {
+						console.log({currentWeek});
+						_itemHeight[index].values.push(Number(list[j].height));
+						_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+						_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
+					} else if(moment(list[j].date).week() < currentWeek){
+						console.log("NOT MARCH")
+						console.log(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1])
+						// _itemHeight[index].values.push(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1]);
+					}
+				// }
+				console.log({startOfWeek, endOfWeek, currentWeek})
+				// for()
+
+				// const dateWeek = moment(list[j].date).startOf().week();
+				// const startOfWeek = moment().startOf().week()
+
+				// // if(dateWeek > startOfWeek && )
+
+				// console.log("WEK", moment(list[j].date).startOf().week())
+				// console.log("CURRENT ", moment().startOf('month').week());
+				// console.log("LAST  CURRENT ", moment().endOf('month').week());
+
+				// console.log(" Last WEK", moment(list[j].date).endOf().week())
+				// console.log("LAST  CURRENT ", moment().endOf().week());
+
+				/// OLD
+				itemsHeightWithMonths.push(Number(list[j].height));
+				itemsWeightWithMonths.push(Number(list[j].weight_oz));
+				itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
+				// /// NEW
+				// _itemHeight[index].values.push(Number(list[j].height));
+				// _itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+				// _itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
 			}
 		}
 
-		if(heightList.length === 0) {
-			heightList.push({
-				x: moment().format("YYYY-MM-DD"),
-				y: 0
-			});
-			weightList.push({
-				x: moment().format("YYYY-MM-DD"),
-				y: 0
-			});
+		const _itemsListForGraph = [];
+		const _itemsListForGraphWeightOZ = [];
+
+		/// height Graph
+		for(let i in _itemHeight) {
+			if(_itemHeight[i].values.length != 4) {
+				for(let j=0; j<4; j++) {
+					if(_itemHeight[i].values[j]) {
+						_itemsListForGraph.push(_itemHeight[i].values[j])
+					} else {
+						_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
+					}
+				}
+			} else {
+				for(let j=0; j<4; j++) {
+					if(_itemHeight[i].values[j]) {
+						_itemsListForGraph.push(_itemHeight[i].values[j])
+					} else {
+						_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
+					}
+				}
+			}
+		}
+		// Weight Graph
+		for(let i in _itemWeightWithOZ) {
+			if(_itemWeightWithOZ[i].values.length != 4) {
+				for(let j=0; j<4; j++) {
+					if(_itemWeightWithOZ[i].values[j]) {
+						_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
+					} else {
+						_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
+					}
+				}
+			} else {
+				for(let j=0; j<4; j++) {
+					if(_itemWeightWithOZ[i].values[j]) {
+						_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
+					} else {
+						_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
+					}
+				}
+			}
 		}
 
 		const { selectedPoint, from, isModalOpen } = this.state;
-		const itemsGraph = [{
-			x: "Nov",
-			y: 5
-		}, {
-			x: "Nov-2",
-			y: 10
-		}, {
-			x: "Nov-3",
-			y: 15
-		}, {
-			x: "Dec",
-			y: 20
-		}, {
-			x: "Dec-2",
-			y: 25
-		}, {
-			x: "Dec",
-			y: 30
-		}, {
-			x: "Jan",
-			y: 35
-		}, {
-			x: "Jan-2",
-			y: 40
-		}, {
-			x: "Jan-3",
-			y: 45
-		}, {
-			x: "Feb",
-			y: 35
-		}, {
-			x: "Feb-2",
-			y: 40
-		}, {
-			x: "Feb-3",
-			y: 45
-		}, {
-			x: "March",
-			y: 35
-		}, {
-			x: "March-2",
-			y: 40
-		}, {
-			x: "March-3",
-			y: 45
-		}, {
-			x: "April",
-			y: 50
-		}, {
-			x: "April-2",
-			y: 55
-		}, {
-			x: "April-3",
-			y: 60
-		}, {
-			x: "May",
-			y: 65
-		}, {
-			x: "May 2",
-			y: 66
-		}, {
-			x: "May 3",
-			y: 68
-		}, {
-			x: "Jun",
-			y: 70
-		}, {
-			x: "Jun 2",
-			y: 72
-		}, {
-			x: "Jun 3",
-			y: 75
-		}, {
-			x: "July",
-			y: 78
-		}, {
-			x: "July 2",
-			y: 80
-		}, {
-			x: "July 3",
-			y: 82
-		}, {
-			x: "Aug",
-			y: 84
-		}, {
-			x: "Aug 2",
-			y: 88
-		}, {
-			x: "Aug 3",
-			y: 90
-		}, {
-			x: "Sept",
-			y: 92
-		}, {
-			x: "Sept 2",
-			y: 94
-		}, {
-			x: "Sept 3",
-			y: 96
-		}];
-		const recordGraphs = [];
-		const months = ["March", "April", "May", "Jun", "July", "Aug", "Sept", "Nov", "Dec", "Jan", "Feb"];
-		let counter = 2;
-		for(let i in months) {
-			for(let j = 1; j <= 4; j++) {
-				if(j === 1) {
-					recordGraphs.push({
-						x: `${months[i]}`,
-						y: counter
-					});
-				} else {
-					recordGraphs.push({
-						x: `${months[i]} ${j}`,
-						y: counter
-					});
-				}
-				counter += 2;
-			}
-		}
-
-		const currentHeight = heightList[heightList.length - 1].y;
+	
+		const currentHeight = (list.length > 0) ? list[list.length - 1].height : 0;
 		const currentWeight = (list.length > 0) ? list[list.length - 1].weight_lb : 0;
-		console.log({ recordGraphs });
-
+		
+		console.log({_itemHeight})
 		return (
 			<View style={styles.container}>
 				<Modal
@@ -349,76 +358,7 @@ class GrowthCards extends React.Component {
 					</View>
 				</Modal>
 				<ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 10 }}>
-					<View>
-					<LineChart
-						data={{
-							labels: ['January', 'February', 'March', 'April'],
-							datasets: [
-							{
-								data: [
-								Math.random() * 100,
-								Math.random() * 100,
-								Math.random() * 100,
-								Math.random() * 100,
-								Math.random() * 100,
-								Math.random() * 100,
-								],
-							},
-							],
-						}}
-						width={Dimensions.get('window').width - 16} // from react-native
-						height={220}
-						yAxisLabel={'Rs'}
-						chartConfig={{
-							backgroundColor: '#1cc910',
-							backgroundGradientFrom: '#eff3ff',
-							backgroundGradientTo: '#efefef',
-							decimalPlaces: 2, // optional, defaults to 2dp
-							color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-							style: {
-							borderRadius: 16,
-							},
-						}}
-						bezier
-						style={{
-							marginVertical: 8,
-							borderRadius: 16,
-						}}
-						/>
-					</View>
-					<Svg width={400} height={400} viewBox="0 0 400 400" style={{ width: "100%", height: "auto" }}>
-						<VictoryChart standalone={false} minDomain={{ y: 0 }}>
-							<VictoryGroup data={recordGraphs}>
-								<VictoryLine
-									style={{
-										data: { stroke: "#E4B167" },
-										parent: { border: "1px solid #F0F0F0" }
-									}}
-								/>
-								<VictoryScatter
-									style={{ data: { fill: "#E4B167" } }}
-									size={5}
-									// events={[{
-									// 	target: "data",
-									// 	eventHandlers: {
-									// 		onPressIn: (data, item, vlaue) => {
-									// 			this.setPoint({
-									// 				selectedPoint: item.datum,
-									// 				from: "height",
-									// 				isModalOpen: true
-									// 			});
-									// 			return [];
-									// 		}
-									// 	}
-									// }]}
-								/>
-								<VictoryAxis tickValues={[0, 20, 40, 60, 80, 100]} dependentAxis tickFormat={(x) => (`${Number(x)} in`)} />
-							</VictoryGroup>
-							<VictoryAxis
-								style={{ axisLabel: { fontSize: 12, padding: 5, angle: 90 }, tickLabels: { fontSize: 12, padding: 10, angle: 90, verticalAnchor: "middle", textAnchor: "start" } }}
-							/>
-						</VictoryChart>
-					</Svg>
+					
 					<View style={styles.graphTitle}>
 						<Text style={styles.graphTitleText}>Current Height:</Text>
 						<Text style={styles.graphTitleSelect}>
@@ -427,38 +367,37 @@ class GrowthCards extends React.Component {
 							in
 						</Text>
 					</View>
-					<Svg width={400} height={300} viewBox="0 0 400 300" style={{ width: "100%", height: "auto" }}>
-						<VictoryChart standalone={false} minDomain={{ y: 0 }} maxDomain={{ y: 60 }}>
-							<VictoryGroup data={heightList}>
-								<VictoryLine
-									style={{
-										data: { stroke: "#E4B167" },
-										parent: { border: "1px solid #F0F0F0" }
+					{
+						itemsHeightWithMonths.length > 0 && (
+							<View>
+								<LineChart
+									data={{
+										labels: monthListings,
+										datasets: [
+										{
+											data: _itemsListForGraph
+										},
+										],
 									}}
-								/>
-								<VictoryScatter
-									style={{ data: { fill: "#E4B167" } }}
-									size={9}
-									events={[{
-										target: "data",
-										eventHandlers: {
-											onPressIn: (data, item, vlaue) => {
-												this.setPoint({
-													selectedPoint: item.datum,
-													from: "height",
-													isModalOpen: true
-												});
-												return [];
-											}
-										}
-									}]}
-								/>
-								<VictoryAxis tickValues={[0, 20, 40, 60]} dependentAxis tickFormat={(x) => (`${Number(x)} in`)} />
-							</VictoryGroup>
-							<VictoryAxis />
-
-						</VictoryChart>
-					</Svg>
+									width={Dimensions.get('window').width - 5} // from react-native
+									height={230}
+									chartConfig={{
+										backgroundColor: '#fff',
+										backgroundGradientFrom: '#fff',
+										backgroundGradientTo: '#fff',
+										decimalPlaces: 0, // optional, defaults to 2dp
+										color: (opacity = 1) => `rgba(243, 146, 31, ${opacity})`,
+      									labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+									}}
+									bezier={false}
+									style={{
+										marginVertical: 20,
+										marginLeft: -30
+									}}
+									/>
+							</View>
+						)
+					}
 
 					<View style={styles.graphTitle}>
 						<Text style={styles.graphTitleText}>Current Weight:</Text>
@@ -468,7 +407,38 @@ class GrowthCards extends React.Component {
 							lbs
 						</Text>
 					</View>
-					<Svg width={400} height={300} viewBox="0 0 400 300" style={{ width: "100%", height: "auto" }}>
+					{
+						itemsWeightWithMonths.length > 0 && (
+							<View>
+								<LineChart
+									data={{
+										labels: monthListings,
+										datasets: [
+										{
+											data: _itemsListForGraphWeightOZ
+										},
+										],
+									}}
+									width={Dimensions.get('window').width - 5} // from react-native
+									height={230}
+									chartConfig={{
+										backgroundColor: '#fff',
+										backgroundGradientFrom: '#fff',
+										backgroundGradientTo: '#fff',
+										decimalPlaces: 0, // optional, defaults to 2dp
+										color: (opacity = 1) => `rgba(243, 146, 31, ${opacity})`,
+      									labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+									}}
+									bezier={false}
+									style={{
+										marginVertical: 20,
+										marginLeft: -30
+									}}
+									/>
+							</View>
+						)
+					}
+					{/* <Svg width={400} height={300} viewBox="0 0 400 300" style={{ width: "100%", height: "auto" }}>
 						<VictoryChart standalone={false} minDomain={{ y: 0 }} maxDomain={{ y: 35 }}>
 							<VictoryGroup data={weightList}>
 								<VictoryLine style={{
@@ -502,7 +472,7 @@ class GrowthCards extends React.Component {
 							/>
 							<VictoryAxis tickValues={[0, 10, 20, 30, 40]} dependentAxis tickFormat={(x) => (`${Number(x)} oz`)} />
 						</VictoryChart>
-					</Svg>
+					</Svg> */}
 				</ScrollView>
 				<TouchableOpacity style={styles.addBreastfeed} onPress={() => this.redirectToAddEntry()}>
 					<Image
@@ -517,7 +487,9 @@ class GrowthCards extends React.Component {
 
 const mapStateToProps = (state) => ({
 	growth: state.growthReducer,
-	activeBaby: getActiveBaby(state)
+	activeBaby: getActiveBaby(state),
+	tabReducer: state.tabReducer,
+	track: state.trackReducer
 });
 
 const mapDispatchToProps = {

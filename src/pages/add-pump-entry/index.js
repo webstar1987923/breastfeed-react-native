@@ -80,8 +80,8 @@ class AddPumpEntry extends React.Component {
 		});
 
 		let oz = [];
-		for (let i = 0; i < 31; i++) {
-			oz.push({label: `${i}.0 OZ`, value: i})
+		for (let i = 0; i < 130; i++) {
+			oz.push({ label: `${(i/4).toFixed(2)} OZ`, value: i / 4 });
 		}
 		this.setState({ ozList: oz });
 	}

@@ -302,9 +302,14 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.2.0):
     - React
+  - react-native-video (5.1.1):
+    - React-Core
+    - react-native-video/Video (= 5.1.1)
+  - react-native-video/Video (5.1.1):
+    - React-Core
   - react-native-viewpager (3.3.1):
     - React
-  - react-native-webview (11.2.3):
+  - react-native-webview (11.3.1):
     - React-Core
   - React-RCTActionSheet (0.61.4):
     - React-Core/RCTActionSheetHeaders (= 0.61.4)
@@ -345,7 +350,7 @@ PODS:
     - React-Core
   - RNCPicker (1.9.11):
     - React-Core
-  - RNDateTimePicker (3.0.9):
+  - RNDateTimePicker (3.3.0):
     - React-Core
   - RNDeviceInfo (5.6.5):
     - React
@@ -406,6 +411,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -500,6 +506,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   react-native-viewpager:
     :path: "../node_modules/@react-native-community/viewpager"
   react-native-webview:
@@ -595,8 +603,9 @@ SPEC CHECKSUMS:
   react-native-image-picker: 0c28bf3cb089cfe840bc5cc9fac3dcc10f2188d9
   react-native-safe-area-context: 86612d2c9a9e94e288319262d10b5f93f0b395f5
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
+  react-native-video: 1574074179ecaf6a9dd067116c8f31bf9fec15c8
   react-native-viewpager: 248267e605c2d4edd26924da7f15032d57ac0b75
-  react-native-webview: 36561eaf7508e67f72d8c959b713bac841f3652e
+  react-native-webview: 30f048378c6cee522ed9bbbedbc34acb21e58188
   React-RCTActionSheet: 7369b7c85f99b6299491333affd9f01f5a130c22
   React-RCTAnimation: d07be15b2bd1d06d89417eb0343f98ffd2b099a7
   React-RCTBlob: 8e0b23d95c9baa98f6b0e127e07666aaafd96c34
@@ -609,7 +618,7 @@ SPEC CHECKSUMS:
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
   RNCAsyncStorage: cb9a623793918c6699586281f0b51cbc38f046f9
   RNCPicker: 6780c753e9e674065db90d9c965920516402579d
-  RNDateTimePicker: 986d4794006e5caaebd089a724f54d35631a8dd4
+  RNDateTimePicker: 2cdf6a103d34db197a53d8a0101b59b00763e9f8
   RNDeviceInfo: e841619c3dac5495a095c5455473579ff04908d4
   RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFBApp: 02bde3edecf2e9694b908a5d3504e03449980f20

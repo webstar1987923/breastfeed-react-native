@@ -118,8 +118,9 @@ const SetAlarmComponent = ({
 					</View>
 					<DateTimePickerModal
 						isVisible={isDateTimeOpen}
-						display={Platform.OS === "ios" ? "inline" : "default"}
+						// display={Platform.OS === "ios" ? "inline" : "default"}
 						mode="datetime"
+						// isDarkModeEnabled={true}
 						date={new Date(date.toLocaleString())}
 						onConfirm={(value) => {
 							setDate(moment(value));

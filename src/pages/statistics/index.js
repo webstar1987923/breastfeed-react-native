@@ -226,8 +226,9 @@ class StatisticsScreen extends React.Component {
 		// console.log({dateRange});
 		if(statistics && statistics.Breastfeeds && statistics.Breastfeeds.Breastfeeds && statistics.Breastfeeds.Breastfeeds.length > 0) {
 			breastfeeds = statistics.Breastfeeds;
-			const todayItems = breastfeeds.Breastfeeds.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
-			console.log({todayItems});
+			// const todayItems = breastfeeds.Breastfeeds.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			const todayItems = breastfeeds.Breastfeeds;
+			// console.log({todayItems});
 			if(todayItems.length > 0) {
 				let totalMin = 0;
 				let totalSec = 0;
@@ -301,7 +302,8 @@ class StatisticsScreen extends React.Component {
 
 		if(statistics && statistics.pumps && statistics.pumps.pumps && statistics.pumps.pumps.length > 0) {
 			pumps = statistics.pumps;
-			const todayItems = pumps.pumps.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			// const todayItems = pumps.pumps.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			const todayItems = pumps.pumps;
 
 			if(todayItems.length > 0) {
 				let totalMin = 0;
@@ -379,7 +381,8 @@ class StatisticsScreen extends React.Component {
 		if(statistics && statistics.bottles && statistics.bottles.bottles && statistics.bottles.bottles.length > 0) {
 			bottles = statistics.bottles;
 			bottle_total_ounces_avg;
-			const todayItems = bottles.bottles.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			// const todayItems = bottles.bottles.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
+			const todayItems = bottles.bottles;
 			if(todayItems.length > 0) {
 				let totalOz = 0;
 
@@ -407,8 +410,11 @@ class StatisticsScreen extends React.Component {
 
 		if(statistics && statistics.Diaper && statistics.Diaper.Diaper && statistics.Diaper.Diaper.length > 0) {
 			diaper = statistics.Diaper;
-			const todayItemsPoop = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Poop');
-			const todayItemsPee = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Pee');
+			// const todayItemsPoop = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Poop');
+			// const todayItemsPee = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Pee');
+
+			const todayItemsPoop = diaper.Diaper.filter((x) => x.type_of_diaper == 'Poop');
+			const todayItemsPee = diaper.Diaper.filter((x) => x.type_of_diaper == 'Pee');
 			
 			
 			if(todayItemsPoop.length > 0) {
@@ -676,8 +682,7 @@ class StatisticsScreen extends React.Component {
 								<View style={styles.statisticsgraphContent}>
 									<Text style={styles.statisticsgraphText}>Daily Average Ounces:</Text>
 									<Text style={styles.statisticsgraphTextOrange}>
-									{bottle_total_ounces_avg || 0} 
-									{bottle_total_ounces_avg && bottle_total_ounces_avg > 1 ? 'ounces' : 'ounce'}
+									{bottle_total_ounces_avg || 0} {bottle_total_ounces_avg && bottle_total_ounces_avg > 1 ? 'ounces' : 'ounce'}
 									</Text>
 								</View>
 								<View style={styles.statisticsgraphchart}>
