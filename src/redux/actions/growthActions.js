@@ -48,7 +48,7 @@ export function handleGrowthCreate(data) {
 		// plisting.result = [...state.growthReducer.growthListing.result];
 		// console.log("plisting", plisting);
 		Services.handleGrowthCreate(data).then(function(response) {
-			console.log("Create response", response.data);
+			// console.log("Create response", response.data);
 
 			if(response.data.result.error) {
 				showAPIErrorAlert(error);
@@ -79,7 +79,7 @@ export function handleGrowthListing(data) {
 			console.log("growth response", response.data);
 			if(response.data.result.error) {
 				// dispatch(GrowthListingSuccess(response.data));
-				dispatch(GrowthListingFailure(response));
+				// dispatch(GrowthListingFailure(response));
 				dispatch(commonActions.loadingEnd());	
 			}
 			dispatch(GrowthListingSuccess(response.data));

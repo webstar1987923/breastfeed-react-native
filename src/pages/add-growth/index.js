@@ -105,7 +105,7 @@ class AddGrowth extends React.Component {
 		if(msg === "ADD_GROWTH_SUCCESS") {
 			dispatchClearCard();
 			this.setState(() => {
-				showAlert("Success", "Growth create successfully.", "", () => {
+				showAlert("Success", "Growth created successfully.", "", () => {
 					navigation.navigate("Track", { activeTab: "Growth" });
 				});
 			});
@@ -157,12 +157,16 @@ class AddGrowth extends React.Component {
 
 	handleConfirm(date) {
 		this.hideDatePicker();
+		if(moment(date).isAfter(moment())) {
+			showAlert("Error", "Date should be less than future date.", "", () => {})
+			return;
+		}
 		this.setState({ value: moment(date).format("MMM DD, YYYY") });
 	}
 
 	render() {
 		const { weightLBList, weightOZList, heightList, selectedOZWeight, selectedLBWeight, NotesValue, time, selectedAmount, selectedHeight, isDatePickerVisible, value, isKeyboardShow } = this.state;
-		console.log(this.state);
+		// console.log(this.state);
 		return (
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Growth Entry</Text>
