@@ -85,7 +85,7 @@ class AddGrowth extends React.Component {
 		}
 
 		let weightOZ = [];
-		for(let i = 0; i < 50; i++) {
+		for(let i = 0; i < 16; i++) {
 			weightOZ.push({ label: `${i} oz`, value: i });
 		}
 		this.setState({
@@ -132,13 +132,13 @@ class AddGrowth extends React.Component {
 		const { dispatchGrowthCreate, activeBaby } = this.props;
 		const data = {
 			babyprofile_id: activeBaby.id,
-			date: value ? new Date(moment(value).format("MMM DD, YYYY")) : new Date(),
+			date: value ? moment(value).format("DD-MM-YYYY") : moment().format("DD-MM-YYYY"),
 			height: selectedHeight,
 			weight_lb: selectedLBWeight,
 			weight_oz: selectedOZWeight,
 			note: NotesValue,
 		};
-
+		console.log("data>>>>", data)
 		if(!isEmptyObject(data)) {
 			dispatchGrowthCreate(data);
 		}

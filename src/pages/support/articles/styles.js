@@ -7,34 +7,30 @@ export default StyleSheet.create({
 	},
 	articlesImgBox: {
 		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-start",
 		marginTop: 20
 	},
 	articlesImg: {
-		maxWidth: 100,
+		width: 100,
 		height: 100,
 		resizeMode: "contain"
 	},
 	articleContent: {
 		paddingLeft: 20,
-		flexDirection: "column",
-		flex: 1,
-		justifyContent: "flex-start",
-		alignItems: "flex-start"
+		width: "75%"
 	},
 	articleTitle: {
 		fontWeight: "bold",
 		fontSize: 16,
 		lineHeight: 20,
 		color: "#000000",
-		marginBottom: 0,
-		flex: 1
+		marginBottom: 5,
 	},
 	articledescription: {
 		fontSize: 12,
 		lineHeight: 14,
 		fontWeight: "normal",
 		color: "#999999",
-		flex: 1,
-		marginTop: -18
 	}
 });

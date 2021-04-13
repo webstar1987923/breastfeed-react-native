@@ -19,11 +19,14 @@ import messaging from '@react-native-firebase/messaging';
 
 
 class dashboardScreen extends React.Component {
-	static navigationOptions = {
-		headerTitle: <HeaderComponent />,
-		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
-		headerLeft: null
-	}
+	
+	static navigationOptions = ({ screenProps: { insets } }) => {
+		return {
+			headerTitle: <HeaderComponent insets={insets} />,
+			headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+			headerLeft: null
+		};
+	};
 
 	constructor(props) {
 		super(props);
@@ -152,7 +155,7 @@ class dashboardScreen extends React.Component {
 		const { leftBreastPercentage, isNoBabyModal } = this.state;
 		let dashboardData = dashboard.dashboardListing.result;
 		// console.log(this.props.tab);
-		// console.log("dashboard", dashboardData);
+		console.log("dashboard", dashboardData);
 		// console.log(this.props.user);
 		return (
 			<ScrollView>
@@ -224,14 +227,8 @@ class dashboardScreen extends React.Component {
 											<View style={styles.linechartOrange}>
 												<View style={[styles.pumpinglinechartPurple, { width: `${((dashboardData.pumps.left_amount / dashboardData.pumps.total_amount) * 100).toFixed(2)}%` }]} />
 											</View>
-											<View style={styles.linechartText}>
-												<Text style={styles.linechartpurpleText}>{translate("dashboardScreen.pumpinglinechartLefttext")}</Text>
-												<Text style={styles.linechartorangeText}>{translate("dashboardScreen.pumpinglinechartRighttext")}</Text>
-											</View>
-											<View style={styles.linechartMiter}>
-												<Text style={styles.linecharttextMiter}>{`${dashboardData.pumps.left_amount} oz`}</Text>
+											<View style={styles.pumpLinechartMiter}>
 												<Text style={styles.linecharttextboldMiter}>{`${dashboardData.pumps.total_amount} oz`}</Text>
-												<Text style={styles.linecharttextMiter}>{`${dashboardData.pumps.right_amount} oz`}</Text>
 											</View>
 										</View>
 									</View>

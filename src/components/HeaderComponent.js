@@ -18,16 +18,16 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		width: "100%",
 		paddingHorizontal: 15,
-		paddingTop: 10,
+		paddingTop: 15,
 		backgroundColor: "#fff"
 	},
 	headerLogo: {
-		width: 40,
-		height: 40
+		width: 31,
+		height: 31
 	},
 	smallLogo: {
-		width: 40,
-		height: 40
+		width: 31,
+		height: 31
 	},
 	menuTrigger: {
 		flexDirection: "row",
@@ -174,12 +174,19 @@ class HeaderComponent extends Component {
 		navigation.navigate("Dashboard");
 	}
 
+	getWeight(data) {
+		let lbs = Number(data.weight_lb);
+		let oz = Number(data.weight_oz);
+		let ozToLbs = Number(oz/16);
+
+		return `${Number(lbs+ozToLbs).toFixed(2)} lbs`;
+	}
+
 	render() {
-		const { user } = this.props;
-		
+		const { user, insets } = this.props;
 		const { activeIndex } = this.state;
 		return (
-			<View style={styles.header}>
+			<View style={[styles.header, { paddingTop: insets.top ? insets.top : 15 }]}>
 				<TouchableOpacity style={styles.headerLogo} onPress={() => { this.DashboardHandler(); }}>
 					<Image
 						source={Images.globalScreen.smallLogo}
@@ -193,16 +200,21 @@ class HeaderComponent extends Component {
 					<MenuTrigger style={styles.menuTrigger} onPress={() => this.setState({ opened: true })}>
 						{
 							user && user.babyEdit
-								? (
-									<FastImage
-										style={styles.babyImage}
-										source={{
-											uri: user.babyEdit.baby_profileupload,
-											priority: FastImage.priority.low,
-										}}
-										resizeMode={FastImage.resizeMode.cover}
-									/>
-								)
+								? 
+									(
+										(user.babyEdit.baby_profileupload) ? <FastImage
+											style={styles.babyImage}
+											source={{
+												uri: user.babyEdit.baby_profileupload,
+												priority: FastImage.priority.low,
+											}}
+											resizeMode={FastImage.resizeMode.cover}
+										/> : <Image
+												source={Images.eidtProfile.userprofileIcon}
+												style={styles.babyImage}
+											/>
+									)
+								
 								: <View style={styles.babyPlaceholder} />
 						}
 						<Image
@@ -218,14 +230,19 @@ class HeaderComponent extends Component {
 										<View style={styles.menuOptionItem} key={index}>
 											<View style={styles.menuOptionHeader}>
 												<TouchableOpacity style={styles.menuOptionHeaderLeft} onPress={() => { this.ActiveBabyHandler(data, index); }}>
-													<FastImage
-														style={styles.menuOptionImage}
-														source={{
-															uri: data.baby_profileupload,
-															priority: FastImage.priority.low,
-														}}
-														resizeMode={FastImage.resizeMode.cover}
-													/>
+													{
+														data.baby_profileupload ? <FastImage
+															style={styles.menuOptionImage}
+															source={{
+																uri: data.baby_profileupload,
+																priority: FastImage.priority.low,
+															}}
+															resizeMode={FastImage.resizeMode.cover}
+														/> : <Image
+															source={Images.eidtProfile.userprofileIcon}
+															style={styles.menuOptionImage}
+														/>
+													}
 													<Text style={[activeIndex === data.id ? styles.menuOptionName : styles.menuOptionNameDisable]}>{data.name}</Text>
 												</TouchableOpacity>
 												{
@@ -303,12 +320,13 @@ class HeaderComponent extends Component {
 															<View style={styles.menuOptionContentItem}>
 																<Text style={styles.contentItemBold}>Weight: </Text>
 																<Text style={styles.contentItemLight}>
-																	{data.weight_lb}
+																	{this.getWeight(data)}
+																	{/* {data.weight_lb}
 																	{" "}
 																	lbs, 
 																	{data.weight_oz}
 																	{" "}
-																	oz
+																	oz */}
 																</Text>
 															</View>
 														</View>

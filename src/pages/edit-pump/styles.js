@@ -170,7 +170,7 @@ export default StyleSheet.create({
 	},
 	TimeCount: {
 		width: "100%",
-		justifyContent: "space-between",
+		justifyContent: "center",
 		alignItems: "center",
 		flex: 1,
 		flexDirection: "row",
@@ -250,7 +250,7 @@ export default StyleSheet.create({
 		flex: 1,
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "space-between",
+		justifyContent: "center",
 		width: "100%"
 	},
 	amountPicker: {

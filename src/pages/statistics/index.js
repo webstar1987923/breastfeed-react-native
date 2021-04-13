@@ -12,10 +12,13 @@ import { getStatistics } from "../../redux/selectors/statistics";
 import * as statisticsAction from "../../redux/actions/statisticsAction";
 
 class StatisticsScreen extends React.Component {
-	static navigationOptions = {
-		headerTitle: <HeaderComponent />,
-		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
-	}
+	static navigationOptions = ({ screenProps: { insets } }) => {
+		return {
+			headerTitle: <HeaderComponent insets={insets} />,
+			headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+			headerLeft: null
+		};
+	};
 
 
 
@@ -74,6 +77,33 @@ class StatisticsScreen extends React.Component {
 		}
  	}
 
+
+	toHHMMSS = (secs) => {
+		let time =  moment().startOf('day')
+		 .seconds(secs)
+		 .format('H:m:ss');
+
+		let newTime = time.split(":");
+		let str = ``;
+
+		if(Number(newTime[0]) > 0) {
+			if(Number(newTime[0]) > 1) {
+				str += `${newTime[0]} hours `
+			} else {
+				str += `${newTime[0]} hour `
+			}
+		}
+
+		if(Number(newTime[1]) > 0) {
+			if(Number(newTime[1]) > 1) {
+				str += `${newTime[1]} minutes`
+			} else {
+				str += `${newTime[1]} minutes`
+			}
+		}
+		return str;
+	}
+	
 	convertToSecound(hms) {
 		if(!hms) {
 			return '0 minute';
@@ -241,35 +271,35 @@ class StatisticsScreen extends React.Component {
 				let _tmpTotal = (totalMin*60) + totalSec
 				if(_tmpTotal < 60) {
 					breastfeeds_total_time_avg = `${_tmpTotal}`
-					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/todayItems.length))}`
+					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7))}`
 
 					if(breastfeeds_total_time_avg > 1) {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} secounds`
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
 					} else {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} secound`
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
 					}
 
 					if(breastfeeds_total_session_avg > 1) {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} secounds`
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
 					} else {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} secound`
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
 					}
 
 
 				} else {
 					breastfeeds_total_time_avg = `${Math.round(_tmpTotal/60)}`;
-					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/todayItems.length)/60)}`;
+					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
 
 					if(breastfeeds_total_time_avg > 1) {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} minutes`
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
 					} else {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg} minute`
+						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
 					}
 
 					if(breastfeeds_total_session_avg > 1) {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} minutes`
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
 					} else {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg} minute`
+						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
 					}
 				}
 			}
@@ -314,38 +344,38 @@ class StatisticsScreen extends React.Component {
 					const _tmp = todayItems[i].total_time.split(":");
 					totalMin += Number(_tmp[0]);
 					totalSec += Number(_tmp[1]);
-					totalOz += (Number(todayItems[i].left_amount) + Number(todayItems[i].right_amount));
+					totalOz += (Number(todayItems[i].total_amount));
 				}
 				let _tmpTotal = (totalMin*60) + totalSec
 
 				if(_tmpTotal < 60) {
 					pumps_total_time_avg = `${_tmpTotal}`
-					pump_total_session_avg = `${Math.round((_tmpTotal/todayItems.length))}`
+					pump_total_session_avg = `${Math.round((_tmpTotal/7))}`
 					if(pumps_total_time_avg > 1) {
-						pumps_total_time_avg = `${pumps_total_time_avg} secounds`
+						pumps_total_time_avg = `${pumps_total_time_avg}`
 					} else {
-						pumps_total_time_avg = `${pumps_total_time_avg} secound`
+						pumps_total_time_avg = `${pumps_total_time_avg}`
 					}
 
 					if(pump_total_session_avg > 1) {
-						pump_total_session_avg = `${pump_total_session_avg} secounds`
+						pump_total_session_avg = `${pump_total_session_avg}`
 					} else {
-						pump_total_session_avg = `${pump_total_session_avg} secound`
+						pump_total_session_avg = `${pump_total_session_avg}`
 					}
 				} else {
 					pumps_total_time_avg = `${Math.round(_tmpTotal/60)}`;
-					pump_total_session_avg = `${Math.round((_tmpTotal/todayItems.length)/60)}`;
+					pump_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
 
 					if(pumps_total_time_avg > 1) {
-						pumps_total_time_avg = `${pumps_total_time_avg} minutes`
+						pumps_total_time_avg = `${pumps_total_time_avg}`
 					} else {
-						pumps_total_time_avg = `${pumps_total_time_avg} minute`
+						pumps_total_time_avg = `${pumps_total_time_avg}`
 					}
 
 					if(pump_total_session_avg > 1) {
-						pump_total_session_avg = `${pump_total_session_avg} minutes`
+						pump_total_session_avg = `${pump_total_session_avg}`
 					} else {
-						pump_total_session_avg = `${pump_total_session_avg} minute`
+						pump_total_session_avg = `${pump_total_session_avg}`
 					}
 				}
 				total_ounces_avg = totalOz;
@@ -359,16 +389,11 @@ class StatisticsScreen extends React.Component {
 
 				if(index > -1) {
 					// Need to add in prev recorf
-					let tmpLeft = Number(pumps.pumps[i].left_amount) + left[index].y;
-					let tmpRight = Number(pumps.pumps[i].right_amount) + right[index].y;
+					let tmpLeft = Number(pumps.pumps[i].total_amount) + left[index].y;
 
 					left[index] = {
 						x: moment(pumps.pumps[i].created_at).format("ddd"),
 						y: tmpLeft
-					};
-					right[index] = {
-						x: moment(pumps.pumps[i].created_at).format("ddd"),
-						y: tmpRight
 					};
 				}
 			}
@@ -390,7 +415,7 @@ class StatisticsScreen extends React.Component {
 					totalOz += (Number(todayItems[i].amount))
 				}
 
-				bottle_total_ounces_avg = Math.round(totalOz/todayItems.length);
+				bottle_total_ounces_avg = Math.round(totalOz/7);
 			}
 			const items = JSON.parse(JSON.stringify(bottleItems));
 
@@ -410,28 +435,31 @@ class StatisticsScreen extends React.Component {
 
 		if(statistics && statistics.Diaper && statistics.Diaper.Diaper && statistics.Diaper.Diaper.length > 0) {
 			diaper = statistics.Diaper;
+			console.log({diaper})
 			// const todayItemsPoop = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Poop');
 			// const todayItemsPee = diaper.Diaper.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD") && x.type_of_diaper == 'Pee');
-
+			daily_average_pee = Number(diaper.daily_average_pee).toFixed(2);
+			daily_average_poop = Number(diaper.daily_average_poop).toFixed(2);
 			const todayItemsPoop = diaper.Diaper.filter((x) => x.type_of_diaper == 'Poop');
 			const todayItemsPee = diaper.Diaper.filter((x) => x.type_of_diaper == 'Pee');
+			// console.log({todayItemsPoop});
+			// console.log({todayItemsPee})
 			
-			
-			if(todayItemsPoop.length > 0) {
-				let totalPee = 0;
-				for(let i in todayItemsPoop) {
-					totalPee += 1
-				}
-				daily_average_poop = Math.round(totalPee/todayItemsPoop.length);
-			}
+			// if(todayItemsPoop.length > 0) {
+			// 	let totalPee = 0;
+			// 	for(let i in todayItemsPoop) {
+			// 		totalPee += 1
+			// 	}
+			// 	daily_average_poop = Math.round(totalPee/7);
+			// }
 
-			if(todayItemsPee.length > 0) {
-				let totalPee = 0;
-				for(let i in todayItemsPee) {
-					totalPee += 1
-				}
-				daily_average_pee = Math.round(totalPee/todayItemsPee.length);
-			}
+			// if(todayItemsPee.length > 0) {
+			// 	let totalPee = 0;
+			// 	for(let i in todayItemsPee) {
+			// 		totalPee += 1
+			// 	}
+			// 	daily_average_pee = Math.round(totalPee/7);
+			// }
 
 			for(let i in diaper.Diaper) {
 				let type = diaper.Diaper[i].type_of_diaper;
@@ -511,6 +539,8 @@ class StatisticsScreen extends React.Component {
 		}
 		
 		const { currentDate } = this.state;
+
+		console.log({breastfeeds_total_session_avg})
 		return (
 
 			<ScrollView>
@@ -555,11 +585,11 @@ class StatisticsScreen extends React.Component {
 						<Text style={styles.statisticsgraphTitle}>Breastfeeding:</Text>
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
-							<Text style={styles.statisticsgraphTextOrange}>{( breastfeeds_total_session_avg || "0 minute")}</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{( this.toHHMMSS(Number(breastfeeds_total_session_avg || 0) * 60) || "0 minute")}</Text>
 						</View>
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
-							<Text style={styles.statisticsgraphTextOrange}>{( breastfeeds_total_time_avg || "0 minute")}</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{( this.toHHMMSS(Number(breastfeeds_total_time_avg || 0) * 60) || "0 minute")}</Text>
 						</View>
 						<View style={styles.statisticsgraphchart}>
 							<View style={styles.statisticsVictoryStack}>
@@ -623,12 +653,12 @@ class StatisticsScreen extends React.Component {
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average Session Time:</Text>
 							<Text style={styles.statisticsgraphTextOrange}>
-								{(pump_total_session_avg || '0 minute')}
+								{(this.toHHMMSS(Number(pump_total_session_avg || 0)*60) || '0 minute')}
 							</Text>
 						</View>
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average Total Time:</Text>
-							<Text style={styles.statisticsgraphTextOrange}>{(pumps_total_time_avg || '0 minute')}</Text>
+							<Text style={styles.statisticsgraphTextOrange}>{(this.toHHMMSS(Number(pumps_total_time_avg || 0) * 60) || '0 minute')}</Text>
 						</View>
 						<View style={styles.statisticsgraphchart}>
 							<View style={styles.statisticsVictoryStack}>
@@ -637,19 +667,19 @@ class StatisticsScreen extends React.Component {
 									domainPadding={10}
 								>
 									<VictoryStack
-										colorScale={["#4B2785", "#E4B167"]}
+										colorScale={["#E4B167", "#E4B167"]}
 										height={160}
 									>
 										<VictoryBar
 											barRatio={1}
 											data={pumpItems.left}
 										/>
-										<VictoryBar
+										{/* <VictoryBar
 											barRatio={1}
 											labels={({ datum }) => `${datum._y1} oz`}
 											style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
 											data={pumpItems.right}
-										/>
+										/> */}
 									</VictoryStack>
 									<VictoryAxis
 										tickValues={[1, 2, 3, 4, 5, 6, 7]}
@@ -661,16 +691,16 @@ class StatisticsScreen extends React.Component {
 									/>
 								</VictoryChart>
 							</View>
-							<View style={styles.maincolorscaleStatic}>
+							{/* <View style={styles.maincolorscaleStatic}>
 								<View style={styles.colorscaleStatic}>
 									<View style={styles.colorscaleblue} />
-									<Text style={styles.statisticsgraphcolorTitle}>Left Breast</Text>
+									<Text style={styles.statisticsgraphcolorTitle}>Breast</Text>
 								</View>
 								<View style={styles.colorscaleStatic}>
 									<View style={styles.colorscaleorange} />
 									<Text style={styles.statisticsgraphcolorTitle}>Right Breast</Text>
 								</View>
-							</View>
+							</View> */}
 						</View>
 					</View>
 				
@@ -714,7 +744,7 @@ class StatisticsScreen extends React.Component {
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average of Pee:</Text>
 							<Text style={styles.statisticsgraphTextOrange}>
-								{daily_average_pee || 0}
+								{Math.ceil(daily_average_pee) || 0}
 								{" "}
 								{daily_average_pee && daily_average_pee > 1 ? 'diapers' : 'diaper'}
 							</Text>
@@ -722,7 +752,7 @@ class StatisticsScreen extends React.Component {
 						<View style={styles.statisticsgraphContent}>
 							<Text style={styles.statisticsgraphText}>Daily Average of Poop:</Text>
 							<Text style={styles.statisticsgraphTextOrange}>
-								{daily_average_poop || 0}
+								{Math.ceil(daily_average_poop) || 0}
 								{" "}
 								
 								{daily_average_poop && daily_average_poop > 1 ? 'diapers' : 'diaper'}

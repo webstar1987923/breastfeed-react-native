@@ -19,6 +19,7 @@ import TimePicker from "react-native-24h-timepicker";
 import { getActiveBaby } from "src/redux/selectors";
 import moment from "moment";
 import styles from "./styles";
+import CustomTimePicker from "../../components/CustomTimePicker";
 
 class AddPumpEntry extends React.Component {
 	constructor(props) {
@@ -43,7 +44,8 @@ class AddPumpEntry extends React.Component {
 			selectedAmount: "1.0",
 			selectedAmountSec: "1.0",
 			isKeyboardShow: false,
-			ozList: null
+			ozList: null,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -96,7 +98,7 @@ class AddPumpEntry extends React.Component {
 		if(msg === "ADD_PUMP_SUCCESS") {
 			dispatchClearCard();
 			this.setState(() => {
-				showAlert("Success", "pump create successfully.", "", () => {
+				showAlert("Success", "Pump entry created successfully", "", () => {
 					navigation.navigate("Track", { activeTab: "Pump" });
 				});
 			});
@@ -224,26 +226,20 @@ class AddPumpEntry extends React.Component {
 		this.TimePicker3.close();
 	}
 
-	ManualTotalTimeCal(left, right) {
+	ManualTotalTimeCal(left) {
 		let TotalSeconf = 0;
 		let TotlaMinur = 0;
-		if(left && right) {
-			const secons = right.split("s")[0];
-			const value = secons.split("m")[1];
-			const minutes = right.split("m")[0];
+		if(left) {
 			const seconsLeft = left.split("s")[0];
 			const valueLeft = seconsLeft.split("m")[1];
 			const minutesLeft = left.split("m")[0];
-			TotalSeconf = parseInt(valueLeft) + parseInt(value);
-			TotlaMinur = parseInt(minutes) + parseInt(minutesLeft);
+			TotalSeconf = parseInt(valueLeft)
+			TotlaMinur = parseInt(minutesLeft);
 			
 			if(TotalSeconf > 59) {
 				TotlaMinur += Math.floor(TotalSeconf / 60);
 				TotalSeconf = TotalSeconf % 60;
 			}
-			// if(TotalSeconf.toString().length === 1) {
-			// 	TotalSeconf = `0${TotalSeconf}`
-			// }
 		}
 		return `${TotlaMinur}:${TotalSeconf}`;
 	}
@@ -280,42 +276,45 @@ class AddPumpEntry extends React.Component {
 	}
 
 	saveHandler() {
-		const { time, NotesValue, TotalTimeMinute, TotalTimeSecond, isEnabled, timeCount, timeCountRight, selectedAmount, selectedAmountSec } = this.state;
+		const { time, NotesValue, TotalTimeMinute, TotalTimeSecond, isEnabled, timeCount, timeCountRight, selectedAmount } = this.state;
 		const { dispatchPumpCreate, activeBaby, navigation: {state : {params}} } = this.props;
 		let startGetLeftBreast = `${this.getMinutes()}:${this.getSeconds()}`;
-		let startGetRightBreast = `${this.getMinutesRight()}:${this.getSecondsRight()}`;
 		let startGetTotalBreast = `${TotalTimeMinute}:${TotalTimeSecond}`;
 
 		const tempLeft = isEnabled ? timeCount.replace("m", "").replace("s", "").split(" ") : startGetLeftBreast.split(":");
-		const tempRight = isEnabled ? timeCountRight.replace("m", "").replace("s", "").split(" ") : startGetRightBreast.split(":");
-
-		
-		if(Number(tempLeft[0]) == 0 && Number(tempLeft[1]) == 0 && Number(tempRight[0]) == 0 && Number(tempRight[1]) == 0){
-			showAlert("Success", "Left/Right pump time must be required.", "", () => {})
+	
+		if(Number(tempLeft[0]) == 0 && Number(tempLeft[1]) == 0){
+			showAlert("Success", "Pump time must be required.", "", () => {})
 			return;
 		}
 
 		let timeConvert = time.split(" ")[0];
-		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ").join(":");
-		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ").join(":");
 
 		let date = moment(params.date).format("YYYY-MM-DD");
 		let tmp_time = moment().format("hh:mm:ss");
 		let date_time = moment(date+' '+tmp_time).format("YYYY-MM-DD HH:mm:ss")
 
 		const data = {
+			// babyprofile_id: activeBaby.id,
+			// start_time: isEnabled ? timeConvert : moment().format("HH:mm"),
+			// left_breast: isEnabled ? timeCountLeftConvert : this.checkTimeLen(startGetLeftBreast),
+			// right_breast: isEnabled ? timeCountRightConvert : this.checkTimeLen(startGetRightBreast),
+			// total_time: isEnabled ? this.ManualTotalTimeCal(timeCount, timeCountRight) : startGetTotalBreast,
+			// manual_entry: isEnabled ? "1" : "0",
+			// note: NotesValue,
+			// left_amount: selectedAmount,
+			// right_amount: selectedAmountSec,
+			// created_at: date_time
+
 			babyprofile_id: activeBaby.id,
-			start_time: isEnabled ? timeConvert : moment().format("HH:mm"),
-			left_breast: isEnabled ? timeCountLeftConvert : this.checkTimeLen(startGetLeftBreast),
-			right_breast: isEnabled ? timeCountRightConvert : this.checkTimeLen(startGetRightBreast),
-			total_time: isEnabled ? this.ManualTotalTimeCal(timeCount, timeCountRight) : startGetTotalBreast,
 			manual_entry: isEnabled ? "1" : "0",
+			total_time: isEnabled ? this.ManualTotalTimeCal(timeCount) : startGetTotalBreast,
+			start_time: isEnabled ? timeConvert : moment().format("HH:mm"),
+			total_amount: selectedAmount,
 			note: NotesValue,
-			left_amount: selectedAmount,
-			right_amount: selectedAmountSec,
 			created_at: date_time
 		};
-		// console.log("data PUPMP", data);
+		console.log("data PUPMP", data);
 		// return;
 		if(!isEmptyObject(data)) {
 			dispatchPumpCreate(data);
@@ -336,9 +335,8 @@ class AddPumpEntry extends React.Component {
 	}
 
 	render() {
-		const { ozList, isKeyboardShow, selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { isTimePickerOpen, ozList, isKeyboardShow, selectedAmount, selectedAmountSec, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
-		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
 
 		const selectedTime = time.split(":");
 		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
@@ -347,6 +345,14 @@ class AddPumpEntry extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Pump Entry</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
@@ -354,7 +360,7 @@ class AddPumpEntry extends React.Component {
 								? (
 									<View style={styles.picker}>
 										<TouchableOpacity
-											onPress={() => this.TimePicker.open()}
+											onPress={() => this.setState({isTimePickerOpen: true})}
 											style={styles.pickerInput}
 										>
 											<Text style={styles.pickerInput}>
@@ -409,7 +415,7 @@ class AddPumpEntry extends React.Component {
 						</View>
 						<View style={styles.TimeCount}>
 							<View style={styles.LeftTimeCount}>
-								<Text style={styles.timeTitle}>Left</Text>
+								{/* <Text style={styles.timeTitle}>Total</Text> */}
 								{
 									IsmanualEntry === false ? (
 										<TouchableOpacity style={styles.TimeStart} onPress={isActive ? () => this.pauseTime() : () => this.startTime()}>
@@ -472,7 +478,7 @@ class AddPumpEntry extends React.Component {
 										)
 								}
 							</View>
-							{
+							{/* {
 								IsmanualEntry === false ? (
 									<View style={styles.MiddleTimeCount}>
 										<Text style={styles.timeTitle}>Total Time</Text>
@@ -491,8 +497,8 @@ class AddPumpEntry extends React.Component {
 											<Text style={styles.timeCountText}>{this.ManualTotalTimeCalView(timeCount, timeCountRight)}</Text>
 										</View>
 									)
-							}
-							<View style={styles.RightTimeCount}>
+							} */}
+							{/* <View style={styles.RightTimeCount}>
 								<Text style={styles.timeTitle}>Right</Text>
 								{
 									IsmanualEntryRight === false ? (
@@ -555,7 +561,7 @@ class AddPumpEntry extends React.Component {
 											</View>
 										)
 								}
-							</View>
+							</View> */}
 						</View>
 						<View style={styles.ClearButton}>
 							<ButtonComponent
@@ -609,7 +615,7 @@ class AddPumpEntry extends React.Component {
 								
 							</View>
 						</View>
-						<View style={styles.amountPicker}>
+						{/* <View style={styles.amountPicker}>
 							<Text style={[styles.amountLabel, { backgroundColor: "#fff", color: "#999" }]}>Amount</Text>
 							<View style={styles.picker}>
 								{
@@ -648,7 +654,7 @@ class AddPumpEntry extends React.Component {
 									:null
 								}								
 							</View>
-						</View>
+						</View> */}
 					</View>
 
 					<View style={styles.notsInput}>

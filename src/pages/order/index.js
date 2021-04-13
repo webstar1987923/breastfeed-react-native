@@ -25,10 +25,13 @@ class OrderScreen extends React.Component {
 		};
 	}
 
-	static navigationOptions = {
-		headerTitle: <HeaderComponent />,
-		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
-	}
+	static navigationOptions = ({ screenProps: { insets } }) => {
+		return {
+			headerTitle: <HeaderComponent insets={insets} />,
+			headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+			headerLeft: null
+		};
+	};
 
 	tabClick(tab) {
 		if(this._tabRef) {

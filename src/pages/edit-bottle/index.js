@@ -18,6 +18,7 @@ import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import moment from "moment";
 import styles from "./styles";
+import CustomTimePicker from "../../components/CustomTimePicker";
 
 class EditBottle extends React.Component {
 	constructor(props) {
@@ -31,7 +32,8 @@ class EditBottle extends React.Component {
 			selectedAmount: card.bottleEdit.amount,
 			selectedFeed: card.bottleEdit.type_of_feed,
 			isKeyboardShow: false,
-			ozList: null
+			ozList: null,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -69,7 +71,7 @@ class EditBottle extends React.Component {
 		
 		let oz = [];
 		for (let i = 0; i < 31; i++) {
-			oz.push({label: `${i}.0 OZ`, value: i})
+			oz.push({ label: `${(i/4).toFixed(2)} OZ`, value: i / 4 });
 		}
 		this.setState({ ozList: oz });
 	}
@@ -127,7 +129,7 @@ class EditBottle extends React.Component {
 	}
 
 	render() {
-		const { ozList, NotesValue, time, selectedAmount, selectedFeed, isKeyboardShow } = this.state;
+		const { isTimePickerOpen, ozList, NotesValue, time, selectedAmount, selectedFeed, isKeyboardShow } = this.state;
 		
 
 		const selectedTime = time.split(":");
@@ -137,11 +139,19 @@ class EditBottle extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Edit a Bottle</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
 							<TouchableOpacity
-								onPress={() => this.TimePicker.open()}
+								onPress={() =>  this.setState({isTimePickerOpen: true})}
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>

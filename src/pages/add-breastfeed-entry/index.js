@@ -16,6 +16,7 @@ import { Images } from "src/assets/images";
 import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import { getActiveBaby } from "src/redux/selectors";
+import CustomTimePicker from "../../components/CustomTimePicker";
 import moment from "moment";
 import styles from "./styles";
 
@@ -39,7 +40,8 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: 0,
 			TotalTimeSecond: 0,
 			ManualTotalTime: "0m 0s",
-			isKeyboardShow: false
+			isKeyboardShow: false,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -86,7 +88,7 @@ class AddBreastfeedEntry extends React.Component {
 		if(msg === "ADD_BREASTFEED_SUCCESS") {
 			dispatchClearCard();
 			this.setState(() => {
-				showAlert("Success", "baby breastfeed create successfully.", "", () => {
+				showAlert("Success", "Breastfeeding entry created successfully", "", () => {
 					// const resetAction = StackActions.reset({
 					// 	index: 1,
 					// 	key: undefined,
@@ -197,12 +199,12 @@ class AddBreastfeedEntry extends React.Component {
 	}
 
 	onCancel() {
-		this.TimePicker.close();
+		// this.TimePicker.close();
 	}
 
 	onConfirm(hour, minute) {
 		this.setState({ time: `${hour}:${minute}` });
-		this.TimePicker.close();
+		// this.TimePicker.close();
 	}
 
 	ontimeCountCancel() {
@@ -210,6 +212,7 @@ class AddBreastfeedEntry extends React.Component {
 	}
 
 	ontimeCountConfirm(minute, second) {
+		console.log({minute, second});
 		this.setState({ timeCount: `${minute}m ${second}s` });
 		this.ManualTotalTimeCal(minute, second);
 		this.TimePicker2.close();
@@ -335,7 +338,7 @@ class AddBreastfeedEntry extends React.Component {
 
 	render() {
 		// console.log("Add", this.props);
-		const { isKeyboardShow, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { isTimePickerOpen, isKeyboardShow, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
 		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ");
@@ -348,6 +351,14 @@ class AddBreastfeedEntry extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Breastfeed Entry</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
@@ -355,7 +366,7 @@ class AddBreastfeedEntry extends React.Component {
 								? (
 									<View style={styles.picker}>
 										<TouchableOpacity
-											onPress={() => this.TimePicker.open()}
+											onPress={() => this.setState({isTimePickerOpen: true})}
 											style={styles.pickerInput}
 										>
 											<Text style={styles.pickerInput}>
@@ -364,7 +375,7 @@ class AddBreastfeedEntry extends React.Component {
 										
 										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 										</TouchableOpacity>
-										<TimePicker
+										{/* <TimePicker
 											ref={(ref) => {
 												this.TimePicker = ref;
 											}}
@@ -372,7 +383,7 @@ class AddBreastfeedEntry extends React.Component {
 											selectedMinute={selectedTime[1] || "00"}
 											onCancel={() => this.onCancel()}
 											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
-										/>
+										/> */}
 									</View>
 								)
 								: 								(

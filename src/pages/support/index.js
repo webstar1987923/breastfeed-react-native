@@ -6,6 +6,7 @@ import styles from "./styles";
 import TutorialsCards from "./tutorials";
 import ContactUsCards from "./contactus";
 import ArticlesCards from "./articles";
+import ManualsScreen from "./manuals";
 import { getActiveIndex } from "./tab-menu";
 
 function TabFirstComponent({ child }) {
@@ -18,11 +19,13 @@ function TabFirstComponent({ child }) {
 
 class TrackScreen extends React.Component {
 
-	static navigationOptions = {
-		headerTitle: <HeaderComponent />,
-		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
-		headerLeft: null
-	}
+	static navigationOptions = ({ screenProps: { insets } }) => {
+		return {
+			headerTitle: <HeaderComponent insets={insets} />,
+			headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+			headerLeft: null
+		};
+	};
 
 	constructor(props) {
 		super();
@@ -52,7 +55,7 @@ class TrackScreen extends React.Component {
 						page={activeIndex}
 						ref={(ref) => this._tabRef = ref}
 						initialPage={activeIndex}
-						renderTabBar={() => <ScrollableTab style={{ width: 260, height: 25, backgroundColor: "#fff", borderWidth: 0 }} tabsContainerStyle={{ width: 260 }} />}
+						renderTabBar={() => <ScrollableTab style={{ width: 300, height: 25, backgroundColor: "#fff", borderWidth: 0 }} tabsContainerStyle={{ width: 300 }} />}
 						tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
 						tabBgColor={{ backgroundColor: "#fff", paddingLeft: 0, paddingRight: 0 }}
 						tabStyle={{ backgroundColor: "#fff", borderBottomWidth: 0, paddingLeft: 0, paddingRight: 0 }}
@@ -66,6 +69,14 @@ class TrackScreen extends React.Component {
 							activeTabStyle={styles.activeTabStyle}
 							activeTextStyle={styles.activeTextStyle}
 							child={<TutorialsCards navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
+						/>
+						<TabFirstComponent
+							heading="Manuals"
+							tabStyle={styles.tabStyle}
+							textStyle={styles.tabTextStyle}
+							activeTabStyle={styles.activeTabStyle}
+							activeTextStyle={styles.activeTextStyle}
+							child={<ManualsScreen navigation={navigation} onTabChange={(tab, lengthValue) => this.tabClick(tab, lengthValue)} />}
 						/>
 						<TabFirstComponent
 							heading="Articles"

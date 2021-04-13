@@ -6,7 +6,7 @@ export default StyleSheet.create({
 		paddingRight: 15,
 		paddingBottom: 20,
 		flex: 1,
-		paddingTop: 15
+		paddingTop: 17
 	},
 	supportheaderTitle: {
 		fontStyle: "normal",

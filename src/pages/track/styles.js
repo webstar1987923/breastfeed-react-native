@@ -149,10 +149,10 @@ export default StyleSheet.create({
 		fontSize: 16,
 		lineHeight: 19,
 		color: "#000",
-		width: 70
+		width: 72
 	},
 	breastUnits: {
-		width: 106,
+		width: 110,
 	},
 	leftBreast: {
 		flexDirection: "row",
@@ -173,7 +173,7 @@ export default StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		textAlign: "center",
-		marginRight: 10,
+		marginRight: 6,
 		fontSize: 14,
 		lineHeight: 18
 	},

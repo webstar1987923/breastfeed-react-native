@@ -54,7 +54,7 @@ class GetStartedForm extends React.Component {
 		this.setState({ weightLBList: weightLB });
 
 		let weightOZ = [];
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 16; i++) {
 			weightOZ.push({label: `${i} oz`, value: i})
 		}
 		this.setState({ weightOZList: weightOZ });
@@ -63,7 +63,7 @@ class GetStartedForm extends React.Component {
 	isValid = () => {
 		const { Babys } = this.state;
 
-		let ErrorMsg = false;
+		let ErrorMsg = true;
 		Babys.forEach((el) => {
 			// console.log(el);
 			if(isEmpty(el.fullName)) {
@@ -74,10 +74,10 @@ class GetStartedForm extends React.Component {
 				el.selectedHeightErrMsg = "Height is required";
 				ErrorMsg = false;
 			}
-			if(isEmpty(el.avatarSource)) {
-				el.avatarSourceErrMsg = "Image is required";
-				ErrorMsg = false;
-			}
+			// if(isEmpty(el.avatarSource)) {
+			// 	el.avatarSourceErrMsg = "Image is required";
+			// 	ErrorMsg = false;
+			// }
 			if(isEmpty(el.selectedLBWeight)) {
 				el.selectedLBWeightErrMsg = "Weight is requied";
 				ErrorMsg = false;
@@ -92,24 +92,27 @@ class GetStartedForm extends React.Component {
 			return el;
 		});
 		this.setState({ validateInput: false, });
-
+		console.log({ErrorMsg});
 		return ErrorMsg;
 	}
 
 	onSubmit = () => {
 		const { submitForm } = this.props;
 		const { Babys } = this.state;
-
+		// console.log("clokledd>>>");
 		if(this.isValid()) {
+
 			console.log("Babys....????", Babys);
 			let data = new FormData();
 			if(Babys.length > 1) {
 				Babys.forEach((el, index) => {
-					data.append(`profile[${index}][baby_profileupload]`, {
-						name: el.avatarSource.fileName,
-						type: el.avatarSource.type,
-						uri: el.avatarSource.uri
-					});
+					if(el.avatarSource) {
+						data.append(`profile[${index}][baby_profileupload]`, {
+							name: el.avatarSource.fileName,
+							type: el.avatarSource.type,
+							uri: el.avatarSource.uri
+						});
+					}
 					data.append(`profile[${index}][name]`, el.fullName);
 					data.append(`profile[${index}][birthday]`, el.DOB ? el.DOB : Moment().format("MMM DD, YYYY"));
 					data.append(`profile[${index}][height]`, el.selectedHeight);
@@ -117,11 +120,13 @@ class GetStartedForm extends React.Component {
 					data.append(`profile[${index}][weight_oz]`, el.selectedOZWeight);
 				});
 			} else {
-				data.append("baby_profileupload", {
-					name: Babys[0].avatarSource.fileName,
-					type: Babys[0].avatarSource.type,
-					uri: Babys[0].avatarSource.uri
-				});
+				if(Babys[0].avatarSource) {
+					data.append("baby_profileupload", {
+						name: Babys[0].avatarSource.fileName,
+						type: Babys[0].avatarSource.type,
+						uri: Babys[0].avatarSource.uri
+					});
+				}
 				data.append("name", Babys[0].fullName);
 				data.append("birthday", Babys[0].DOB);
 				data.append("height", Babys[0].selectedHeight);
@@ -339,7 +344,7 @@ class GetStartedForm extends React.Component {
 								</View>
 							</View>
 							<View style={styles.pickerInputContainer}>
-								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Height</Text>
+								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Birth Height</Text>
 								<View style={styles.picker}>
 									{
 										heightList ? 
@@ -380,7 +385,7 @@ class GetStartedForm extends React.Component {
 								{isEmpty(el.selectedHeight) && el.selectedHeightErrMsg && <Text style={styles.error}>{isEmpty(el.selectedHeightErrMsg) ? "" : el.selectedHeightErrMsg}</Text>}
 							</View>
 							<View style={styles.pickerInputContainer}>
-								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Weight</Text>
+								<Text style={[styles.pickerLabel, { backgroundColor: "#E8BC7D" }]}>Birth Weight</Text>
 								<View style={styles.weightPicker}>
 									<View style={styles.weightLBPicker}>
 										{

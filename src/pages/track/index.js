@@ -17,11 +17,13 @@ import { getActiveIndex, getIndexData } from "./tab-menu";
 import { setTrackActiveTab } from "../../redux/actions/tabAction";
 
 class TrackScreen extends React.Component {
-	static navigationOptions = {
-		headerTitle: <HeaderComponent />,
-		headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
-		headerLeft: null
-	}
+	static navigationOptions = ({ screenProps: { insets } }) => {
+		return {
+			headerTitle: <HeaderComponent insets={insets} />,
+			headerStyle: { borderBottomWidth: 0, elevation: 0, paddingTop: 10 },
+			headerLeft: null
+		};
+	};
 
 	constructor(props) {
 		super();
@@ -40,32 +42,35 @@ class TrackScreen extends React.Component {
 
 	render() {
 		const { currentDate } = this.state;
-		const { navigation } = this.props;
-
+		const { navigation, tabReducer: { trackActiveTab } } = this.props;
+		
 		return (
 			<View style={styles.container}>
 				<View style={styles.TrackHeader}>
-					<TouchableOpacity style={styles.prevArrow} onPress={() => { this.prevClick(currentDate); }}>
-						<Image
-							source={Images.Track.prevIcon}
-							style={styles.ArrowIcon}
-						/>
-					</TouchableOpacity>
-					<Text style={styles.trackTitle}>
-						{currentDate == moment().format("MMMM DD, YYYY") ? "Today" : currentDate == moment().subtract(1, "days").format("MMMM DD, YYYY") == true ? "Yesterday" : currentDate}
-					</Text>
+					{
+						(trackActiveTab !== "Growth") && <TouchableOpacity style={styles.prevArrow} onPress={() => { this.prevClick(currentDate); }}>
+							<Image
+								source={Images.Track.prevIcon}
+								style={styles.ArrowIcon}
+							/>
+						</TouchableOpacity>
+					}
+					{
+						(trackActiveTab !== "Growth") ?   <Text style={styles.trackTitle}>
+							{currentDate == moment().format("MMMM DD, YYYY") ? "Today" : currentDate == moment().subtract(1, "days").format("MMMM DD, YYYY") == true ? "Yesterday" : currentDate}
+						</Text> : <Text style={styles.trackTitle}>Growth</Text>
+					}
 					{
 						currentDate == moment().format("MMMM DD, YYYY")
-							? (
-								<TouchableOpacity style={styles.nextArrow}>
+							? (trackActiveTab !== "Growth") && <TouchableOpacity style={styles.nextArrow}>
 									<Image
 										source={Images.Track.nextIcon}
 										style={styles.Disable}
 									/>
 								</TouchableOpacity>
-							)
-							: 							(
-								<TouchableOpacity style={styles.nextArrow} onPress={() => { this.nextClick(currentDate); }}>
+								
+							: (
+								(trackActiveTab !== "Growth") &&  <TouchableOpacity style={styles.nextArrow} onPress={() => { this.nextClick(currentDate); }}>
 									<Image
 										source={Images.Track.nextIcon}
 										style={styles.ArrowIcon}
@@ -150,4 +155,10 @@ const mapDispatchToProps = {
 	dispatchSetTrackActiveTab: (data) => setTrackActiveTab(data)
 };
 
-export default connect(null, mapDispatchToProps)(TrackScreen);
+const mapStateToProps = (state) => {
+	return {
+		tabReducer: state.tabReducer
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackScreen);

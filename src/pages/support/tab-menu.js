@@ -5,6 +5,11 @@ export const tabs = [
 		"width": 0
 	},
 	{
+		"title": "Manuals",
+		"id": "Manuals",
+		"width": 0
+	},
+	{
 		"title": "Articles",
 		"id": "Articles",
 		"width": 0

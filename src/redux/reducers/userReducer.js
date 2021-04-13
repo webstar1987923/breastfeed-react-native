@@ -8,8 +8,11 @@ import {
 	DELETE_BABY_START,
 	DELETE_BABY_SUCCESS,
 	DELETE_BABY_FAILED,
-	UPDATE_USER_NOTIFICATION
+	UPDATE_USER_NOTIFICATION,
 } from "../actions/userAction";
+import {
+	UPDATE_USER_LISTED_BABY_DETAIL
+} from "../actions/growthActions";
 
 const initialState = {
 	isLoading: false,
@@ -42,7 +45,19 @@ const userReducer = (state = initialState, action) => {
 		case EDIT_GET_DATA_BABY:
 			return { ...state, babyEdit: action.data };
 		case UPDATE_PROFILE_SUCCESS:
-			return { ...state, babyDetails: action.data, isLoading: false, loadingError: null };
+			console.log("U)PDATE", action.data);
+			let { babyEdit } = state;
+			const index = action.data.findIndex((x) => x.id === babyEdit.id);
+			if(index > -1) {
+				babyEdit = {...action.data[index]};
+			}
+			return {
+				...state, 
+				babyDetails: action.data, 
+				babyEdit,
+				isLoading: false, 
+				loadingError: null 
+			};
 		case UPDATE_PROFILE_START:
 			return { ...state, isLoading: true };
 		case UPDATE_USER_NOTIFICATION: {
@@ -69,6 +84,28 @@ const userReducer = (state = initialState, action) => {
 				...state,
 				notification: obj
 			};
+		}
+		case UPDATE_USER_LISTED_BABY_DETAIL: {
+			const data = action.data;
+			const {babyEdit, babyDetails} = state;
+			if(babyEdit.id === data.babyprofile_id) {
+				babyEdit['height'] = data.height;
+				babyEdit['weight_lb'] = data.weight_lb;
+				babyEdit['weight_oz'] = data.weight_oz;
+			}
+
+			const index = babyDetails.findIndex((x) => x.id === data.babyprofile_id);
+			if(index > -1) {
+				babyDetails[index]['height'] = data.height;
+				babyDetails[index]['weight_lb'] = data.weight_lb;
+				babyDetails[index]['weight_oz'] = data.weight_oz;
+			}
+
+			return {
+				...state,
+				babyEdit,
+				babyDetails
+			}
 		}
 		default:
 			return state;

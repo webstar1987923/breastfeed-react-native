@@ -124,8 +124,15 @@ class SignupScreen extends React.Component {
 		navigation.pop();
 	}
 
+	resend = () => {
+		const { dispatchForgotPassword } = this.props;
+		// console.log(this.state.email);
+		dispatchForgotPassword({email: this.state.email})
+	}
+
 	render() {
 		const { enableScrollViewScroll, isShowDropDown, formStep, resetOTPInput, otpErrorMessage, OTP } = this.state;
+		console.log(this.state)
 		return (
 			<LinearGradient style={styles.container} colors={["#F4E0C2", "#E4B166"]}>
 				{
@@ -171,7 +178,9 @@ class SignupScreen extends React.Component {
 										</View>
 										<View style={styles.resendTextDiv}>
 											<Text style={styles.resendText}>Didn't receive a code?</Text>
+											<TouchableOpacity onPress={() => this.resend()}>
 											<Text style={styles.resend}>Resend</Text>
+											</TouchableOpacity>
 										</View>
 										<ButtonComponent
 											buttonClicked={() => {
@@ -202,6 +211,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
 	dispatchSignUp: (data) => authActions.handleSignUp(data),
 	dispatchVerifySignUpOTP: (data) => authActions.handleVerifySignUpOTP(data),
+	dispatchForgotPassword: (data) => authActions.handleForgotPassword(data),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignupScreen);

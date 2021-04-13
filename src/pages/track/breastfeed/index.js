@@ -125,12 +125,28 @@ class BreastfeedCards extends React.Component {
 		return moment(data, ["HH:mm"]).format("hh:mm A");
 	}
 
+	toHHMMSS = (secs) => {
+		var sec_num = parseInt(secs, 10)
+		var hours   = Math.floor(sec_num / 3600)
+		var minutes = Math.floor(sec_num / 60) % 60
+		var seconds = sec_num % 60
+	
+		return [hours,minutes,seconds]
+			.map(v => v < 10 ? "0" + v : v)
+			.filter((v,i) => v !== "00" || i > 0)
+			.join(":")
+	}
+
 	// eslint-disable-next-line class-methods-use-this
 	convertDataIntoHM(data) {
 		// console.log("dasda", data);
 		let tmp = data.split(":");
-
 		if(Number(tmp[0]) > 0) {
+			// let totalSecs = (Number(tmp[0])*60)+Number(tmp[1]);
+			// let newTime = this.toHHMMSS(totalSecs).split(":");
+			// if(Number(newTime[0]) > 0) {
+			// 	return `${newTime[0]} h ${newTime[1]} m`
+			// }
 			if(Number(tmp[1]) > 0) {
 				return `${tmp[0]}m ${tmp[1]}s`;
 			}

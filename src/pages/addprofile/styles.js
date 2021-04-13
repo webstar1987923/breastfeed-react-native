@@ -64,8 +64,8 @@ export default StyleSheet.create({
 		padding: 0,
 	},
 	userprofilebutton: {
-		maxWidth: 100,
-		height: 100,
+		maxWidth: 125,
+		height: 125,
 		resizeMode: "contain",
 	},
 	cameraIcon: {

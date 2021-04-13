@@ -9,7 +9,7 @@ import { setActiveTab } from "../redux/actions/tabAction";
 const styles = StyleSheet.create({
 	footer: {
 		paddingBottom: 0,
-		height: 80,
+		height: 60,
 	},
 	footerTab: {
 		backgroundColor: "#fff",

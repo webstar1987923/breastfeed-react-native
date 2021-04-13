@@ -167,7 +167,7 @@ class PumpCards extends React.Component {
 		const { pump, isFocused, track } = this.props;
 		const { ViewNoteModal, isAlarmModal } = this.state;
 		const alarm = track.pump || [];
-
+		console.log({pump});
 		return (
 			<View style={styles.trackContainer}>
 				{
@@ -223,39 +223,24 @@ class PumpCards extends React.Component {
 										return (
 											<View style={styles.trackListItem} key={`track${key}`}>
 												<Text style={styles.startTime}>{this.convertTime(data.start_time)}</Text>
-												<View style={styles.breastUnits}>
-													{this.hasTime(data.left_breast)
-													&& (
-														<View style={styles.leftBreast}>
-															<Text style={styles.roundFrame}>L</Text>
-															<Text style={styles.listText}>Left breast</Text>
-														</View>
-													)}
-													{this.hasTime(data.right_breast)
-													&& (
-														<View style={styles.rightBreast}>
-															<Text style={styles.roundFrame}>R</Text>
-															<Text style={styles.listText}>Right breast</Text>
-														</View>
-													)}
-												</View>
+												
 												<View style={styles.pumpUnit}>
-													{(data.left_amount !== null)
+													{(data.total_amount !== null)
 													&& (
 														<Text style={styles.pumpUnitTextLeft}>
-															{data.left_amount}
+															{data.total_amount}
 															{" "}
 															oz
 														</Text>
 													)}
-													{(data.right_amount !== null)
+													{/* {(data.right_amount !== null)
 													&& (
 														<Text style={styles.pumpUnitTextRight}>
 															{data.right_amount}
 															{" "}
 															oz
 														</Text>
-													)}
+													)} */}
 												</View>
 												<Text style={styles.totalTime}>{this.convertDataIntoHM(data.total_time)}</Text>
 												<View style={styles.trackMenu}>

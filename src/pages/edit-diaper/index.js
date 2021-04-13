@@ -18,6 +18,7 @@ import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import moment from "moment";
 import styles from "./styles";
+import CustomTimePicker from "../../components/CustomTimePicker";
 
 class EditDiaper extends React.Component {
 	constructor(props) {
@@ -29,7 +30,8 @@ class EditDiaper extends React.Component {
 			// TimeValue: "",
 			time: card.diaperEdit.start_time,
 			selectedFeed: card.diaperEdit.type_of_diaper,
-			isKeyboardShow: false
+			isKeyboardShow: false,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -118,7 +120,7 @@ class EditDiaper extends React.Component {
 	}
 
 	render() {
-		const { NotesValue, time, selectedFeed, isKeyboardShow } = this.state;
+		const { isTimePickerOpen, NotesValue, time, selectedFeed, isKeyboardShow } = this.state;
 		
 		const selectedTime = time.split(":");
 		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
@@ -127,11 +129,19 @@ class EditDiaper extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Edit a Diaper</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
 							<TouchableOpacity
-								onPress={() => this.TimePicker.open()}
+								onPress={() => this.setState({isTimePickerOpen: true})}
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>

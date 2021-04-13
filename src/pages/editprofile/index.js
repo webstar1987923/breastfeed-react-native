@@ -17,6 +17,7 @@ import * as ImagePicker from "react-native-image-picker";
 import Moment from "moment";
 // import { translate } from "src/locales/i18n";
 import styles from "./styles";
+import moment from "moment";
 
 class EditProfileScreen extends React.Component {
 	constructor(props) {
@@ -34,7 +35,8 @@ class EditProfileScreen extends React.Component {
 			avatarSource: "",
 			heightList: null,
 			weightLBList: null,
-			weightOZList: null
+			weightOZList: null,
+			opened: false
 		};
 	}
 
@@ -62,14 +64,14 @@ class EditProfileScreen extends React.Component {
 
 	componentDidMount() {
 		const { navigation } = this.props;
-		console.warn("navigation.state.params.data", navigation.state.params.data);
-		console.warn("navigation.state.params", navigation.state.params);
+		console.log("navigation.state.params.data", navigation.state.params.data);
+		console.log("navigation.state.params", navigation.state.params);
 		if(navigation.state.params && navigation.state.params.data) {
 			this.setState({
 				babyprofile_id: navigation.state.params.data.id,
-				selectedHeight: navigation.state.params.data.height,
-				selectedLBWeight: navigation.state.params.data.weight_lb,
-				selectedOZWeight: navigation.state.params.data.weight_oz,
+				selectedHeight: Number(navigation.state.params.data.height),
+				selectedLBWeight: Number(navigation.state.params.data.weight_lb),
+				selectedOZWeight: Number(navigation.state.params.data.weight_oz),
 				nameValue: navigation.state.params.data.name,
 				value: navigation.state.params.data.birthday,
 				imageUrl: navigation.state.params.data.baby_profileupload
@@ -137,7 +139,7 @@ class EditProfileScreen extends React.Component {
 		}
 		data.append("name", nameValue);
 		data.append("babyprofile_id", babyprofile_id);
-		data.append("birthday", value);
+		data.append("birthday", moment(value).format("YYYY-MM-DD"));
 		data.append("height", selectedHeight);
 		data.append("weight_oz", selectedOZWeight);
 		data.append("weight_lb", selectedLBWeight);
@@ -165,6 +167,7 @@ class EditProfileScreen extends React.Component {
 		const options = {
 			title: "Select file",
 			mediaType: "photo",
+			quality: 0.7
 		};
 		ImagePicker.launchImageLibrary(options, (response) => {
 		  console.log("Response = ", response);
@@ -185,8 +188,8 @@ class EditProfileScreen extends React.Component {
 				<ScrollView style={styles.scrollView}>
 					<Text style={styles.editprofileTitle}>Edit Baby Profile</Text>
 					<View style={styles.editprofileForm}>
-						<Menu>
-							<MenuTrigger style={styles.MenuuserprofileIcon}>
+						<Menu opened={this.state.opened}>
+							<MenuTrigger style={styles.MenuuserprofileIcon} onPress={() => this.setState({ opened: true })}>
 								<View style={styles.userprofileIcon}>
 									{imageUrl !== null ? (
 										<Image
@@ -206,16 +209,19 @@ class EditProfileScreen extends React.Component {
 									/>
 								</View>
 							</MenuTrigger>
-							<MenuOptions style={styles.menuOptionS} optionsContainerStyle={{ marginTop: 100, marginLeft: 55, maxWidth: 160, elevation: 10, }}>
+							<MenuOptions  style={styles.menuOptionS} optionsContainerStyle={{ marginTop: 125, marginLeft: 85, maxWidth: 160, elevation: 10, }}>
 								<MenuOption style={styles.menuOption}>
-									<TouchableOpacity onPress={(data) => this.selectPhotoTapped(data)}>
+									<TouchableOpacity onPress={(data) => {
+										this.selectPhotoTapped(data);
+										this.setState({ opened: false })
+									}}>
 										<View style={[styles.avatar, styles.avatarContainer, { marginBottom: 20 }]}>
 											<Text style={styles.menuOptionText}>Change Photo</Text>
 										</View>
 									</TouchableOpacity>
 								</MenuOption>
 								<MenuOption style={styles.menuOption}>
-									<Text style={styles.menuOptionText} onPress={() => this.setState({ avatarSource: null, imageUrl: null })}>Remove</Text>
+									<Text style={styles.menuOptionText} onPress={() => this.setState({ avatarSource: null, imageUrl: null, opened: false })}>Remove</Text>
 								</MenuOption>
 							</MenuOptions>
 						</Menu>
@@ -258,7 +264,7 @@ class EditProfileScreen extends React.Component {
 							</View>
 						</View>
 						<View style={styles.pickerInputContainer}>
-							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Height</Text>
+							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Birth Height</Text>
 							<View style={styles.picker}>
 								{
 									heightList ?
@@ -298,7 +304,7 @@ class EditProfileScreen extends React.Component {
 							</View>
 						</View>
 						<View style={styles.pickerInputContainer}>
-							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Weight</Text>
+							<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Birth Weight</Text>
 							<View style={styles.weightPicker}>
 								<View style={styles.weightLBPicker}>
 									{

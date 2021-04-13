@@ -14,6 +14,7 @@ import { Keys, KeyValueStore } from "./utils/KeyValueStore";
 import GetStartedNavigator from "./getStartedNavigator";
 import * as commonActions from "./redux/actions/commonActions";
 import { isIOS } from "./utils/native";
+// import firebase from 'react-native-firebase';
 
 class App extends Component {
 	constructor(props) {
@@ -48,7 +49,9 @@ class App extends Component {
 		}
 
 		if(isIOS()) {
-			messaging().requestPermission();
+			messaging().requestPermission({
+				badge: false
+			});
 		}
 
 		messaging().onMessage((data) => {
@@ -81,13 +84,14 @@ class App extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
+				{ (isLoading) && <LoadingIndicator isLoading={isLoading} /> }
 				{
 					(signedIn) ? (
 						<SafeAreaInsetsContext.Consumer>
 							{
 								(insets) => (
 									<React.Fragment>
-										<StatusBar barStyle="light" />
+										<StatusBar barStyle="dark" />
 										{
 											isGetStarted ? (
 												<HomeNavigator screenProps={{ t, i18n, insets }} onNavigationStateChange={(prevState, currentState) => this.onNavigateStateChange(prevState, currentState)} />

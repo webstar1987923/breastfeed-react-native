@@ -8,7 +8,7 @@ export const GROWTH_LISTING_START = "GROWTH_LISTING_START";
 export const GROWTH_LISTING_SUCCESS = "GROWTH_LISTING_SUCCESS";
 export const GROWTH_LISTING_FAILURE = "GROWTH_LISTING_FAILURE";
 export const CLEAR_MSG = "CLEAR_MSG";
-
+export const UPDATE_USER_LISTED_BABY_DETAIL = "UPDATE_USER_LISTED_BABY_DETAIL";
 /* LOGIN ACTIONS */
 export const addGrowthStart = () => ({
 	type: ADD_GROWTH_START
@@ -37,8 +37,13 @@ export const clearMsg = () => ({
 	type: CLEAR_MSG
 });
 
+export const updateBabyDetails = (data) => ({
+	type: UPDATE_USER_LISTED_BABY_DETAIL,
+	data
+})
+
 export function handleGrowthCreate(data) {
-	console.warn("Create data:::", data);
+	console.log("Create data:::", data);
 	return (dispatch, getState) => {
 		dispatch(commonActions.loadingStart());
 		dispatch(addGrowthStart());
@@ -47,8 +52,9 @@ export function handleGrowthCreate(data) {
 		// console.log("State", state);
 		// plisting.result = [...state.growthReducer.growthListing.result];
 		// console.log("plisting", plisting);
+		console.log("data", data)
 		Services.handleGrowthCreate(data).then(function(response) {
-			// console.log("Create response", response.data);
+			console.log("Create response", response.data);
 
 			if(response.data.result.error) {
 				showAPIErrorAlert(error);
@@ -60,10 +66,11 @@ export function handleGrowthCreate(data) {
 			// console.log("plisting", plisting);
 			
 			dispatch(addGrowthSuccess(response.data.result));
+			dispatch(updateBabyDetails(response.data.result));
 			dispatch(commonActions.loadingEnd());
 			// dispatch(addGrowthSuccess());
 		}).catch(function(error) {
-			// console.log("error", error);
+			console.log("error", error);
 			dispatch(commonActions.loadingEnd());
 			showAPIErrorAlert(error);
 		});

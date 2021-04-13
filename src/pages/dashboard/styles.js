@@ -1,9 +1,13 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
+	safeAreaContainer: {
+		flex: 1,
+		backgroundColor: 'white',
+	},
 	container: {
 		paddingHorizontal: 15,
-		paddingTop: 10,
+		paddingTop: 15,
 		paddingBottom: 15
 	},
 	activityTitle: {
@@ -151,6 +155,12 @@ export default StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingBottom: 5,
+	},
+	pumpLinechartMiter: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 5,
 	},
 	linecharttextMiter: {
 		fontSize: 14,

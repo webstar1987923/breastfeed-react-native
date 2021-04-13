@@ -66,7 +66,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>2:31</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>How to Operate Final | English</Text>
+								<Text style={styles.tutorialsvideoText}>How to Operate Hygeia Evolve Pump</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("490896029")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -76,7 +76,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:54</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>How to Clean Final | English</Text>
+								<Text style={styles.tutorialsvideoText}>How to Clean Hygeia Evolve Pump</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("491921534")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -86,7 +86,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:04</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Key Features v4 | English</Text>
+								<Text style={styles.tutorialsvideoText}>Hygeia Evolve Pump Key Features</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("492238725")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -96,7 +96,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:08</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Troubleshooting Tips_Final | English</Text>
+								<Text style={styles.tutorialsvideoText}>Hygeia Evolve Pump Troubleshooting Tips</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494200531")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -106,7 +106,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>2:57</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>How to Clean | Spanish Final</Text>
+								<Text style={styles.tutorialsvideoText}>Como Utilizar El Extractor De Leche Hygeia Evolve</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494197950")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -116,7 +116,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>3:55</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>How to Operate | Spanish Final</Text>
+								<Text style={styles.tutorialsvideoText}>Como Limpiar El Extractor De Leche Hygeia Evolve</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494196665")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -126,7 +126,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:05</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Troubleshooting Tips Final - Spanish</Text>
+								<Text style={styles.tutorialsvideoText}>Características Principales Del Dxtractor De Deche Hygeia Evolve</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494195438")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -136,7 +136,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:04</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Key Features v4 Spanish</Text>
+								<Text style={styles.tutorialsvideoText}>Extractor De Deche Hygeia Evolve Consejos Para Resolución De Problemas</Text>
 							</TouchableOpacity>
 						</View>
 					</ScrollView>

@@ -19,6 +19,7 @@ import TimePicker from "react-native-24h-timepicker";
 import { getActiveBaby } from "src/redux/selectors";
 import moment from "moment";
 import styles from "./styles";
+import CustomTimePicker from "../../components/CustomTimePicker";
 
 class AddBottle extends React.Component {
 	constructor(props) {
@@ -31,7 +32,8 @@ class AddBottle extends React.Component {
 			selectedAmount: "1.0",
 			selectedFeed: "Breastmilk",
 			isKeyboardShow: false,
-			ozList: null
+			ozList: null,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -84,7 +86,7 @@ class AddBottle extends React.Component {
 		if(msg === "ADD_BOTTLE_SUCCESS") {
 			dispatchClearCard();
 			this.setState(() => {
-				showAlert("Success", "bottle create successfully.", "", () => {
+				showAlert("Success", "Bottle entry created successfully", "", () => {
 					navigation.navigate("Track", { activeTab: "Bottles" });
 				});
 			});
@@ -135,7 +137,7 @@ class AddBottle extends React.Component {
 	}
 
 	render() {
-		const { ozList, NotesValue, time, selectedAmount, selectedFeed, isKeyboardShow } = this.state;
+		const { isTimePickerOpen, ozList, NotesValue, time, selectedAmount, selectedFeed, isKeyboardShow } = this.state;
 
 		const selectedTime = time.split(":");
 		selectedTime[1] = selectedTime[1].length === 1 ? `0${selectedTime[1]}` : selectedTime[1];
@@ -145,11 +147,19 @@ class AddBottle extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.breastfeedTitle}>Add a Bottle</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 					<View style={styles.startTimePicker}>
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						<View style={styles.picker}>
 							<TouchableOpacity
-								onPress={() => this.TimePicker.open()}
+								onPress={() => this.setState({isTimePickerOpen: true})}
 								style={styles.pickerInput}
 							>
 								<Text style={styles.pickerInput}>

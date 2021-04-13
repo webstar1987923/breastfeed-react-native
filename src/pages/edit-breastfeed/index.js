@@ -17,6 +17,7 @@ import { isEmptyObject, showAlert } from "src/utils/native";
 import TimePicker from "react-native-24h-timepicker";
 import moment from "moment";
 import styles from "./styles";
+import CustomTimePicker from "../../components/CustomTimePicker";
 
 class AddBreastfeedEntry extends React.Component {
 	constructor(props) {
@@ -68,7 +69,8 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: TotalTimeMinutes,
 			TotalTimeSecond: TotalTimeSeconds,
 			ManualTotalTime: "0m 0s",
-			isKeyboardShow: false
+			isKeyboardShow: false,
+			isTimePickerOpen: false
 		};
 	}
 
@@ -357,7 +359,7 @@ class AddBreastfeedEntry extends React.Component {
 	}
 
 	render() {
-		const { isKeyboardShow, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
+		const { isTimePickerOpen, isKeyboardShow, NotesValue, isEnabled, IsmanualEntry, ManualTotalTime, IsmanualEntryRight, time, timeCountRight, timeCount, isActive, secondsElapsed, isActiveRight, secondsElapsedRight, TotalTimeMinute, TotalTimeSecond } = this.state;
 		
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ")
 		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ")
@@ -371,13 +373,21 @@ class AddBreastfeedEntry extends React.Component {
 				<Text style={styles.breastfeedTitle}>Edit a Breastfeed Entry</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					<View style={styles.startTimePicker}>
+					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						if(value) {
+							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
+						} else {
+							this.setState({isTimePickerOpen: false})
+						}
+						
+					}}/> }
 						<Text style={[styles.pickerLabel, { backgroundColor: "#fff", color: "#999" }]}>Start Time</Text>
 						{
 							isEnabled
 								? (
 									<View style={styles.picker}>
 										<TouchableOpacity
-											onPress={() => this.TimePicker.open()}
+											onPress={() => this.setState({isTimePickerOpen: true})}
 											style={styles.pickerInput}
 										>
 											<Text style={styles.pickerInput}>
@@ -386,7 +396,7 @@ class AddBreastfeedEntry extends React.Component {
 										
 										<FontAwesomeIcon style={styles.pickerIcon} name="caret-down" />
 										</TouchableOpacity>
-										<TimePicker
+										{/* <TimePicker
 											ref={(ref) => {
 												this.TimePicker = ref;
 											}}
@@ -394,7 +404,7 @@ class AddBreastfeedEntry extends React.Component {
 											selectedMinute={selectedTime[1] || "00"}
 											onCancel={() => this.onCancel()}
 											onConfirm={(hour, minute,) => this.onConfirm(hour, minute)}
-										/>
+										/> */}
 									</View>
 								)
 								: 								(

@@ -4,7 +4,7 @@ export default StyleSheet.create({
 	container: {
 		paddingHorizontal: 15,
 		paddingBottom: 10,
-		paddingTop: 10
+		paddingTop: 15
 	},
 	statisticsHeader: {
 		flexDirection: "row",

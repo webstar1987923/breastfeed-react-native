@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { View, StyleSheet, TextInput as Input, Text } from "react-native";
+import { View, StyleSheet, TextInput as Input, Text, Keyboard } from "react-native";
 import { isEmpty } from "../utils/native";
 
 const styles = StyleSheet.create({
@@ -59,6 +59,9 @@ export default function TextInput({ inputStyle, multiline, textLabelColor, textL
 				returnKeyType={returnKeyType}
 				maxLength={maxLength}
 				editable={isEmpty(editable) ? true : editable}
+				onSubmitEditing={() => {
+					Keyboard.dismiss();
+				}}
 			/>
 			{
 				isInvalid && <Text style={styles.error}>{isEmpty(errorMessage) ? `${placeholder} is required` : errorMessage}</Text>

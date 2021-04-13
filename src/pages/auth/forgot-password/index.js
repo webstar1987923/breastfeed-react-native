@@ -130,6 +130,7 @@ class ForgotPasswordScreen extends React.Component {
 
 	render() {
 		const { formStep, otpErrorMessage, OTP, resetOTPInput, isKeyboardShow } = this.state;
+		console.log(this.state,"dadad");
 		return (
 			<LinearGradient style={styles.container} colors={["#E8BC7D", "#E8BC7D"]}>
 				{

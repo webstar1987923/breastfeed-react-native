@@ -160,7 +160,7 @@ class GrowthCards extends React.Component {
 					// counter +=2;
 				}
 			}
-			console.log(i, chartData[i]);
+			// console.log(i, chartData[i]);
 			// if(chartData !== "Mar" & )
 		}
 		// console.log({tmpStaticData})
@@ -175,25 +175,31 @@ class GrowthCards extends React.Component {
 
 
 		const _newMonths = [];
-		const _newHeights = [10];
-		const _newWeightOz = [10];
-		const _newWeightLbs = [10];
-		let _counter = 0;
-		let currentMonth = moment().format("MMM");
-		let currentMonthData;
+		const _newHeights = [];
+		const _newWeightOz = []
+		const _newWeightLbs = [];
+		// let _counter = 0;
+		// let currentMonth = moment().format("MMM");
+		// let currentMonthData;
+		console.log({list})
 		for(let i in list) {
+			// console.log("LO");
 			const monthName = moment(list[i].date).format("MMM");
-			// console.log("monthName", monthName)
 			const existingMonthIndex = _newMonths.findIndex((x) => x === monthName);
-			if(currentMonth === monthName && _newMonths.length !== 12) {
-				if(list[i].height != 0 ) {
-					currentMonthData = list[i];
-				}
-			}
 			if(existingMonthIndex === -1) {
 				_newMonths.push(monthName);
 			}
-			if(_newHeights.length < 48) {
+			// // console.log("monthName", monthName)
+			// const existingMonthIndex = _newMonths.findIndex((x) => x === monthName);
+			// if(currentMonth === monthName && _newMonths.length !== 12) {
+			// 	if(list[i].height != 0 ) {
+			// 		currentMonthData = list[i];
+			// 	}
+			// }
+			// if(existingMonthIndex === -1) {
+			// 	_newMonths.push(monthName);
+			// }
+			// if(_newHeights.length < 48) {
 				
 				// if(Number(i) < 10) {
 				// 	_newHeights.push(_counter);
@@ -205,198 +211,198 @@ class GrowthCards extends React.Component {
 				// 	_newWeightLbs.push(0);
 				// }
 				// _counter = _counter+2;
-				_newHeights.push(list[i].height);
-				_newWeightOz.push(list[i].weight_oz);
-				_newWeightLbs.push(list[i].weight_lb);
-			}
+				_newHeights.push(Number(list[i].height));
+				_newWeightOz.push(Number(list[i].weight_oz));
+				_newWeightLbs.push(Number(list[i].weight_lb));
+			// }
 
 			
 		}
-		  
+		console.log({_newHeights})
 		// const heightList = [];
 		// const weightList = [];
 		// const graphItems = [];
 		// const graphItemMonths = [];
 
-		const monthListings = [];
-		const itemsHeightWithMonths = [];
-		const itemsWeightWithMonths = [];
-		const itemsWeightLBSWithMonths = [];
+		// const monthListings = [];
+		// const itemsHeightWithMonths = [];
+		// const itemsWeightWithMonths = [];
+		// const itemsWeightLBSWithMonths = [];
 
 
-		const _itemHeight = [];
-		const _itemWeightWithLBS = [];
-		const _itemWeightWithOZ = [];
+		// const _itemHeight = [];
+		// const _itemWeightWithLBS = [];
+		// const _itemWeightWithOZ = [];
 
-		// Last 4 Months 
-		for(let i=4;i>=1; i--) {
-			let startMonth = moment().subtract(i, 'months').startOf("month");
-			let endMonth = moment().subtract(i, 'months').endOf("month");
-			// console.log(">>>>>>>")
-			_itemHeight.push({
-				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
-				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
-				values: []
-			})
-			_itemWeightWithLBS.push({
-				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
-				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
-				values: []
-			})
-			_itemWeightWithOZ.push({
-				month: moment().subtract(i, 'months').startOf("month").format("MMM"),
-				number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
-				values: []
-			})
+		// // Last 4 Months 
+		// for(let i=4;i>=1; i--) {
+		// 	let startMonth = moment().subtract(i, 'months').startOf("month");
+		// 	let endMonth = moment().subtract(i, 'months').endOf("month");
+		// 	// console.log(">>>>>>>")
+		// 	_itemHeight.push({
+		// 		month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+		// 		number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+		// 		values: []
+		// 	})
+		// 	_itemWeightWithLBS.push({
+		// 		month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+		// 		number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+		// 		values: []
+		// 	})
+		// 	_itemWeightWithOZ.push({
+		// 		month: moment().subtract(i, 'months').startOf("month").format("MMM"),
+		// 		number: Number(moment().subtract(i, 'months').startOf("month").format("M")),
+		// 		values: []
+		// 	})
 
-			const index = _itemHeight.findIndex((x) => x.month === moment().subtract(i, 'months').startOf("month").format("MMM"));
-			for(let j in list) {
+		// 	const index = _itemHeight.findIndex((x) => x.month === moment().subtract(i, 'months').startOf("month").format("MMM"));
+		// 	for(let j in list) {
 				
-				if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
+		// 		if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
 					
-					_itemHeight[index].values.push(Number(list[j].height));
-					_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
-					_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
+		// 			_itemHeight[index].values.push(Number(list[j].height));
+		// 			_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+		// 			_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
 
-					// OLD
-					itemsHeightWithMonths.push(Number(list[j].height));
-					itemsWeightWithMonths.push(Number(list[j].weight_oz));
-					itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
-				}
-			}
-			monthListings.push(moment().subtract(i, 'months').startOf("month").format("MMM"));
-		}
+		// 			// OLD
+		// 			itemsHeightWithMonths.push(Number(list[j].height));
+		// 			itemsWeightWithMonths.push(Number(list[j].weight_oz));
+		// 			itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
+		// 		}
+		// 	}
+		// 	monthListings.push(moment().subtract(i, 'months').startOf("month").format("MMM"));
+		// }
 		
 
-		// CURRENT MONTH
-		monthListings.push(moment().add(1,"months").format("MMM"));
-		let startMonth = moment().add(1,"months").startOf("month");
-		let endMonth = moment().add(1,"months").endOf("month");
+		// // CURRENT MONTH
+		// monthListings.push(moment().add(1,"months").format("MMM"));
+		// let startMonth = moment().add(1,"months").startOf("month");
+		// let endMonth = moment().add(1,"months").endOf("month");
 
-		_itemHeight.push({
-			month: moment().add(1,"months").startOf("month").format("MMM"),
-			number: Number(moment().add(1,"months").startOf("month").format("M")),
-			values: []
-		})
-		_itemWeightWithLBS.push({
-			month: moment().add(1,"months").startOf("month").format("MMM"),
-			number: Number(moment().add(1,"months").startOf("month").format("M")),
-			values: []
-		})
-		_itemWeightWithOZ.push({
-			month: moment().add(1,"months").startOf("month").format("MMM"),
-			number: Number(moment().add(1,"months").startOf("month").format("M")),
-			values: []
-		})
-		const index = _itemHeight.findIndex((x) => x.month === moment().add(1,"months").startOf("month").format("MMM"));
-		for(let j in list) {
-			if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
+		// _itemHeight.push({
+		// 	month: moment().add(1,"months").startOf("month").format("MMM"),
+		// 	number: Number(moment().add(1,"months").startOf("month").format("M")),
+		// 	values: []
+		// })
+		// _itemWeightWithLBS.push({
+		// 	month: moment().add(1,"months").startOf("month").format("MMM"),
+		// 	number: Number(moment().add(1,"months").startOf("month").format("M")),
+		// 	values: []
+		// })
+		// _itemWeightWithOZ.push({
+		// 	month: moment().add(1,"months").startOf("month").format("MMM"),
+		// 	number: Number(moment().add(1,"months").startOf("month").format("M")),
+		// 	values: []
+		// })
+		// const index = _itemHeight.findIndex((x) => x.month === moment().add(1,"months").startOf("month").format("MMM"));
+		// for(let j in list) {
+		// 	if((moment(list[j].date).isAfter(startMonth) && moment(list[j].date).isBefore(endMonth)) || moment(list[j].date).isSame(endMonth) || moment(list[j].date).isSame(startMonth)) {
 				
 
-				const startOfWeek = moment().add(1,"months").startOf('month').week();
-				const endOfWeek = moment().add(1,"months").endOf('month').week();
-				const currentWeek = moment().add(1,"months").week();
-				// console.log(">>>>>>>>>>>>>", list[j].date, moment(list[j].date).week(), currentWeek)
-				// for(let i = startOfWeek; i<=currentWeek; i++) {
+		// 		const startOfWeek = moment().add(1,"months").startOf('month').week();
+		// 		const endOfWeek = moment().add(1,"months").endOf('month').week();
+		// 		const currentWeek = moment().add(1,"months").week();
+		// 		// console.log(">>>>>>>>>>>>>", list[j].date, moment(list[j].date).week(), currentWeek)
+		// 		// for(let i = startOfWeek; i<=currentWeek; i++) {
 					
-					if(moment(list[j].date).week() == currentWeek) {
-						console.log({currentWeek});
-						_itemHeight[index].values.push(Number(list[j].height));
-						_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
-						_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
-					} else if(moment(list[j].date).week() < currentWeek){
-						// console.log("NOT MARCH")
-						// console.log(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1])
-						// _itemHeight[index].values.push(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1]);
-					}
-				// }
-				// console.log({startOfWeek, endOfWeek, currentWeek})
-				// for()
+		// 			if(moment(list[j].date).week() == currentWeek) {
+		// 				console.log({currentWeek});
+		// 				_itemHeight[index].values.push(Number(list[j].height));
+		// 				_itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+		// 				_itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
+		// 			} else if(moment(list[j].date).week() < currentWeek){
+		// 				// console.log("NOT MARCH")
+		// 				// console.log(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1])
+		// 				// _itemHeight[index].values.push(_itemHeight[index-1].values[_itemHeight[index-1].values.length-1]);
+		// 			}
+		// 		// }
+		// 		// console.log({startOfWeek, endOfWeek, currentWeek})
+		// 		// for()
 
-				// const dateWeek = moment(list[j].date).startOf().week();
-				// const startOfWeek = moment().startOf().week()
+		// 		// const dateWeek = moment(list[j].date).startOf().week();
+		// 		// const startOfWeek = moment().startOf().week()
 
-				// // if(dateWeek > startOfWeek && )
+		// 		// // if(dateWeek > startOfWeek && )
 
-				// console.log("WEK", moment(list[j].date).startOf().week())
-				// console.log("CURRENT ", moment().startOf('month').week());
-				// console.log("LAST  CURRENT ", moment().endOf('month').week());
+		// 		// console.log("WEK", moment(list[j].date).startOf().week())
+		// 		// console.log("CURRENT ", moment().startOf('month').week());
+		// 		// console.log("LAST  CURRENT ", moment().endOf('month').week());
 
-				// console.log(" Last WEK", moment(list[j].date).endOf().week())
-				// console.log("LAST  CURRENT ", moment().endOf().week());
+		// 		// console.log(" Last WEK", moment(list[j].date).endOf().week())
+		// 		// console.log("LAST  CURRENT ", moment().endOf().week());
 
-				/// OLD
-				itemsHeightWithMonths.push(Number(list[j].height));
-				itemsWeightWithMonths.push(Number(list[j].weight_oz));
-				itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
-				// /// NEW
-				// _itemHeight[index].values.push(Number(list[j].height));
-				// _itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
-				// _itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
-			}
-		}
+		// 		/// OLD
+		// 		itemsHeightWithMonths.push(Number(list[j].height));
+		// 		itemsWeightWithMonths.push(Number(list[j].weight_oz));
+		// 		itemsWeightLBSWithMonths.push(Number(list[j].weight_lb));
+		// 		// /// NEW
+		// 		// _itemHeight[index].values.push(Number(list[j].height));
+		// 		// _itemWeightWithLBS[index].values.push(Number(list[j].weight_lb));
+		// 		// _itemWeightWithOZ[index].values.push(Number(list[j].weight_oz));
+		// 	}
+		// }
 
-		const _itemsListForGraph = [];
-		const _itemsListForGraphWeightOZ = [];
+		// const _itemsListForGraph = [];
+		// const _itemsListForGraphWeightOZ = [];
 
-		/// height Graph
-		for(let i in _itemHeight) {
-			if(_itemHeight[i].month !== moment().add(1,"months").startOf("month").format("MMM")) {
-				for(let j=0; j<4; j++) {
-					if(_itemHeight[i].values[j]) {
-						_itemsListForGraph.push(_itemHeight[i].values[j])
-					} else {
-						_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
-					}
-				}
-			} else {
-				for(let j=0; j<4; j++) {
-					if(_itemHeight[i].values[j]) {
-						_itemsListForGraph.push(0)
-					} else {
-						_itemsListForGraph.push(0);
-					}
-				}
-			}
+		// /// height Graph
+		// for(let i in _itemHeight) {
+		// 	if(_itemHeight[i].month !== moment().add(1,"months").startOf("month").format("MMM")) {
+		// 		for(let j=0; j<4; j++) {
+		// 			if(_itemHeight[i].values[j]) {
+		// 				_itemsListForGraph.push(_itemHeight[i].values[j])
+		// 			} else {
+		// 				_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
+		// 			}
+		// 		}
+		// 	} else {
+		// 		for(let j=0; j<4; j++) {
+		// 			if(_itemHeight[i].values[j]) {
+		// 				_itemsListForGraph.push(0)
+		// 			} else {
+		// 				_itemsListForGraph.push(0);
+		// 			}
+		// 		}
+		// 	}
 			
-			// if(_itemHeight[i].values.length != 4) {
-			// 	for(let j=0; j<4; j++) {
-			// 		if(_itemHeight[i].values[j]) {
-			// 			_itemsListForGraph.push(_itemHeight[i].values[j])
-			// 		} else {
-			// 			_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
-			// 		}
-			// 	}
-			// } else {
-			// 	for(let j=0; j<4; j++) {
-			// 		if(_itemHeight[i].values[j]) {
-			// 			_itemsListForGraph.push(_itemHeight[i].values[j])
-			// 		} else {
-			// 			_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
-			// 		}
-			// 	}
-			// }
-		}
-		// Weight Graph
-		for(let i in _itemWeightWithOZ) {
-			if(_itemWeightWithOZ[i].values.length != 4) {
-				for(let j=0; j<4; j++) {
-					if(_itemWeightWithOZ[i].values[j]) {
-						_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
-					} else {
-						_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
-					}
-				}
-			} else {
-				for(let j=0; j<4; j++) {
-					if(_itemWeightWithOZ[i].values[j]) {
-						_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
-					} else {
-						_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
-					}
-				}
-			}
-		}
+		// 	// if(_itemHeight[i].values.length != 4) {
+		// 	// 	for(let j=0; j<4; j++) {
+		// 	// 		if(_itemHeight[i].values[j]) {
+		// 	// 			_itemsListForGraph.push(_itemHeight[i].values[j])
+		// 	// 		} else {
+		// 	// 			_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
+		// 	// 		}
+		// 	// 	}
+		// 	// } else {
+		// 	// 	for(let j=0; j<4; j++) {
+		// 	// 		if(_itemHeight[i].values[j]) {
+		// 	// 			_itemsListForGraph.push(_itemHeight[i].values[j])
+		// 	// 		} else {
+		// 	// 			_itemsListForGraph.push(_itemsListForGraph[_itemsListForGraph.length-1] || 0);
+		// 	// 		}
+		// 	// 	}
+		// 	// }
+		// }
+		// // Weight Graph
+		// for(let i in _itemWeightWithOZ) {
+		// 	if(_itemWeightWithOZ[i].values.length != 4) {
+		// 		for(let j=0; j<4; j++) {
+		// 			if(_itemWeightWithOZ[i].values[j]) {
+		// 				_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
+		// 			} else {
+		// 				_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
+		// 			}
+		// 		}
+		// 	} else {
+		// 		for(let j=0; j<4; j++) {
+		// 			if(_itemWeightWithOZ[i].values[j]) {
+		// 				_itemsListForGraphWeightOZ.push(_itemWeightWithOZ[i].values[j])
+		// 			} else {
+		// 				_itemsListForGraphWeightOZ.push(_itemsListForGraphWeightOZ[_itemsListForGraphWeightOZ.length-1] || 0);
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		const { selectedPoint, from, isModalOpen } = this.state;
 	
@@ -410,7 +416,7 @@ class GrowthCards extends React.Component {
 		// const hidePointIndexesOfHeight = this.getHidePointIndexs(_newHeights);
 
 		// console.log({_newHeights, hidePointIndexesOfHeight, _newMonths, chartData, tmpStaticData});
-		console.log({currentMonthData})
+		console.log({_newHeights, _newMonths})
 		return (
 			<View style={styles.container}>
 				<Modal
@@ -448,7 +454,7 @@ class GrowthCards extends React.Component {
 					<View style={styles.graphTitle}>
 						<Text style={styles.graphTitleText}>Current Height:</Text>
 						<Text style={styles.graphTitleSelect}>
-							{(currentMonthData && currentMonthData.height) ? currentMonthData.height : 0}
+							{currentHeight}
 							{" "}
 							in
 						</Text>
@@ -491,7 +497,7 @@ class GrowthCards extends React.Component {
 					<View style={styles.graphTitle}>
 						<Text style={styles.graphTitleText}>Current Weight:</Text>
 						<Text style={styles.graphTitleSelect}>
-							{(currentMonthData && currentMonthData.weight_lb) ? currentMonthData.weight_lb : 0}
+							{currentWeight}
 							{" "}
 							lbs
 						</Text>
