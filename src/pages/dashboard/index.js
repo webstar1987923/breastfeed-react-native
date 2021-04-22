@@ -155,7 +155,7 @@ class dashboardScreen extends React.Component {
 		const { leftBreastPercentage, isNoBabyModal } = this.state;
 		let dashboardData = dashboard.dashboardListing.result;
 		// console.log(this.props.tab);
-		console.log("dashboard", dashboardData);
+		// console.log("dashboard", dashboardData);
 		// console.log(this.props.user);
 		return (
 			<ScrollView>

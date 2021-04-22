@@ -123,6 +123,10 @@ export const Images = {
 	},
 	Articles: {
 		articlesImg: require("./article-img.png"),
+		howTo: require("./howTo.jpeg"),
+		understanding: require("./understanding.jpeg"),
+		pupming_storing: require("./pupming_storing.jpeg"),
+		guideline: require("./guideline.jpeg")
 	},
 	Statistics: {
 		prevIcon: require("./prev-icon.png"),

@@ -11,7 +11,7 @@ class ArticlesScreen extends React.Component {
 				<View style={styles.container}>
 					<TouchableOpacity style={styles.articlesImgBox} onPress={() => Linking.openURL("https://www.hygeiahealth.com/blog/how-to-breastfeed/")}>
 						<Image
-							source={Images.Articles.articlesImg}
+							source={Images.Articles.howTo}
 							style={styles.articlesImg}
 						/>
 						<View style={styles.articleContent}>
@@ -21,7 +21,7 @@ class ArticlesScreen extends React.Component {
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.articlesImgBox} onPress={() => Linking.openURL("https://www.hygeiahealth.com/blog/breastfeed-understanding-benefits-breastfeeding/")}>
 						<Image
-							source={Images.Articles.articlesImg}
+							source={Images.Articles.understanding}
 							style={styles.articlesImg}
 						/>
 						<View style={styles.articleContent}>
@@ -31,7 +31,7 @@ class ArticlesScreen extends React.Component {
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.articlesImgBox} onPress={() => Linking.openURL("https://www.hygeiahealth.com/blog/pumping-and-storing/")}>
 						<Image
-							source={Images.Articles.articlesImg}
+							source={Images.Articles.pupming_storing}
 							style={styles.articlesImg}
 						/>
 						<View style={styles.articleContent}>
@@ -51,7 +51,7 @@ class ArticlesScreen extends React.Component {
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.articlesImgBox} onPress={() => Linking.openURL("https://www.hygeiahealth.com/guidelines-for-storing-and-thawing-breast-milk/")}>
 						<Image
-							source={Images.Articles.articlesImg}
+							source={Images.Articles.guideline}
 							style={styles.articlesImg}
 						/>
 						<View style={styles.articleContent}>

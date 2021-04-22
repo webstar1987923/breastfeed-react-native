@@ -186,7 +186,7 @@ class HeaderComponent extends Component {
 		const { user, insets } = this.props;
 		const { activeIndex } = this.state;
 		return (
-			<View style={[styles.header, { paddingTop: insets.top ? insets.top : 15 }]}>
+			<View style={styles.header}>
 				<TouchableOpacity style={styles.headerLogo} onPress={() => { this.DashboardHandler(); }}>
 					<Image
 						source={Images.globalScreen.smallLogo}

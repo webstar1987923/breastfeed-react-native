@@ -263,45 +263,53 @@ class StatisticsScreen extends React.Component {
 				let totalMin = 0;
 				let totalSec = 0;
 
-				for(let i in todayItems) {
-					const _tmp = todayItems[i].total_time.split(":");
-					totalMin += Number(_tmp[0]);
-					totalSec += Number(_tmp[1]);
-				}
-				let _tmpTotal = (totalMin*60) + totalSec
-				if(_tmpTotal < 60) {
-					breastfeeds_total_time_avg = `${_tmpTotal}`
-					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7))}`
+				// for(let i in todayItems) {
+				// 	const _tmp = todayItems[i].total_time.split(":");
+				// 	totalMin += Number(_tmp[0]);
+				// 	totalSec += Number(_tmp[1]);
+				// }
+				// let _tmpTotal = (totalMin*60) + totalSec
+				// if(_tmpTotal < 60) {
+				// 	breastfeeds_total_time_avg = `${_tmpTotal/7}`
+				// 	breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7))}`
 
-					if(breastfeeds_total_time_avg > 1) {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
-					} else {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
-					}
+				// 	if(breastfeeds_total_time_avg > 1) {
+				// 		breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
+				// 	} else {
+				// 		breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
+				// 	}
 
-					if(breastfeeds_total_session_avg > 1) {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
-					} else {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
-					}
+				// 	if(breastfeeds_total_session_avg > 1) {
+				// 		breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
+				// 	} else {
+				// 		breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
+				// 	}
 
 
-				} else {
-					breastfeeds_total_time_avg = `${Math.round(_tmpTotal/60)}`;
-					breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
+				// } else {
+				// 	breastfeeds_total_time_avg = `${Math.round(_tmpTotal/60)}`;
+				// 	breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
 
-					if(breastfeeds_total_time_avg > 1) {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
-					} else {
-						breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
-					}
+				// 	if(breastfeeds_total_time_avg > 1) {
+				// 		breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
+				// 	} else {
+				// 		breastfeeds_total_time_avg = `${breastfeeds_total_time_avg}`
+				// 	}
 
-					if(breastfeeds_total_session_avg > 1) {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
-					} else {
-						breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
-					}
-				}
+				// 	if(breastfeeds_total_session_avg > 1) {
+				// 		breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
+				// 	} else {
+				// 		breastfeeds_total_session_avg = `${breastfeeds_total_session_avg}`
+				// 	}
+				// }
+
+				let tmpBreastfeedTotalTimeAvg = breastfeeds.breastfeeds_total_time_avg.toString().split(":");
+				breastfeeds_total_time_avg = ((Number(tmpBreastfeedTotalTimeAvg[0])*60) + Number(tmpBreastfeedTotalTimeAvg[1]))/60;
+
+				let tmpBreastfeedSessionTotalTimeAvg = breastfeeds.breastfeeds_total_session_avg.toString().split(":");
+				breastfeeds_total_session_avg = ((Number(tmpBreastfeedSessionTotalTimeAvg[0])*60) + Number(tmpBreastfeedSessionTotalTimeAvg[1]))/60;
+				// breastfeeds_total_session_avg = `${Math.round((_tmpTotal/7))}`
+
 			}
 
 			const left = JSON.parse(JSON.stringify(breastfeedsItems.left));
@@ -340,45 +348,52 @@ class StatisticsScreen extends React.Component {
 				let totalSec = 0;
 				let totalOz = 0;
 
-				for(let i in todayItems) {
-					const _tmp = todayItems[i].total_time.split(":");
-					totalMin += Number(_tmp[0]);
-					totalSec += Number(_tmp[1]);
-					totalOz += (Number(todayItems[i].total_amount));
-				}
-				let _tmpTotal = (totalMin*60) + totalSec
+				// for(let i in todayItems) {
+				// 	const _tmp = todayItems[i].total_time.split(":");
+				// 	totalMin += Number(_tmp[0]);
+				// 	totalSec += Number(_tmp[1]);
+				// 	totalOz += (Number(todayItems[i].total_amount));
+				// }
+				// let _tmpTotal = (totalMin*60) + totalSec
 
-				if(_tmpTotal < 60) {
-					pumps_total_time_avg = `${_tmpTotal}`
-					pump_total_session_avg = `${Math.round((_tmpTotal/7))}`
-					if(pumps_total_time_avg > 1) {
-						pumps_total_time_avg = `${pumps_total_time_avg}`
-					} else {
-						pumps_total_time_avg = `${pumps_total_time_avg}`
-					}
+				// if(_tmpTotal < 60) {
+				// 	pumps_total_time_avg = `${_tmpTotal}`
+				// 	pump_total_session_avg = `${Math.round((_tmpTotal/7))}`
+				// 	if(pumps_total_time_avg > 1) {
+				// 		pumps_total_time_avg = `${pumps_total_time_avg}`
+				// 	} else {
+				// 		pumps_total_time_avg = `${pumps_total_time_avg}`
+				// 	}
 
-					if(pump_total_session_avg > 1) {
-						pump_total_session_avg = `${pump_total_session_avg}`
-					} else {
-						pump_total_session_avg = `${pump_total_session_avg}`
-					}
-				} else {
-					pumps_total_time_avg = `${Math.round(_tmpTotal/60)}`;
-					pump_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
+				// 	if(pump_total_session_avg > 1) {
+				// 		pump_total_session_avg = `${pump_total_session_avg}`
+				// 	} else {
+				// 		pump_total_session_avg = `${pump_total_session_avg}`
+				// 	}
+				// } else {
+				// 	pumps_total_time_avg = `${Math.round(_tmpTotal/60)}`;
+				// 	pump_total_session_avg = `${Math.round((_tmpTotal/7)/60)}`;
 
-					if(pumps_total_time_avg > 1) {
-						pumps_total_time_avg = `${pumps_total_time_avg}`
-					} else {
-						pumps_total_time_avg = `${pumps_total_time_avg}`
-					}
+				// 	if(pumps_total_time_avg > 1) {
+				// 		pumps_total_time_avg = `${pumps_total_time_avg}`
+				// 	} else {
+				// 		pumps_total_time_avg = `${pumps_total_time_avg}`
+				// 	}
 
-					if(pump_total_session_avg > 1) {
-						pump_total_session_avg = `${pump_total_session_avg}`
-					} else {
-						pump_total_session_avg = `${pump_total_session_avg}`
-					}
-				}
-				total_ounces_avg = totalOz;
+				// 	if(pump_total_session_avg > 1) {
+				// 		pump_total_session_avg = `${pump_total_session_avg}`
+				// 	} else {
+				// 		pump_total_session_avg = `${pump_total_session_avg}`
+				// 	}
+				// }
+				console.log({pump_total_session_avg})
+				let tmpTotalSession = pumps.pump_total_session_avg.toString().split(":")
+				pump_total_session_avg = ((Number(tmpTotalSession[0])*60) + Number(tmpTotalSession[1]))/60;
+
+				tmpTotalSession = pumps.pumps_total_time_avg.toString().split(":")
+				pumps_total_time_avg = ((Number(tmpTotalSession[0])*60) + Number(tmpTotalSession[1]))/60;
+				
+				total_ounces_avg = Math.round(pumps.total_ounces_avg);
 			}
 
 			const left = JSON.parse(JSON.stringify(pumpItems.left));
@@ -405,18 +420,20 @@ class StatisticsScreen extends React.Component {
 
 		if(statistics && statistics.bottles && statistics.bottles.bottles && statistics.bottles.bottles.length > 0) {
 			bottles = statistics.bottles;
-			bottle_total_ounces_avg;
+			// bottle_total_ounces_avg;
 			// const todayItems = bottles.bottles.filter((x) => moment(x.created_at).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"));
 			const todayItems = bottles.bottles;
-			if(todayItems.length > 0) {
-				let totalOz = 0;
+			// if(todayItems.length > 0) {
+			// 	let totalOz = 0;
 
-				for(let i in todayItems) {
-					totalOz += (Number(todayItems[i].amount))
-				}
+			// 	for(let i in todayItems) {
+			// 		totalOz += (Number(todayItems[i].amount))
+			// 	}
 
-				bottle_total_ounces_avg = Math.round(totalOz/7);
-			}
+			// 
+			// }
+			bottle_total_ounces_avg = bottles.bottle_total_ounces_avg;
+			
 			const items = JSON.parse(JSON.stringify(bottleItems));
 
 			for(let i in bottles.bottles) {
@@ -539,8 +556,16 @@ class StatisticsScreen extends React.Component {
 		}
 		
 		const { currentDate } = this.state;
-
-		console.log({breastfeeds_total_session_avg})
+		const items = [];
+		for(let i in 	bottleItems) {
+			items.push(bottleItems[i].y);
+		}
+		
+		let maxValue = Math.max(...items);
+		if(maxValue < 1) {
+			maxValue = 1;
+		}
+		// console.log({bottleItems})
 		return (
 
 			<ScrollView>
@@ -718,9 +743,11 @@ class StatisticsScreen extends React.Component {
 								<View style={styles.statisticsgraphchart}>
 									<VictoryChart
 										domainPadding={30}
+										domain={{y: [0, Number(maxValue)]}}
 									>
 										<VictoryGroup>
 											<VictoryLine
+											
 												style={{
 													data: { stroke: "#E4B167" },
 													parent: { border: "1px solid #ccc" }
@@ -728,6 +755,7 @@ class StatisticsScreen extends React.Component {
 												data={bottleItems}
 											/>
 											<VictoryScatter
+												maxDomain={1}
 												style={{ data: { fill: "#E4B167", stroke: "#E4B167" } }}
 												size={5}
 												data={bottleItems}

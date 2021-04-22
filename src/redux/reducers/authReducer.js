@@ -32,7 +32,8 @@ const initialState = {
 	verifyOTPResponse: null,
 	isResetPassSuccessful: false,
 	resetPassResponse: null,
-	isGetStarted: false
+	isGetStarted: false,
+	isFirstTime: false
 };
 
 const authReducer = (state = initialState, action) => {
@@ -40,7 +41,9 @@ const authReducer = (state = initialState, action) => {
 		case LOG_IN_START:
 			return { ...state, isLoginSuccessful: false };
 		case LOG_IN_SUCCESS:
-			return { ...state, isLoginSuccessful: true, user: action.data, loggedIn: true };
+			console.log("LOGI SUCCES", action.data);
+			const isFirstTime = action.data.result.first_login == "yes";
+			return { ...state, isLoginSuccessful: true, user: action.data, loggedIn: true, isFirstTime: isFirstTime };
 		case SIGN_UP_START:
 			return { ...state, isSignupSuccessful: false };
 		case SIGN_UP_SUCCESS:
@@ -64,9 +67,10 @@ const authReducer = (state = initialState, action) => {
 		case FB_LOG_IN_START:
 			return { ...state, isLoginSuccessful: false };
 		case FB_LOG_IN_SUCCESS:
-			return { ...state, isLoginSuccessful: true, user: action.data, loggedIn: true };
+			const firstTimeLogin = action.data.result.first_login == "yes";
+			return { ...state, isLoginSuccessful: true, user: action.data, loggedIn: true, isFirstTime: firstTimeLogin };
 		case GET_STARTED_SUCCESS:
-			return { ...state, isGetStarted: action.data };
+			return { ...state, isGetStarted: action.data,  isFirstTime: false };
 		case RESET_AUTH_STATE:
 			return initialState;
 		default:

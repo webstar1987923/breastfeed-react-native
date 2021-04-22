@@ -126,7 +126,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:05</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Características Principales Del Dxtractor De Deche Hygeia Evolve</Text>
+								<Text style={styles.tutorialsvideoText}>Características Principales Del Dxtractor De Leche Hygeia Evolve</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494195438")}>
 								<View style={styles.tutorialsVideoImage}>
@@ -136,7 +136,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:04</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Extractor De Deche Hygeia Evolve Consejos Para Resolución De Problemas</Text>
+								<Text style={styles.tutorialsvideoText}>Extractor De Leche Hygeia Evolve Consejos Para Resolución De Problemas</Text>
 							</TouchableOpacity>
 						</View>
 					</ScrollView>

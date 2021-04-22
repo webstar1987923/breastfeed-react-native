@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
 import messaging from "@react-native-firebase/messaging";
+// import firebase from '@react-native-firebase/app';
 import { showAlert } from "src/utils/native";
 import HomeNavigator from "./homeNavigator";
 import AuthNavigator from "./authNavigator";
@@ -14,6 +15,7 @@ import { Keys, KeyValueStore } from "./utils/KeyValueStore";
 import GetStartedNavigator from "./getStartedNavigator";
 import * as commonActions from "./redux/actions/commonActions";
 import { isIOS } from "./utils/native";
+import notifee from '@notifee/react-native';
 // import firebase from 'react-native-firebase';
 
 class App extends Component {
@@ -21,18 +23,24 @@ class App extends Component {
 		super(props);
 		this.state = {
 			signedIn: props.auth.loggedIn || false,
-			isGetStarted: props.auth.isGetStarted || false
+			isGetStarted: props.auth.isGetStarted || false,
+			isFirstTime: props.auth.isFirstTime || false
 		};
 	}
 
 	componentDidUpdate(prevProps) {
 		const { auth } = this.props;
+		// console.log("next props", {prevProps, auth});
 		if((prevProps.auth.isLoginSuccessful === false && auth.isLoginSuccessful === true) || (prevProps.auth.isLoginSuccessful === true && auth.isLoginSuccessful === false)) {
 			this.setState({ signedIn: auth.loggedIn });
 		}
 
 		if((prevProps.auth.isGetStarted === false && auth.isGetStarted === true) || (prevProps.auth.isGetStarted === true && auth.isGetStarted === false)) {
 			this.setState({ isGetStarted: auth.isGetStarted });
+		}
+
+		if((prevProps.auth.isFirstTime === false && auth.isFirstTime === true) || (prevProps.auth.isFirstTime === true && auth.isFirstTime === false)) {
+			this.setState({ isFirstTime: auth.isFirstTime });
 		}
 
 		// if((prevProps.auth.isSignupSuccessful === false && auth.isSignupSuccessful === true) || (prevProps.auth.isSignupSuccessful === true && auth.isSignupSuccessful === false)) {
@@ -58,6 +66,16 @@ class App extends Component {
 			console.log(data,"NOTIFDS");
 			Alert.alert("Notification", data.notification.title);
 		});
+
+		if(isIOS()) {
+			// let badgeCount = await firebase.notifications().getBadge();
+			try {
+			// firebase.notifications().setBadge(0);
+			await notifee.setBadgeCount(0)
+			} catch (e) {
+				console.log(e)
+			}
+		}
 	}
 
 	getActiveRouteName(navigationState) {
@@ -78,9 +96,10 @@ class App extends Component {
 	}
 
 	render() {
-		const { signedIn, isGetStarted } = this.state;
+		const { signedIn, isGetStarted, isFirstTime } = this.state;
 		const { common: { isLoading } } = this.props;
 		const { t, i18n } = this.props;
+		// console.log({isFirstTime});
 
 		return (
 			<View style={{ flex: 1 }}>
@@ -93,12 +112,22 @@ class App extends Component {
 									<React.Fragment>
 										<StatusBar barStyle="dark" />
 										{
-											isGetStarted ? (
+											isFirstTime ? (
+
+													<GetStartedNavigator screenProps={{ t, i18n, insets }} />
+												
+											) : (
+												<HomeNavigator screenProps={{ t, i18n, insets }} onNavigationStateChange={(prevState, currentState) => this.onNavigateStateChange(prevState, currentState)} />
+											)
+										}
+
+										{/* {
+											(!isFirstTime && isGetStarted) ? (
 												<HomeNavigator screenProps={{ t, i18n, insets }} onNavigationStateChange={(prevState, currentState) => this.onNavigateStateChange(prevState, currentState)} />
 											) : (
 												<GetStartedNavigator screenProps={{ t, i18n, insets }} />
 											)
-										}
+										} */}
 									</React.Fragment>
 								)
 							}

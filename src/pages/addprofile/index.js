@@ -171,7 +171,7 @@ class AddProfileScreen extends React.Component {
 				<ScrollView style={styles.scrollView}>
 					<Text style={styles.editprofileTitle}>Add Baby Profile</Text>
 					<View style={styles.editprofileForm}>
-						<Menu opened={this.state.opened}>
+						<Menu opened={this.state.opened} onBackdropPress={() =>  this.setState({ opened: false })}>
 							<MenuTrigger style={styles.MenuuserprofileIcon} onPress={() => this.setState({ opened: true })}>
 								<View style={styles.userprofileIcon}>
 									{imageUrl !== null ? (
