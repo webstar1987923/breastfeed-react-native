@@ -30,7 +30,7 @@ class AddBreastfeedEntry extends React.Component {
 			IsmanualEntry: false,
 			IsmanualEntryRight: false,
 			// TimeValue: "",
-			time: "9:00 AM",
+			time: "09:00 AM",
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
 			isActive: false,
@@ -158,7 +158,7 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: 0,
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
-			time: "9:00"
+			time: "09:00"
 		});
 	}
 
@@ -191,7 +191,7 @@ class AddBreastfeedEntry extends React.Component {
 		this.setState({ isActive: false });
 		const { isEnabled, IsmanualEntry, IsmanualEntryRight } = this.state;
 		this.setState({
-			time: "9:00",
+			time: "09:00",
 			isEnabled: !isEnabled,
 			IsmanualEntry: !IsmanualEntry,
 			IsmanualEntryRight: !IsmanualEntryRight
@@ -294,7 +294,7 @@ class AddBreastfeedEntry extends React.Component {
 			showAlert("Success", "Left/Right breastfeet time must be required.", "", () => {})
 			return;
 		}
-
+		
 		let timeConvert = time.split(" ")[0];
 		let timeCountLeftConvert = timeCount.replace("m", "").replace("s", "").split(" ").join(":");
 		let timeCountRightConvert = timeCountRight.replace("m", "").replace("s", "").split(" ").join(":");
@@ -314,13 +314,10 @@ class AddBreastfeedEntry extends React.Component {
 			note: NotesValue,
 			created_at: date_time
 		};
-		// console.log(data);
+		console.log("AddBreastfeedEntry", data);
 		
-		// return;
 		if(!isEmptyObject(data)) {
 			dispatchBreastfeedCreate(data);
-			// const { navigation } = this.props;
-			// navigation.navigate("Track");
 		}
 	}
 
@@ -352,6 +349,7 @@ class AddBreastfeedEntry extends React.Component {
 				<Text style={styles.breastfeedTitle}>Add a Breastfeed Entry</Text>
 				<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: isKeyboardShow ? 0.5 : 1 }}>
 					{isTimePickerOpen && <CustomTimePicker time={selectedTime} onClose={(value) => {
+						console.warn("value", value);
 						if(value) {
 							this.setState({ isTimePickerOpen: false, time: `${value[0]}:${value[1]}` });
 						} else {

@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, Linking } from "react-native";
 import TextInput from "src/components/TextInput";
 import { translate } from "src/locales/i18n";
 import { Images } from "src/assets/images";
@@ -122,7 +122,7 @@ class ProductSupportScreen extends React.Component {
 						{"\n"}
 						If you need an update about a pump order from Hygeia or A Breast Pump and More, you can
 						{" "}
-						<Text style={styles.checkStatus}>check your order status here.</Text>
+						<Text style={styles.checkStatus} onPress={() => Linking.openURL("https://status.hygeiahealth.com/")}>check your order status here.</Text>
 					</Text>
 					<View style={styles.contactForm}>
 						<TextInput

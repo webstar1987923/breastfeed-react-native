@@ -24,7 +24,7 @@ export function handleDashboard(data) {
 		dispatch(commonActions.loadingStart());
 		dispatch(DashboardListingStart());
 		Services.handleDashboard(data).then(function(response) {
-			// console.log("response", response.data);
+			console.log("handleDashboard", response.data);
 			dispatch(DashboardListingSuccess(response.data));
 			dispatch(commonActions.loadingEnd());
 		}).catch(function(error) {

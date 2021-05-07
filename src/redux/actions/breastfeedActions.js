@@ -78,6 +78,10 @@ export function handleBreastfeedCreate(data) {
 			listing.result.push(response.data.result);
 			// console.log("listing", listing);
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(addBreastfeedSuccess(listing));
 		}).catch(function(error) {
 			// console.log("error", error);
@@ -93,7 +97,7 @@ export function handleBreastfeedListing(data) {
 		// dispatch(commonActions.loadingStart());
 		dispatch(BreastfeedListingStart());
 		Services.handleBreastfeedListing(data).then(function(response) {
-			// console.log("response", response);
+			console.log("handleBreastfeedListing", response.data);
 			dispatch(BreastfeedListingSuccess(response.data));
 			// dispatch(commonActions.loadingEnd());
 		}).catch(function(error) {
@@ -151,6 +155,10 @@ export function handleBreastfeedEdit(data) {
 			// console.log("dataFilter", dataFilter);
 			plisting.result = dataFilter;
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(editBreastfeedSuccess(plisting));
 		}).catch(function(error) {
 			// console.log("error", error);

@@ -35,11 +35,25 @@ class StatisticsScreen extends React.Component {
 
 
 		if (prevProps.activeBaby && activeBaby && prevProps.activeBaby.id !== activeBaby.id) {
-			const data = {
-				babyprofile_id: activeBaby.id
-			};
+			// const data = {
+			// 	babyprofile_id: activeBaby.id
+			// };
+			let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
+			let endDate = moment(this.state.currentDate).format('YYYY-MM-DD');
+			
+			let data = new FormData();
+			const activeBaby = this.props.activeBaby;
+
+			data.append("babyprofile_id", activeBaby.id);
+			data.append("from_date", startDate);
+			data.append("to_date", endDate);
+
+			setTimeout(() => {
+				this.props.dispatchGetStatisticsList(data);
+			},100);
+
 		}
-		if (activeScreen !== null && (activeScreen === "Statistics" && routeName === "Statistics")) {
+		if (activeScreen !== null && (activeScreen === "Statistics" && routeName === "Statistics") && prevProps.activeScreen !== "Statistics") {
 			if (!isEmptyObject(activeBaby)) {
 				console.log("callingpi", this.state.currentDate)
 				let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
@@ -153,15 +167,31 @@ class StatisticsScreen extends React.Component {
 	getRange(startDate, endDate, type) {
 		let fromDate = moment(startDate)
 		let toDate = moment(endDate)
-		let diff = toDate.diff(fromDate, type)
+		let diff = toDate.diff(fromDate, type);
+		// console.log({diff})
 		let range = []
-		for (let i = 0; i < diff; i++) {
+		for (let i = 0; i <= diff; i++) {
 		  range.push(moment(startDate).add(i, type))
 		}
 		return range
 	}
 
+	// getDateArray(startDate, endDate){
+	// 	var start = startDate;
+	// 	var end = endDate;
+	// 	var res = [];
+	// 	while(start.isBefore(end)){
+	// 		var day = start.format('dddd').toLowerCase();
+	// 		if( obj[day] ){
+	// 		res.push(start);
+	// 		}
+	// 		start.add(1, 'd');
+	// 	}
+	// 	return res;
+	// }
+
 	getDaysArray(start, end) {
+		console.log({start,end});
 		for(var arr=[],dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
 			arr.push(new Date(dt));
 		}
@@ -200,14 +230,16 @@ class StatisticsScreen extends React.Component {
 		const pee = [];
 		const poop = [];
 		// const diaperLabels = [];
-		let startDate = moment(this.state.currentDate).subtract(6,'d').format('YYYY-MM-DD');;
-		let endDate = moment(this.state.currentDate).format('YYYY-MM-DD');
-
+		let startDate = moment(this.state.currentDate).subtract(6,'d').set({hours:0, minutes:0 , seconds: 0})
+		let endDate = moment(this.state.currentDate).set({hours: 23, minutes:59, seconds: 59})
+		// console.log({startDate,endDate});
 		// var range = moment().range(startDate, endDate);
 		// var diff = range.diff('days');
-		const tmpDateRanges = this.getDaysArray(new Date(startDate),new Date(endDate));
+		// moment.range()
+		const tmpDateRanges = this.getRange(startDate, endDate, "days");
 		const dateRange = [];
 		for(let i in tmpDateRanges) {
+			// console.log("moment(tmpDateRanges[i])", moment(tmpDateRanges[i]));	
 			let name = moment(tmpDateRanges[i]).format('ddd');
 			dateRange.push(name);
 		
@@ -696,7 +728,9 @@ class StatisticsScreen extends React.Component {
 										height={160}
 									>
 										<VictoryBar
-											barRatio={1}
+											barRatio={1}											
+											style={{ labels: { fill: "#000", padding: 2.5, margin: 0, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 } }}
+											labels={({ datum }) => `${datum._y1} oz`}
 											data={pumpItems.left}
 										/>
 										{/* <VictoryBar
@@ -810,7 +844,7 @@ class StatisticsScreen extends React.Component {
 									</VictoryStack>
 									<VictoryAxis
 										tickValues={[1, 2, 3, 4, 5, 6, 7]}
-										tickFormat={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", ""]}
+										tickFormat={dateRange}
 										style={{
 											axis: { stroke: "#fff"},
 											tickLabels: { fontSize: 12 }

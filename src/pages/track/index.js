@@ -43,7 +43,6 @@ class TrackScreen extends React.Component {
 	render() {
 		const { currentDate } = this.state;
 		const { navigation, tabReducer: { trackActiveTab } } = this.props;
-		
 		return (
 			<View style={styles.container}>
 				<View style={styles.TrackHeader}>

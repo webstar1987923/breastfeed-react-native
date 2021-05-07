@@ -77,6 +77,10 @@ export function handleBottleCreate(data) {
 			plisting.result.push(response.data.result);
 			console.log("plisting", plisting);
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(addBottleSuccess(plisting));
 		}).catch(function(error) {
 			// console.log("error", error);
@@ -149,6 +153,10 @@ export function handleBottleEdit(data) {
 			// console.log("dataFilter", dataFilter);
 			plisting.result = dataFilter;
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(editBottleSuccess(plisting));
 		}).catch(function(error) {
 			// console.log("error", error);

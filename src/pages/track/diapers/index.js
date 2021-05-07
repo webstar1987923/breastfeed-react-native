@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { View, Text, Image, ScrollView, TouchableOpacity, Modal, TouchableHighlight } from "react-native";
 import { List, ListItem, Left, Right } from "native-base";
 import * as authActions from "src/redux/actions/authActions";
+import * as commonActions from "src/redux/actions/commonActions";
 import ButtonComponent from "src/components/ButtonComponent";
 // import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -33,6 +34,11 @@ class DiapersCards extends React.Component {
 		const { currentDate, activeBaby } = this.props;
 		if(currentDate !== prevProps.currentDate || prevProps.activeBaby && activeBaby && prevProps.activeBaby.id !== activeBaby.id) {
 			this.diaperFunction(currentDate, activeBaby);
+		}
+
+		if(this.props.refreshData) {
+			this.diaperFunction(currentDate, activeBaby);
+			this.props.dispatchRefresh(false);
 		}
 	}
 
@@ -233,14 +239,16 @@ class DiapersCards extends React.Component {
 
 const mapStateToProps = (state) => ({
 	diaper: state.diaperReducer,
-	activeBaby: getActiveBaby(state)
+	activeBaby: getActiveBaby(state),
+	refreshData: state.commonReducer.refreshData
 });
 
 const mapDispatchToProps = {
 	dispatchDiaperListing: (data) => diaperActions.handleDiaperListing(data),
 	dispatchDiaperDelete: (data) => diaperActions.handleDiaperDelete(data),
 	dispatchEditDiaper: (data) => diaperActions.EditGetDataDiaper(data),
-	dispatchResetAuthState: () => authActions.resetAuthState()
+	dispatchResetAuthState: () => authActions.resetAuthState(),
+	dispatchRefresh: (flag) => commonActions.setRefreshData(flag)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DiapersCards);

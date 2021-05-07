@@ -126,7 +126,7 @@ class TutorialsScreen extends React.Component {
 									/>
 									<Text style={styles.tutorialsVideoTime}>1:05</Text>
 								</View>
-								<Text style={styles.tutorialsvideoText}>Características Principales Del Dxtractor De Leche Hygeia Evolve</Text>
+								<Text style={styles.tutorialsvideoText}>Características Principales Del Extractor De Leche Hygeia Evolve</Text>
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.tutorialsVideoBox} onPress={() => this.setModalVisible("494195438")}>
 								<View style={styles.tutorialsVideoImage}>

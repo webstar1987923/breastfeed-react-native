@@ -126,7 +126,8 @@ export const Images = {
 		howTo: require("./howTo.jpeg"),
 		understanding: require("./understanding.jpeg"),
 		pupming_storing: require("./pupming_storing.jpeg"),
-		guideline: require("./guideline.jpeg")
+		guideline: require("./guideline.jpeg"),
+		work: require("./work.jpeg")
 	},
 	Statistics: {
 		prevIcon: require("./prev-icon.png"),

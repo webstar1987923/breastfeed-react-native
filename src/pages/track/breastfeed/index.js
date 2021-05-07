@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { View, Text, Image, ScrollView, TouchableOpacity, Modal, TouchableHighlight, Switch } from "react-native";
 import * as authActions from "src/redux/actions/authActions";
+import * as commonActions from "src/redux/actions/commonActions";
 import ButtonComponent from "src/components/ButtonComponent";
 import * as breastfeedActions from "src/redux/actions/breastfeedActions";
 import { Images } from "src/assets/images";
@@ -54,6 +55,11 @@ class BreastfeedCards extends React.Component {
 				/// FETCH ALARA HERE
 				this.fetchAlarmValue(activeBaby);
 			}
+		}
+
+		if(this.props.refreshData) {
+			this.breastFeed(currentDate, activeBaby);
+			this.props.dispatchRefresh(false);
 		}
 	}
 
@@ -171,10 +177,10 @@ class BreastfeedCards extends React.Component {
 	}
 
 	render() {
-		const { breastfeed, isFocused, track } = this.props;
+		const { breastfeed, isFocused, track, refreshData } = this.props;
 		const { modalVisible, ViewNoteModal, isAlarmModal } = this.state;
 		const alarm = track.breastfeed || [];
-
+		
 		return (
 			<View style={styles.trackContainer}>
 				{
@@ -357,7 +363,8 @@ const mapStateToProps = (state) => ({
 	breastfeed: state.breastfeedReducer,
 	activeBaby: getActiveBaby(state),
 	tabReducer: state.tabReducer,
-	track: state.trackReducer
+	track: state.trackReducer,
+	refreshData: state.commonReducer.refreshData
 });
 
 const mapDispatchToProps = {
@@ -365,7 +372,8 @@ const mapDispatchToProps = {
 	dispatchBreastfeedDelete: (data) => breastfeedActions.handleBreastfeedDelete(data),
 	dispatchEditBreastfeed: (data) => breastfeedActions.EditGetDataBreastfeed(data),
 	dispatchResetAuthState: () => authActions.resetAuthState(),
-	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data)
+	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data),
+	dispatchRefresh: (flag) => commonActions.setRefreshData(flag)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(BreastfeedCards));

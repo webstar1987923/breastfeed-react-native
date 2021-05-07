@@ -6,6 +6,13 @@ export const LOADING_SUCCESSFUL = "LOADING_SUCCESSFUL";
 export const LOADING_ERROR = "LOADING_ERROR";
 export const LOADING_ERROR_RESET = "LOADING_ERROR_RESET";
 export const GET_CURRENT_SCREEN = "GET_CURRENT_SCREEN";
+export const SET_REFRESH_DATA = "SET_REFRESH_DATA";
+
+
+export const setRefreshData = (payload) => ({
+	type: SET_REFRESH_DATA,
+	payload
+})
 
 /* LOADING ACTIONS */
 export const loadingStart = () => ({

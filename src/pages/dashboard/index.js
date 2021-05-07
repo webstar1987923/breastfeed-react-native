@@ -10,7 +10,6 @@ import { translate } from "src/locales/i18n";
 import * as dashboardActions from "src/redux/actions/dashboardActions";
 import { Images } from "src/assets/images";
 import { isEmptyObject } from "src/utils/native";
-import Moment from "moment";
 import { getActiveBaby, getActiveScreen } from "src/redux/selectors";
 import moment from "moment";
 import styles from "./styles";
@@ -38,10 +37,10 @@ class dashboardScreen extends React.Component {
 
 	componentDidMount() {
 		const { dispatchDashboardListing, activeBaby } = this.props;
-		
 		if(!isEmptyObject(activeBaby)) {
 			const data = {
-				babyprofile_id: activeBaby.id
+				babyprofile_id: activeBaby.id, 
+				date: moment()
 			};
 			dispatchDashboardListing(data);
 		} else {
@@ -85,11 +84,12 @@ class dashboardScreen extends React.Component {
 			};
 			dispatchDashboardListing(data);
 		}
-		if(activeScreen !== null && (activeScreen === "Dashboard" && routeName === "Dashboard")) {
+		if(activeScreen !== null && (activeScreen === "Dashboard" && routeName === "Dashboard") && prevProps.activeScreen !== "Dashboard") {
 			if(!isEmptyObject(activeBaby)) {
 				const data = {
 					babyprofile_id: activeBaby.id
 				};
+				console.log(">>>>>>>>>>>>>>>>>>>>>>>")
 				dispatchDashboardListing(data);
 			}
 		}
@@ -105,8 +105,8 @@ class dashboardScreen extends React.Component {
 			let leftBreast = dashboard.dashboardListing.result.breastfeeds.left_breast;
 			let totalTime = dashboard.dashboardListing.result.breastfeeds.total_time;
 
-			let leftBreastSecond = Moment(leftBreast, "HH:mm:ss: A").diff(Moment().startOf("day"), "seconds");
-			let totalTimeSecond = Moment(totalTime, "HH:mm:ss: A").diff(Moment().startOf("day"), "seconds");
+			let leftBreastSecond = moment(leftBreast, "HH:mm:ss: A").diff(moment().startOf("day"), "seconds");
+			let totalTimeSecond = moment(totalTime, "HH:mm:ss: A").diff(moment().startOf("day"), "seconds");
 
 			let leftValue = ((leftBreastSecond / totalTimeSecond) * 100).toFixed(2);
 
@@ -150,12 +150,17 @@ class dashboardScreen extends React.Component {
 		return (Number(_t[0]) > 0 || Number(_t[1]) > 0);
 	}
 
+
+	getTimeAMPM(data) {
+		return moment(data, ["HH:mm"]).format("hh:mm A");
+	}
+
 	render() {
 		const { dashboard } = this.props;
 		const { leftBreastPercentage, isNoBabyModal } = this.state;
 		let dashboardData = dashboard.dashboardListing.result;
 		// console.log(this.props.tab);
-		// console.log("dashboard", dashboardData);
+		// console.log("dashboard", dashboardData.pump_session_count);
 		// console.log(this.props.user);
 		return (
 			<ScrollView>
@@ -270,7 +275,7 @@ class dashboardScreen extends React.Component {
 														<Text style={styles.listBreastsIcon}>B</Text>
 														<View style={styles.mainlistText}>
 															<Text style={styles.listTextBold}>Both Breasts, </Text>
-															<Text style={styles.listText}>{dashboardData.breastfeeds.start_time}</Text>
+															<Text style={styles.listText}>{this.getTimeAMPM(dashboardData.breastfeeds.start_time)}</Text>
 														</View>
 													</View>
 												)
@@ -283,7 +288,7 @@ class dashboardScreen extends React.Component {
 																		<Text style={styles.listBreastsIcon}>R</Text>
 																		<View style={styles.mainlistText}>
 																			<Text style={styles.listTextBold}>Right Breast, </Text>
-																			<Text style={styles.listText}>{dashboardData.breastfeeds.start_time}</Text>
+																			<Text style={styles.listText}>{this.getTimeAMPM(dashboardData.breastfeeds.start_time)}</Text>
 																		</View>
 																	</View>
 																)
@@ -296,7 +301,7 @@ class dashboardScreen extends React.Component {
 																		<Text style={styles.listBreastsIcon}>L</Text>
 																		<View style={styles.mainlistText}>
 																			<Text style={styles.listTextBold}>Left Breast, </Text>
-																			<Text style={styles.listText}>{dashboardData.breastfeeds.start_time}</Text>
+																			<Text style={styles.listText}>{this.getTimeAMPM(dashboardData.breastfeeds.start_time)}</Text>
 																		</View>
 																	</View>
 																)

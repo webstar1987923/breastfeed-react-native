@@ -28,7 +28,7 @@ class AddBottle extends React.Component {
 			NotesValue: "",
 			// selectedStartTime: "",
 			// TimeValue: "",
-			time: "9:00 AM",
+			time: "09:00 AM",
 			selectedAmount: "1.0",
 			selectedFeed: "Breastmilk",
 			isKeyboardShow: false,

@@ -41,7 +41,7 @@ class ArticlesScreen extends React.Component {
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.articlesImgBox} onPress={() => Linking.openURL("https://www.hygeiahealth.com/blog/preparing-pumping-work/")}>
 						<Image
-							source={Images.Articles.articlesImg}
+							source={Images.Articles.work}
 							style={styles.articlesImg}
 						/>
 						<View style={styles.articleContent}>

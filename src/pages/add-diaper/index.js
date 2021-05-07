@@ -28,7 +28,7 @@ class AddDiaper extends React.Component {
 			NotesValue: "",
 			// selectedStartTime: "",
 			// TimeValue: "",
-			time: "9:00 AM",
+			time: "09:00 AM",
 			selectedFeed: "Both",
 			isKeyboardShow: false,
 			isTimePickerOpen: false

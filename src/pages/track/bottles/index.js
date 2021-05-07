@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { View, Text, Image, ScrollView, TouchableOpacity, Modal, TouchableHighlight } from "react-native";
 import { List, ListItem, Left, Right } from "native-base";
 import * as authActions from "src/redux/actions/authActions";
+import * as commonActions from "src/redux/actions/commonActions";
 import ButtonComponent from "src/components/ButtonComponent";
 // import LanguageSwitcher from "src/components/LanguageSwitcher";
 // import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
@@ -57,6 +58,11 @@ class BottlesCards extends React.Component {
 				/// FETCH ALARA HERE
 				this.fetchAlarmValue(activeBaby);
 			}
+		}
+
+		if(this.props.refreshData) {
+			this.bottleFunction(currentDate, activeBaby);
+			this.props.dispatchRefresh(false);
 		}
 	}
 
@@ -282,7 +288,8 @@ const mapStateToProps = (state) => ({
 	bottle: state.bottleReducer,
 	activeBaby: getActiveBaby(state),
 	tabReducer: state.tabReducer,
-	track: state.trackReducer
+	track: state.trackReducer,
+	refreshData: state.commonReducer.refreshData
 });
 
 const mapDispatchToProps = {
@@ -290,7 +297,8 @@ const mapDispatchToProps = {
 	dispatchBottleDelete: (data) => bottleActions.handleBottleDelete(data),
 	dispatchEditBottle: (data) => bottleActions.EditGetDataBottle(data),
 	dispatchResetAuthState: () => authActions.resetAuthState(),
-	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data)
+	dispatchGetAlarm: (data) => fetchPrevAlarmValue(data),
+	dispatchRefresh: (flag) => commonActions.setRefreshData(flag)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(BottlesCards));

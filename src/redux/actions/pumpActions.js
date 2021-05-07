@@ -77,6 +77,10 @@ export function handlePumpCreate(data) {
 			plisting.result.push(response.data.result);
 			console.log("plisting", plisting);
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(addPumpSuccess(plisting));
 		}).catch(function(error) {
 			// console.log("error", error);
@@ -149,6 +153,10 @@ export function handlePumpEdit(data) {
 			// console.log("dataFilter", dataFilter);
 			plisting.result = dataFilter;
 			dispatch(commonActions.loadingEnd());
+			dispatch({
+				type: "SET_REFRESH_DATA",
+				payload: true
+			});
 			dispatch(editPumpSuccess(plisting));
 		}).catch(function(error) {
 			// console.log("error", error);

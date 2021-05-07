@@ -188,7 +188,7 @@ class AddBreastfeedEntry extends React.Component {
 			TotalTimeMinute: 0,
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
-			time: '9:00'
+			time: '09:00'
 		});
 	}
 

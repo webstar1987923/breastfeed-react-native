@@ -31,7 +31,7 @@ class AddPumpEntry extends React.Component {
 			IsmanualEntry: false,
 			IsmanualEntryRight: false,
 			// TimeValue: "",
-			time: "9:00 AM",
+			time: "09:00 AM",
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
 			isActive: false,
@@ -159,7 +159,7 @@ class AddPumpEntry extends React.Component {
 			TotalTimeMinute: 0,
 			timeCount: "0m 0s",
 			timeCountRight: "0m 0s",
-			time: "9:00"
+			time: "09:00"
 		});
 	}
 

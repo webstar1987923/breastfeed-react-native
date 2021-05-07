@@ -138,7 +138,6 @@ android {
     }
     dexOptions {
         javaMaxHeapSize "4g"
-        preDexLibraries = false
     }
     splits {
         abi {
